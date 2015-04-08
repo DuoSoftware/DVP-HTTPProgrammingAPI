@@ -1,4 +1,3 @@
-DVP-HTTPProgrammingAPI
-======================
+﻿# DuoVoiceAPIResponseServer
 
-HTTP programming API for external developers
+
