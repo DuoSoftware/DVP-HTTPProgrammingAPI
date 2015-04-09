@@ -24,8 +24,6 @@ console.log(doc.toString({ pretty: true }));
     //<params/>--custum post tags
     //<work/>
     //</document>
-
-
     /*
 
     <document type="text/freeswitch-httapi">

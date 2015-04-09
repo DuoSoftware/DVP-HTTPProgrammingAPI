@@ -2,6 +2,7 @@
     "action": "record",
     "file": "testrecord.wav",
     "nexturl": "http://localhost/IVR/end.json",
+    "posturl": "http://localhost/IVR/end.json",
     "result": "result",
     "errorfile": "",
     "digittimeout" : 5,

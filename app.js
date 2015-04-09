@@ -8,8 +8,9 @@ var http = require('http');
 var redis = require('redis');
 var request = require('request');
 var FormData = require('form-data');
-var util = require('util');
+//var util = require('util');
 var Regex = require("regex");
+var format = require("stringformat");
 
 //console.log(messageGenerator.DTMFType("xxxxxxxxxx", "yyyyyyyyyyyyyyyyy", "inband"));
 
@@ -82,32 +83,97 @@ function postData(req, res) {
         var uuid_data;
         if (err) {
 
+            console.log(err);
+
         }
         else {
             
             
             uuid_data = JSON.parse(sessiondata);
-            if (uuid_data["posturl"] && uuid_data["posturl"] != "none") {
-                //fs.createReadStream(req.files.result["path"]).pipe(request.post(uuid_data["posturl"]))
-                
-                
+            var body = { session: req.body["session_id"], direction: req.body["Caller-Direction"], ani: req.body["Caller-Caller-ID-Number"], dnis: req.body["Caller-Destination-Number"], name: req.body["Caller-Caller-ID-Name"], result: "uploaded" };
+
+
+            /////////////upload to system location///////////////////////////////////////////
+
+            try {
+                var urloadurl = config.Services.uploadurl;
+
+
                 var form = new FormData();
                 form.append("sessionid", req.body["session_id"]);
                 form.append("filename", fs.createReadStream(req.files.result["path"]));
-                
+                form.append("displayname", req.files.result["name"]);
+                form.append("hostname", req.body["hostname"])
+
                 form.getLength(function (err, length) {
                     if (err) {
-                        return requestCallback(err);
+                        console.log(err);
                     }
-                    
-                    var r = request.post(uuid_data["posturl"], requestCallback);
+
+                    var r = request.post(urloadurl, requestCallback);
                     r._form = form;
                     r.setHeader('content-length', length);
 
                 });
+
+            }catch(ex){
+
+                console.log(err);
+            }
+
+
+            /////////////////////////////////////////////upload to client post url//////////////////////////////////////////
+
+            if (uuid_data["posturl"] && uuid_data["posturl"] != "none") {
+                //fs.createReadStream(req.files.result["path"]).pipe(request.post(uuid_data["posturl"]))
+                
+                try {
+                    var form = new FormData();
+                    form.append("sessionid", req.body["session_id"]);
+                    form.append("filename", fs.createReadStream(req.files.result["path"]));
+                    form.append("displayname", req.files.result["name"]);
+
+                    form.getLength(function (err, length) {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        var r = request.post(uuid_data["posturl"], requestCallbackDev);
+                        r._form = form;
+                        r.setHeader('content-length', length);
+
+                    });
+                }catch(ex){
+
+                    console.log(ex);
+                }
                 
                 function requestCallback(err, res, body) {
-                    console.log(body);
+
+                    if(res.statusCode == 200) {
+
+                        console.log(body);
+                        //////////////////////////////////////////////push activities///////////////////
+                        
+                    }else{
+
+
+                    }
+                }
+
+                function requestCallbackDev(err, res, body) {
+
+                    if(res.statusCode == 200) {
+
+                        console.log(body);
+                        //////////////////////////////////////////////push activities///////////////////
+
+
+                    }else{
+
+
+
+                    }
                 }
             }
 
@@ -157,7 +223,7 @@ function HandleFunction(queryData, req, res, next) {
             
             if (!sessiondata) {
                 
-                uuid_data = { path: "http://localhost:8081", company: 1, tenent: 3, pbx: 'none', app: 'start' };
+                uuid_data = { path: "http://localhost:8081", company: 1, tenent: 3, pbx: 'none'};
             }
             
             
@@ -185,7 +251,7 @@ function HandleFunction(queryData, req, res, next) {
                             var basurl = "none";
                             var nxurl = uuid_data["path"];
                             if (uuid_data["app"]) {
-                                nxurl = util.format("%s/%s", uuid_data["path"], uuid_data["app"])
+                                nxurl = format("{0}/{1}", uuid_data["path"], uuid_data["app"])
                                 basurl = uuid_data["path"];
                             }
                             
@@ -209,7 +275,7 @@ function HandleFunction(queryData, req, res, next) {
                         var options = { url: uuid_dev["nexturl"], method: "POST", json: body };
                         
                         
-                        request(options, function (error, response, data) {
+                        request.get(options, function (error, response, data) {
                             
                             if (!error && response.statusCode == 200) {
                                 
@@ -244,6 +310,9 @@ function HandleFunction(queryData, req, res, next) {
                                 
                                 
                                 //console.log(callData);
+
+
+
                                 res.writeHead(200, { "Content-Type": "text/xml" });
                                 switch (callData["action"]) {
 
@@ -316,18 +385,6 @@ function HandleFunction(queryData, req, res, next) {
                                     case "sms":
                                         //var sms = function(actionURL, tempURL,to,message)
                                         res.write(messageGenerator.Sms(mainServer, mainServer, callData["to"], callData["message"]));
-                                        
-                                        break;
-                                    
-                                    case "setdtmfx":
-                                        
-                                        console.log("------------------------------------------------------>" + callData["dtmftype"]);
-                                        var msg = messageGenerator.DTMFType(mainServer, mainServer, callData["dtmftype"]);
-                                        console.log("------------------------------------------------------>" + msg);
-                                        //var sms = function(actionURL, tempURL,to,message)
-                                        res.write(msg);
-                                        
-                                        console.log("------------------------------------------------------>" + "Done");
                                         
                                         break;
 
@@ -410,14 +467,14 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                     case "dialextention":
-                                        var number = util.format("pbx/%s/%s", uuid_data['pbxcontext'], callData["number"]);
+                                        var number = format("pbx/{0}/{1}", uuid_data['pbxcontext'], callData["number"]);
                                         res.write(messageGenerator.Dial(mainServer, mainServer, callData["context"], callData["dialplan"], callData["callername"], callData["callernumber"], number));
                                         
                                         break;
 
                                     case "directdial":
                                         
-                                        var number = util.format("sip:%s@%s", callData["number"], uuid_data['domain']);
+                                        var number = format("sip:{0}@{1}", callData["number"], uuid_data['domain']);
                                         var context = "developer";
                                         if (uuid_data['pbxcontext'])
                                             var context = uuid_data['pbxcontext'];
@@ -498,22 +555,22 @@ function HandleFunction(queryData, req, res, next) {
                                 console.log("----------------------------------------------------> got result");
                                 
                                 
-                                /* if (uuid_dev["baseurl"] != "none") {
+                                if (uuid_dev["baseurl"] != "none" && callData["app"]) {
                                     
                                     console.log("----------------------------------------------------> have base url"+ uuid_dev["baseurl"]);
 
                                     uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                    uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["nexturl"]);
+                                    uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
                                 }
-                                else {*/
-                                    
+                                else {
+
                                     console.log("----------------------------------------------------> no base url");
-                                
-                                uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                uuid_dev["nexturl"] = callData["nexturl"];
-                                
-                                console.log(uuid_dev["nexturl"]);
-                                //}
+
+                                    uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                    uuid_dev["nexturl"] = callData["nexturl"];
+
+                                    console.log(uuid_dev["nexturl"]);
+                                }
                                 
                                 
                                 try {
