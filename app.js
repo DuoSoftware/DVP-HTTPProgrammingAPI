@@ -96,25 +96,31 @@ function postData(req, res) {
             /////////////upload to system location///////////////////////////////////////////
 
             try {
-                var urloadurl = config.Services.uploadurl;
+
+                if(config.Services && config.Services.uploadurl) {
+                    var urloadurl = config.Services.uploadurl;
 
 
-                var form = new FormData();
-                form.append("sessionid", req.body["session_id"]);
-                form.append("filename", fs.createReadStream(req.files.result["path"]));
-                form.append("displayname", req.files.result["name"]);
-                form.append("hostname", req.body["hostname"])
+                    var form = new FormData();
+                    form.append("sessionid", req.body["session_id"]);
+                    form.append("filename", fs.createReadStream(req.files.result["path"]));
+                    form.append("displayname", req.files.result["name"]);
+                    form.append("hostname", req.body["hostname"])
 
-                form.getLength(function (err, length) {
-                    if (err) {
-                        console.log(err);
-                    }
+                    form.getLength(function (err, length) {
+                        if (err) {
+                            console.log(err);
+                        }
 
-                    var r = request.post(urloadurl, requestCallback);
-                    r._form = form;
-                    r.setHeader('content-length', length);
+                        var r = request.post(urloadurl, requestCallback);
+                        r._form = form;
+                        r.setHeader('content-length', length);
 
-                });
+                    });
+                }else{
+
+
+                }
 
             }catch(ex){
 
@@ -154,7 +160,7 @@ function postData(req, res) {
 
                         console.log(body);
                         //////////////////////////////////////////////push activities///////////////////
-                        
+
                     }else{
 
 
@@ -181,6 +187,248 @@ function postData(req, res) {
     });
 
 };
+
+
+
+function Operation(callData, fileID, mainServer, queryData, res){
+
+    res.writeHead(200, {"Content-Type": "text/xml"});
+    switch (callData["action"]) {
+
+        case "play":
+
+            var maxdigits = callData["digits"];
+            if (callData["maxdigits"])
+                maxdigits = callData["maxdigits"];
+
+            res.write(messageGenerator.Playback(fileID, mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
+            break;
+
+
+        case "playandgetdigits":
+
+            var maxdigits = callData["digits"];
+            if (callData["maxdigits"])
+                maxdigits = callData["maxdigits"];
+
+            var error = './invalid.wav';
+            if (callData["errorfile"])
+                error = callData["errorfile"];
+
+
+            res.write(messageGenerator.PlayAndGetDigits(fileID, mainServer, mainServer, callData["result"], error, callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
+
+            break;
+
+        case "record":
+
+            var maxdigits = callData["digits"];
+            if (callData["maxdigits"])
+                maxdigits = callData["maxdigits"];
+            //file, actionURL,tempURL, paramName, errorFile, digitTimeout, limit, terminators, strip
+            res.write(messageGenerator.Record(callData["file"], mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["limit"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
+
+            break;
+
+        case "pause":
+
+            var maxdigits = callData["digits"];
+            if (callData["maxdigits"])
+                maxdigits = callData["maxdigits"];
+            //var pause = function( actionURL,tempURL, paramName, errorFile, digitTimeout,inputTimeout, milliseconds, terminators, strip)
+            res.write(messageGenerator.Pause(mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["milliseconds"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
+
+            break;
+
+        case "speak":
+
+            var maxdigits = callData["digits"];
+            if (callData["maxdigits"])
+                maxdigits = callData["maxdigits"];
+            //var speak = function(file,actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops,engine,voice, terminators, strip)
+            res.write(messageGenerator.Speak(callData["file"], mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["engine"], callData["voice"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
+
+            break;
+
+        case "say":
+
+            var maxdigits = callData["digits"];
+            if (callData["maxdigits"])
+                maxdigits = callData["maxdigits"];
+
+            //var say = function(file,actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops,language,type,method,gender, terminators, strip)
+            res.write(messageGenerator.Say(callData["file"], mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["language"], callData["type"], callData["method"], callData["gender"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
+
+            break;
+
+        case "sms":
+            //var sms = function(actionURL, tempURL,to,message)
+            res.write(messageGenerator.Sms(mainServer, mainServer, callData["to"], callData["message"]));
+
+            break;
+
+        case "setdtmf":
+
+            ////////////////////////new//////////////////////////////////
+
+
+            //var str = "a=rtpmap:97 telephone-event/8000";
+
+            var regex = new RegExp(/a=rtpmap:(\d+)\stelephone-event\/8000/);
+
+
+            //var ismatch = str.match(regex);
+
+            //var regex = new Regex("a=rtpmap:(\d+)\stelephone-event//8000");
+
+            if (queryData["variable_switch_r_sdp"]) {
+
+                console.log("variable_switch_r_sdp ok");
+                var query = queryData["variable_switch_r_sdp"];
+
+                var ismatch = query.match(regex);
+
+                console.log(query);
+
+                if (ismatch && ismatch.length > 0) {
+
+
+                    console.log("------------------------------------------------------> outband");
+                    var msg = messageGenerator.Continue(mainServer);
+                    console.log("------------------------------------------------------>" + msg);
+                    res.write(msg);
+
+                    console.log("------------------------------------------------------>" + "Done");
+
+
+                }
+                else {
+
+                    console.log("------------------------------------------------------> INBAND");
+                    var msg = messageGenerator.DTMFType(mainServer, mainServer, "INBAND");
+                    console.log("------------------------------------------------------>" + msg);
+                    res.write(msg);
+
+                    console.log("------------------------------------------------------>" + "Done");
+
+
+                }
+            }
+            else {
+
+                ////////////////////////////////////////////////////////////////
+
+                console.log("------------------------------------------------------>" + callData["dtmftype"]);
+                var msg = messageGenerator.DTMFType(mainServer, mainServer, callData["dtmftype"]);
+                console.log("------------------------------------------------------>" + msg);
+                //var sms = function(actionURL, tempURL,to,message)
+                res.write(msg);
+
+                console.log("------------------------------------------------------>" + "Done");
+            }
+
+            break;
+
+
+        case "execute":
+            //var execute = function(actionURL, tempURL,application,data)
+            res.write(messageGenerator.Execute(mainServer, mainServer, callData["application"], callData["data"]));
+
+            break;
+
+        case "dial":
+            //var dial = function(actionURL, tempURL,context,dialplan,callername,callernumber,number)
+            res.write(messageGenerator.Dial(mainServer, mainServer, callData["context"], callData["dialplan"], callData["callername"], callData["callernumber"], callData["number"]));
+
+            break;
+
+
+        case "dialextention":
+            var number = format("pbx/{0}/{1}", uuid_data['pbxcontext'], callData["number"]);
+            res.write(messageGenerator.Dial(mainServer, mainServer, callData["context"], callData["dialplan"], callData["callername"], callData["callernumber"], number));
+
+            break;
+
+        case "directdial":
+
+            var number = format("sip:{0}@{1}", callData["number"], uuid_data['domain']);
+            var context = "developer";
+            if (uuid_data['pbxcontext'])
+                var context = uuid_data['pbxcontext'];
+            res.write(messageGenerator.Dial(mainServer, mainServer, context, callData["dialplan"], callData["callername"], callData["callernumber"], number));
+
+            break;
+
+        case "recordcall":
+            //var recordCall = function(actionURL, tempURL,limit,name)
+            res.write(messageGenerator.RecordCall(mainServer, mainServer, callData["limit"], callData["name"]));
+
+            break;
+
+        case "conference":
+            //var conference = function(actionURL, tempURL,profile,data)
+            res.write(messageGenerator.Conference(mainServer, mainServer, callData["profile"], callData["data"]));
+
+            break;
+
+        case "break":
+            //var breakx = function(actionURL, tempURL,cause)
+            res.write(messageGenerator.Break(mainServer, mainServer, callData["cause"]));
+
+            break;
+
+        case "waitforanswer":
+
+            res.write(messageGenerator.WaitForAnswer(mainServer, mainServer));
+
+            break;
+
+
+        case "log":
+            //var log = function(actionURL, tempURL,level,clean,message)
+            res.write(messageGenerator.Log(mainServer, mainServer, callData["level"], callData["clean"], callData["message"]));
+
+            break;
+
+
+        case "getvar":
+            //var getVar = function(actionURL, tempURL, permenent, name)
+            res.write(messageGenerator.GetVar(mainServer, mainServer, callData["permenent"], callData["name"]));
+
+            break;
+
+
+        case "voicemail":
+            //var voicemail = function(actionURL, tempURL, check, authonly, profile,domain,id)
+            res.write(messageGenerator.VoiceMail(mainServer, mainServer, callData["check"], callData["authonly"], callData["profile"], callData["domain"], callData["id"]));
+
+            break;
+
+        case "hangup":
+            res.write(messageGenerator.Hangup(mainServer, mainServer, callData["cause"]));
+
+            break;
+
+        case "continue":
+            res.write(messageGenerator.Continue(mainServer));
+
+            break;
+
+
+        default:
+            res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
+
+            break;
+    }
+
+    console.log("----------------------------------------------------> end response");
+
+    res.end();
+
+
+}
+
+
 
 
 function HandleFunction(queryData, req, res, next) {
@@ -311,276 +559,122 @@ function HandleFunction(queryData, req, res, next) {
                                 
                                 //console.log(callData);
 
+                                if((callData["action"] == "play" || callData["action"] == "playandgetdigits" ) && (config.Services && config.Services.downloaddurl)) {
 
+                                    var filenamex = callData["file"];
+                                    var url = format("{0}/GetFileIDForName/{1}", config.Services.serverdata, filenamex);
+                                    request.get(config.Services.uploadurl, function (errorx, responsex, datax) {
 
-                                res.writeHead(200, { "Content-Type": "text/xml" });
-                                switch (callData["action"]) {
+                                        var fileID = filenamex;
 
-                                    case "play":
-                                        
-                                        var maxdigits = callData["digits"];
-                                        if (callData["maxdigits"])
-                                            maxdigits = callData["maxdigits"];
-                                        
-                                        res.write(messageGenerator.Playback(callData["file"], mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
-                                        break;
+                                        try {
+                                            var callDatax = responsex.body;
+                                            if (callDatax && callDatax["fileID"]) {
 
-
-                                    case "playandgetdigits":
-                                        
-                                        var maxdigits = callData["digits"];
-                                        if (callData["maxdigits"])
-                                            maxdigits = callData["maxdigits"];
-                                        
-                                        var error = './invalid.wav';
-                                        if (callData["errorfile"])
-                                            error = callData["errorfile"];
-                                        
-                                        res.write(messageGenerator.PlayAndGetDigits(callData["file"], mainServer, mainServer, callData["result"], error, callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
-                                        
-                                        
-                                        break;
-
-                                    case "record":
-                                        
-                                        var maxdigits = callData["digits"];
-                                        if (callData["maxdigits"])
-                                            maxdigits = callData["maxdigits"];
-                                        //file, actionURL,tempURL, paramName, errorFile, digitTimeout, limit, terminators, strip
-                                        res.write(messageGenerator.Record(callData["file"], mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["limit"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
-                                        
-                                        break;
-
-                                    case "pause":
-                                        
-                                        var maxdigits = callData["digits"];
-                                        if (callData["maxdigits"])
-                                            maxdigits = callData["maxdigits"];
-                                        //var pause = function( actionURL,tempURL, paramName, errorFile, digitTimeout,inputTimeout, milliseconds, terminators, strip)
-                                        res.write(messageGenerator.Pause(mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["milliseconds"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
-                                        
-                                        break;
-
-                                    case "speak":
-                                        
-                                        var maxdigits = callData["digits"];
-                                        if (callData["maxdigits"])
-                                            maxdigits = callData["maxdigits"];
-                                        //var speak = function(file,actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops,engine,voice, terminators, strip)
-                                        res.write(messageGenerator.Speak(callData["file"], mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["engine"], callData["voice"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
-                                        
-                                        break;
-
-                                    case "say":
-                                        
-                                        var maxdigits = callData["digits"];
-                                        if (callData["maxdigits"])
-                                            maxdigits = callData["maxdigits"];
-                                        
-                                        //var say = function(file,actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops,language,type,method,gender, terminators, strip)
-                                        res.write(messageGenerator.Say(callData["file"], mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["language"], callData["type"], callData["method"], callData["gender"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
-                                        
-                                        break;
-
-                                    case "sms":
-                                        //var sms = function(actionURL, tempURL,to,message)
-                                        res.write(messageGenerator.Sms(mainServer, mainServer, callData["to"], callData["message"]));
-                                        
-                                        break;
-
-                                    case "setdtmf":
-                                        
-                                        ////////////////////////new//////////////////////////////////
-                                        
-                                        
-                                        //var str = "a=rtpmap:97 telephone-event/8000";
-                                        
-                                        var regex = new RegExp(/a=rtpmap:(\d+)\stelephone-event\/8000/);
-                                        
-                                        
-                                        
-                                        //var ismatch = str.match(regex);
-                                        
-                                        //var regex = new Regex("a=rtpmap:(\d+)\stelephone-event//8000");
-                                        
-                                        if (queryData["variable_switch_r_sdp"]) {
-                                            
-                                            console.log("variable_switch_r_sdp ok");
-                                            var query = queryData["variable_switch_r_sdp"];
-                                            
-                                            var ismatch = query.match(regex);
-                                            
-                                            console.log(query);
-                                            
-                                            if (ismatch && ismatch.length > 0) {
-                                                
-                                                
-                                                console.log("------------------------------------------------------> outband");
-                                                var msg = messageGenerator.Continue(mainServer);
-                                                console.log("------------------------------------------------------>" + msg);
-                                                res.write(msg);
-                                                
-                                                console.log("------------------------------------------------------>" + "Done");
+                                                fileID = callDatax["fileID"];
 
 
                                             }
                                             else {
-                                                
-                                                console.log("------------------------------------------------------> INBAND");
-                                                var msg = messageGenerator.DTMFType(mainServer, mainServer, "INBAND");
-                                                console.log("------------------------------------------------------>" + msg);
-                                                res.write(msg);
-                                                
-                                                console.log("------------------------------------------------------>" + "Done");
 
 
                                             }
+
+                                            ///////////////////////////////////////////////////////////////////////////
+
+
+                                            Operation(callData, fileID,mainServer,queryData,res);
+
+                                            console.log("----------------------------------------------------> get result");
+
+                                            uuid_dev["result"] = callData["result"];
+
+                                            console.log("----------------------------------------------------> got result");
+
+
+                                            if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+
+                                                console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
+
+                                                uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
+                                            }
+                                            else {
+
+                                                console.log("----------------------------------------------------> no base url");
+
+                                                uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                uuid_dev["nexturl"] = callData["nexturl"];
+
+                                                console.log(uuid_dev["nexturl"]);
+                                            }
+
+
+                                            try {
+                                                var redisData = JSON.stringify(uuid_dev);
+                                                redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                            }
+                                            catch (e) {
+                                                console.error(e);
+                                            }
+
+
+                                        } catch (exx) {
+
                                         }
-                                        else {
-                                            
-                                            ////////////////////////////////////////////////////////////////
-                                            
-                                            console.log("------------------------------------------------------>" + callData["dtmftype"]);
-                                            var msg = messageGenerator.DTMFType(mainServer, mainServer, callData["dtmftype"]);
-                                            console.log("------------------------------------------------------>" + msg);
-                                            //var sms = function(actionURL, tempURL,to,message)
-                                            res.write(msg);
-                                            
-                                            console.log("------------------------------------------------------>" + "Done");
-                                        }
-                                        
-                                        break;
-
-                                        
-
-                                    case "execute":
-                                        //var execute = function(actionURL, tempURL,application,data)
-                                        res.write(messageGenerator.Execute(mainServer, mainServer, callData["application"], callData["data"]));
-                                        
-                                        break;
-
-                                    case "dial":
-                                        //var dial = function(actionURL, tempURL,context,dialplan,callername,callernumber,number)
-                                        res.write(messageGenerator.Dial(mainServer, mainServer, callData["context"], callData["dialplan"], callData["callername"], callData["callernumber"], callData["number"]));
-                                        
-                                        break;
 
 
-                                    case "dialextention":
-                                        var number = format("pbx/{0}/{1}", uuid_data['pbxcontext'], callData["number"]);
-                                        res.write(messageGenerator.Dial(mainServer, mainServer, callData["context"], callData["dialplan"], callData["callername"], callData["callernumber"], number));
-                                        
-                                        break;
+                                    });
 
-                                    case "directdial":
-                                        
-                                        var number = format("sip:{0}@{1}", callData["number"], uuid_data['domain']);
-                                        var context = "developer";
-                                        if (uuid_data['pbxcontext'])
-                                            var context = uuid_data['pbxcontext'];
-                                        res.write(messageGenerator.Dial(mainServer, mainServer, context, callData["dialplan"], callData["callername"], callData["callernumber"], number));
-                                        
-                                        break;
+                                }else {
 
-                                    case "recordcall":
-                                        //var recordCall = function(actionURL, tempURL,limit,name)
-                                        res.write(messageGenerator.RecordCall(mainServer, mainServer, callData["limit"], callData["name"]));
-                                        
-                                        break;
+                                    ///////////////////////////////////////////////////////////////////////////
 
-                                    case "conference":
-                                        //var conference = function(actionURL, tempURL,profile,data)
-                                        res.write(messageGenerator.Conference(mainServer, mainServer, callData["profile"], callData["data"]));
-                                        
-                                        break;
+                                    Operation(callData, callData["file"], mainServer, queryData, res);
 
-                                    case "break":
-                                        //var breakx = function(actionURL, tempURL,cause)
-                                        res.write(messageGenerator.Break(mainServer, mainServer, callData["cause"]));
-                                        
-                                        break;
-                                        
-                                    case "waitforanswer":
-                                        
-                                        res.write(messageGenerator.WaitForAnswer(mainServer, mainServer));
-                                        
-                                        break;
+                                    console.log("----------------------------------------------------> get result");
+
+                                    uuid_dev["result"] = callData["result"];
+
+                                    console.log("----------------------------------------------------> got result");
 
 
-                                    case "log":
-                                        //var log = function(actionURL, tempURL,level,clean,message)
-                                        res.write(messageGenerator.Log(mainServer, mainServer, callData["level"], callData["clean"], callData["message"]));
-                                        
-                                        break;
+                                    if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+
+                                        console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
+
+                                        uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                        uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
+                                    }
+                                    else {
+
+                                        console.log("----------------------------------------------------> no base url");
+
+                                        uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                        uuid_dev["nexturl"] = callData["nexturl"];
+
+                                        console.log(uuid_dev["nexturl"]);
+                                    }
 
 
-                                    case "getvar":
-                                        //var getVar = function(actionURL, tempURL, permenent, name)
-                                        res.write(messageGenerator.GetVar(mainServer, mainServer, callData["permenent"], callData["name"]));
-                                        
-                                        break;
+                                    try {
+                                        var redisData = JSON.stringify(uuid_dev);
+                                        redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                    }
+                                    catch (e) {
+                                        console.error(e);
+                                    }
 
-
-                                    case "voicemail":
-                                        //var voicemail = function(actionURL, tempURL, check, authonly, profile,domain,id)
-                                        res.write(messageGenerator.VoiceMail(mainServer, mainServer, callData["check"], callData["authonly"], callData["profile"], callData["domain"], callData["id"]));
-                                        
-                                        break;
-
-                                    case "hangup":
-                                        res.write(messageGenerator.Hangup(mainServer, mainServer, callData["cause"]));
-                                        
-                                        break;
-
-                                    case "continue":
-                                        res.write(messageGenerator.Continue(mainServer));
-                                        
-                                        break;
-
-
-                                    default:
-                                        res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
-                                        
-                                        break;
+                                    ////////////
                                 }
-                                
-                                console.log("----------------------------------------------------> end response");
-                                
-                                res.end();
-                                
-                                console.log("----------------------------------------------------> get result");
-                                
-                                uuid_dev["result"] = callData["result"];
-                                
-                                console.log("----------------------------------------------------> got result");
-                                
-                                
-                                if (uuid_dev["baseurl"] != "none" && callData["app"]) {
-                                    
-                                    console.log("----------------------------------------------------> have base url"+ uuid_dev["baseurl"]);
 
-                                    uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                    uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
-                                }
-                                else {
-
-                                    console.log("----------------------------------------------------> no base url");
-
-                                    uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                    uuid_dev["nexturl"] = callData["nexturl"];
-
-                                    console.log(uuid_dev["nexturl"]);
-                                }
-                                
-                                
-                                try {
-                                    var redisData = JSON.stringify(uuid_dev);
-                                    redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
-                                }
-                                catch (e) {
-                                    console.error(e);
-                                }
                                 return next();
+
+
+
+
+
+
 
                             }
                             else {

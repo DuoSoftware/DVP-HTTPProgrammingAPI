@@ -28,7 +28,8 @@ module.exports = {
 
 "Services": {
 
-    "uploadurl": 'http://upload.duovoice.com'
+    "uploadurl": 'http://upload.duovoice.com',
+    "downloaddurl": 'http://download.duovoice.com'
 
 
     }
