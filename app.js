@@ -73,8 +73,6 @@ var httpPOST = function (custumerData, section, data) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
 function postData(req, res) {
     //fs.createReadStream('file.json').pipe(request.put('http://mysite.com/obj.json'))
     
@@ -187,7 +185,6 @@ function postData(req, res) {
     });
 
 };
-
 
 
 function Operation(callData, fileID, mainServer, queryData, res){
@@ -429,8 +426,6 @@ function Operation(callData, fileID, mainServer, queryData, res){
 }
 
 
-
-
 function HandleFunction(queryData, req, res, next) {
     
     
@@ -471,7 +466,7 @@ function HandleFunction(queryData, req, res, next) {
             
             if (!sessiondata) {
                 
-                uuid_data = { path: "http://localhost:8081", company: 1, tenent: 3, pbx: 'none'};
+                uuid_data = { path: "http://localhost:8081", company: 1, tenent: 3, pbx: 'none', appid:'none'};
             }
             
             
@@ -562,16 +557,16 @@ function HandleFunction(queryData, req, res, next) {
                                 if((callData["action"] == "play" || callData["action"] == "playandgetdigits" ) && (config.Services && config.Services.downloaddurl)) {
 
                                     var filenamex = callData["file"];
-                                    var url = format("{0}/GetFileIDForName/{1}", config.Services.serverdata, filenamex);
-                                    request.get(config.Services.uploadurl, function (errorx, responsex, datax) {
+                                    var url = format("{0}/{1}/GetFileIDForName/{2}", config.Services.serverdata, filenamex,uuid_data['appid']);
+                                    request.get(config.Services.uploadurl, function (_error, _response, datax) {
 
                                         var fileID = filenamex;
 
                                         try {
-                                            var callDatax = responsex.body;
-                                            if (callDatax && callDatax["fileID"]) {
+                                            var filedata = _response.body;
+                                            if (!_error && _response.statusCode == 200 && filedata && filedata["fileID"]) {
 
-                                                fileID = callDatax["fileID"];
+                                                fileID = filedata["fileID"];
 
 
                                             }
@@ -701,7 +696,6 @@ function HandleFunction(queryData, req, res, next) {
     
     return next();
 };
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
