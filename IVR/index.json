@@ -1,7 +1,7 @@
 {
     "action": "playandgetdigits",
     "file": "Duo_IVR_Menu.wav",
-    "nexturl": "http://localhost/IVR/record.json",
+    "nexturl": "http://localhost/IVR/conference.json",
     "result": "result",
     "errorfile": "",
     "digittimeout" : 5,

@@ -1,0 +1,5 @@
+{
+  "action": "conference",
+  "data": "testconference",
+  "nexturl": "http://localhost/IVR/end.json"
+}

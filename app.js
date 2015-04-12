@@ -75,6 +75,9 @@ var httpPOST = function (custumerData, section, data) {
 
 function postData(req, res) {
     //fs.createReadStream('file.json').pipe(request.put('http://mysite.com/obj.json'))
+
+
+
     
     redisClient.get(req.body["session_id"] + "_dev", function (err, sessiondata) {
         
@@ -88,7 +91,7 @@ function postData(req, res) {
             
             
             uuid_data = JSON.parse(sessiondata);
-            var body = { session: req.body["session_id"], direction: req.body["Caller-Direction"], ani: req.body["Caller-Caller-ID-Number"], dnis: req.body["Caller-Destination-Number"], name: req.body["Caller-Caller-ID-Name"], result: "uploaded" };
+            //var body = { session: req.body["session_id"], direction: req.body["Caller-Direction"], ani: req.body["Caller-Caller-ID-Number"], dnis: req.body["Caller-Destination-Number"], name: req.body["Caller-Caller-ID-Name"], result: "uploaded" };
 
 
             /////////////upload to system location///////////////////////////////////////////
@@ -103,7 +106,8 @@ function postData(req, res) {
                     form.append("sessionid", req.body["session_id"]);
                     form.append("filename", fs.createReadStream(req.files.result["path"]));
                     form.append("displayname", req.files.result["name"]);
-                    form.append("hostname", req.body["hostname"])
+                    form.append("hostname", req.body["hostname"]);
+                    form.append("appid", uuid_data["appid"])
 
                     form.getLength(function (err, length) {
                         if (err) {
@@ -187,7 +191,7 @@ function postData(req, res) {
 };
 
 
-function Operation(callData, fileID, mainServer, queryData, res){
+function Operation(callData, fileID, mainServer, queryData, res, domain, profile){
 
     res.writeHead(200, {"Content-Type": "text/xml"});
     switch (callData["action"]) {
@@ -364,7 +368,7 @@ function Operation(callData, fileID, mainServer, queryData, res){
 
         case "conference":
             //var conference = function(actionURL, tempURL,profile,data)
-            res.write(messageGenerator.Conference(mainServer, mainServer, callData["profile"], callData["data"]));
+            res.write(messageGenerator.Conference(mainServer, mainServer, profile, callData["data"]));
 
             break;
 
@@ -397,7 +401,7 @@ function Operation(callData, fileID, mainServer, queryData, res){
 
         case "voicemail":
             //var voicemail = function(actionURL, tempURL, check, authonly, profile,domain,id)
-            res.write(messageGenerator.VoiceMail(mainServer, mainServer, callData["check"], callData["authonly"], callData["profile"], callData["domain"], callData["id"]));
+            res.write(messageGenerator.VoiceMail(mainServer, mainServer, callData["check"], callData["authonly"], profile, domain, callData["id"]));
 
             break;
 
@@ -466,7 +470,7 @@ function HandleFunction(queryData, req, res, next) {
             
             if (!sessiondata) {
                 
-                uuid_data = { path: "http://localhost:8081", company: 1, tenent: 3, pbx: 'none', appid:'none'};
+                uuid_data = { path: "http://localhost:8081", company: 1, tenent: 3, pbx: 'none', appid:'none', domain:'none', profile:'default'};
             }
             
             
@@ -499,7 +503,7 @@ function HandleFunction(queryData, req, res, next) {
                             }
                             
                             
-                            uuid_dev = { serverdata: queryData, nexturl: nxurl, currenturl: "none", result: "result", lastcommand: "none", lastresult: "none", company: uuid_data["company"], tenent: uuid_data["tenent"], posturl: "none", baseurl: basurl }
+                            uuid_dev = { serverdata: queryData, nexturl: nxurl, currenturl: "none", result: "result", lastcommand: "none", lastresult: "none", company: uuid_data["company"], tenent: uuid_data["tenent"], posturl: "none", baseurl: basurl, appid:  uuid_data["appid"]}
                             redisClient.lpush(queryData["Caller-Destination-Number"] + "_live", queryData["session_id"], redis.print);
                         }
                         
@@ -554,10 +558,27 @@ function HandleFunction(queryData, req, res, next) {
                                 
                                 //console.log(callData);
 
-                                if((callData["action"] == "play" || callData["action"] == "playandgetdigits" ) && (config.Services && config.Services.downloaddurl)) {
+
+                                var url;
+                                /*
+                                if(process.env.envirnament && process.env.domain){
+
+                                    url = format("{0}{1}/{2}/GetFileIDForName/{3}", process.env.envirnament, process.env.domain, filenamex, uuid_data['appid']);
+
+                                }
+                                else */
+
+
+                                if((config.Services && config.Services.downloaddurl && uuid_data['appid'])) {
+                                    url = format("{0}/{1}/GetFileIDForName/{2}", config.Services.serverdata, filenamex, uuid_data['appid']);
+                                }
+
+
+
+                                if((callData["action"] == "play" || callData["action"] == "playandgetdigits" ) && url) {
 
                                     var filenamex = callData["file"];
-                                    var url = format("{0}/{1}/GetFileIDForName/{2}", config.Services.serverdata, filenamex,uuid_data['appid']);
+
                                     request.get(config.Services.uploadurl, function (_error, _response, datax) {
 
                                         var fileID = filenamex;
@@ -572,13 +593,15 @@ function HandleFunction(queryData, req, res, next) {
                                             }
                                             else {
 
+                                                console.log("file resolution failed --------> ");
+
 
                                             }
 
                                             ///////////////////////////////////////////////////////////////////////////
 
 
-                                            Operation(callData, fileID,mainServer,queryData,res);
+                                            Operation(callData, fileID,mainServer,queryData,res,uuid_data["domain"],uuid_data["profile"]);
 
                                             console.log("----------------------------------------------------> get result");
 
@@ -625,7 +648,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                     ///////////////////////////////////////////////////////////////////////////
 
-                                    Operation(callData, callData["file"], mainServer, queryData, res);
+                                    Operation(callData, callData["file"], mainServer, queryData, res,uuid_data["domain"],uuid_data["profile"]);
 
                                     console.log("----------------------------------------------------> get result");
 
@@ -664,12 +687,6 @@ function HandleFunction(queryData, req, res, next) {
                                 }
 
                                 return next();
-
-
-
-
-
-
 
                             }
                             else {
