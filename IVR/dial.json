@@ -1,9 +1,9 @@
 {
-    "action": "dial",
+    "action": "dialgateway",
     "context": "TestInternalPbx",
     "nexturl": "http://localhost/IVR/end.json",
     "dialplan": "XML",
     "callername": "1000",
     "callernumber" : "1000",
-    "number" : "pbx/TestInternalPbx/2001"
+    "number" : "2001"
 }

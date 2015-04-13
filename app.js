@@ -344,13 +344,13 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
             break;
 
 
-        case "dialextention":
-            var number = format("pbx/{0}/{1}", uuid_data['pbxcontext'], callData["number"]);
+        case "dialuser":
+            var number = format("user/{0}@{1}", callData["number"], uuid_data['domain']);
             res.write(messageGenerator.Dial(mainServer, mainServer, callData["context"], callData["dialplan"], callData["callername"], callData["callernumber"], number));
 
             break;
 
-        case "directdial":
+        case "dialdirect":
 
             var number = format("sip:{0}@{1}", callData["number"], uuid_data['domain']);
             var context = "developer";
@@ -359,6 +359,22 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
             res.write(messageGenerator.Dial(mainServer, mainServer, context, callData["dialplan"], callData["callername"], callData["callernumber"], number));
 
             break;
+
+        /*
+        case "dialgateway":
+
+            if(uuid_data['gateway'])
+                var number = format("sofia/{0}/{1}", uuid_data['gateway'], callData["number"]);
+            var context = "developer";
+            if (uuid_data['pbxcontext'])
+                var context = uuid_data['pbxcontext'];
+            res.write(messageGenerator.Dial(mainServer, mainServer, context, callData["dialplan"], callData["callername"], callData["callernumber"], number));
+
+            break;
+            */
+
+
+
 
         case "recordcall":
             //var recordCall = function(actionURL, tempURL,limit,name)
@@ -568,40 +584,123 @@ function HandleFunction(queryData, req, res, next) {
                                 }
                                 else */
 
+                                var filenamex = callData["file"];
 
                                 if((config.Services && config.Services.downloaddurl && uuid_data['appid'])) {
-                                    url = format("{0}/{1}/GetFileIDForName/{2}", config.Services.serverdata, filenamex, uuid_data['appid']);
+                                    url = format("{0}/{1}/GetFileIDForName/{2}", config.Services.downloaddurl, filenamex, uuid_data['appid']);
                                 }
 
 
 
-                                if((callData["action"] == "play" || callData["action"] == "playandgetdigits" ) && url) {
+                                if((callData["action"] == "play" || callData["action"] == "playandgetdigits" ) ) {
 
-                                    var filenamex = callData["file"];
+                                        request.get(url, function (_error, _response, datax) {
 
-                                    request.get(config.Services.uploadurl, function (_error, _response, datax) {
+                                            var fileID = filenamex;
 
-                                        var fileID = filenamex;
+                                            try {
+                                                var filedata = _response.body;
+                                                if (!_error && _response.statusCode == 200 && filedata && filedata["fileID"]) {
+
+                                                    fileID = filedata["fileID"];
+
+
+                                                }
+                                                else {
+
+                                                    console.log("file resolution failed --------> ");
+
+
+                                                }
+
+                                                ///////////////////////////////////////////////////////////////////////////
+
+
+                                                Operation(callData, fileID, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"]);
+
+                                                console.log("----------------------------------------------------> get result");
+
+                                                uuid_dev["result"] = callData["result"];
+
+                                                console.log("----------------------------------------------------> got result");
+
+
+                                                if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+
+                                                    console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
+
+                                                    uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                    uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
+                                                }
+                                                else {
+
+                                                    console.log("----------------------------------------------------> no base url");
+
+                                                    uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                    uuid_dev["nexturl"] = callData["nexturl"];
+
+                                                    console.log(uuid_dev["nexturl"]);
+                                                }
+
+
+                                                try {
+                                                    var redisData = JSON.stringify(uuid_dev);
+                                                    redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                                }
+                                                catch (e) {
+                                                    console.error(e);
+                                                }
+
+
+                                            } catch (exx) {
+
+                                            }
+
+
+                                        });
+
+                                } else if(callData["action"] == "dialgateway"){
+
+
+                                    var outbountruleurl;
+
+
+                                    if((config.Services && config.Services.ruleservice )) {
+                                        outbountruleurl = format("{0}/{1}/GetOutboundRule/{2}/{3}/{4}", config.Services.ruleservice, callData["callernumber"], callData["number"], callData["tenant"],callData["company"]);
+                                    }
+
+
+                                    request.get(outbountruleurl, function (_error, _response, datax) {
+
+                                       // var fileID = filenamex;
+
+                                        var ani;
+                                        var gateway;
+                                        var dnis;
 
                                         try {
-                                            var filedata = _response.body;
-                                            if (!_error && _response.statusCode == 200 && filedata && filedata["fileID"]) {
+                                            var ruledata = _response.body;
+                                            if (!_error && _response.statusCode == 200 && ruledata) {
 
-                                                fileID = filedata["fileID"];
+
+
+                                                callData["callernumber"] = ruledata["ani"];
+                                                callData["number"] =  ruledata["dnis"];
+                                                calldata["gateway"] = ruledata["gateway"];
 
 
                                             }
                                             else {
 
-                                                console.log("file resolution failed --------> ");
+                                                console.log("Get outbound rule failed --------> ");
+                                                callData["action"] = "hangup";
+                                                callData["cause"] =  "SERVICE_UNAVAILABLE";
 
 
                                             }
 
-                                            ///////////////////////////////////////////////////////////////////////////
 
-
-                                            Operation(callData, fileID,mainServer,queryData,res,uuid_data["domain"],uuid_data["profile"]);
+                                            Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"]);
 
                                             console.log("----------------------------------------------------> get result");
 
@@ -635,16 +734,13 @@ function HandleFunction(queryData, req, res, next) {
                                             catch (e) {
                                                 console.error(e);
                                             }
-
-
-                                        } catch (exx) {
+                                        }
+                                        catch (reqex) {
 
                                         }
 
-
                                     });
-
-                                }else {
+                                } else {
 
                                     ///////////////////////////////////////////////////////////////////////////
 
