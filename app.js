@@ -833,4 +833,56 @@ server.get('/', function CallHandle(req, res, next) {
 });
 //messageGenerator.Playback("file", "tempURL", "paramName", "errorFile", "digitTimeout", "inputTimeout", "loops", "terminators", "strip");
 
+
+
+server.post('/route', function(req,res, next){
+
+    var data = req.body;
+
+
+    var destinationURL = format("http://{0}:8080/api/originate?", "127.0.0.1");
+    var params = format('{return_ring_ready=true,Originate_session_uuid={0}{1}',data.SessionID, '}');
+    var socketdata = format('&socket({0}:{1} async full)', '127.0.0.1',2233);
+    var args = format('{1} {0}user/{2} 5555',params, destinationURL, data.Extention);
+
+    console.log(args);
+
+    request(args, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            console.log(body) // Show the HTML for the Google homepage.
+
+            var arr = body.split(" ");
+
+            if(arr.length > 1) {
+
+                if(arr[0] == '-ERR'){
+
+                    res.send(503, new Error(arr[1]));
+
+
+
+                }
+
+            }
+
+            res.end();
+
+
+        }
+        else{
+
+            res.end();
+        }
+    })
+
+    //http://127.0.0.1:8080/api/originate?%20{return_ring_ready=true,ignore_early_media=false,Originate_session_uuid=1793e788-b4e3-45c0-a4f8-ccee8efe0f04}user/1001%205555
+
+
+
+    next();
+
+
+
+});
+
 process.stdin.resume();

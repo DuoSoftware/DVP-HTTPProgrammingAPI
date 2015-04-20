@@ -20,6 +20,7 @@ var config = require('config');
 
 
 var restify = require('restify');
+var format = require("stringformat");
 
 var server = restify.createServer({
     name: 'localhost',
@@ -44,6 +45,8 @@ redisClient.on('error', function (err) {
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
+
+
 
 
 
@@ -78,11 +81,15 @@ server.post('/CallApp', function(req,res,next) {
                 .ele("context").att("name", "default")
                 .ele("extension").att("name", "test9")
                 .ele("condition").att("field", "destination_number").att("expression", "^5555$")
-                .ele("action").att("application", "httapi").att("data", "{url=http://127.0.0.1:8086}")
+                .ele("action").att("application", "socket").att("data", "127.0.0.1:8084 async full")
+                //.ele("action").att("application", "httapi").att("data", "{url=http://127.0.0.1:8086}")
+                //<action application="socket" data="127.0.0.1:8084 async full"/>
                 .end({pretty: true});
 
 
             res.end(doc);
+
+            console.log(doc)
         }
     });
 
@@ -105,6 +112,6 @@ var convertUrlEncoded = function(payload){
 
 
 
-server.listen(9093, 'localhost', function () {
+server.listen(9093, '192.168.0.79', function () {
     console.log('%s listening at %s', server.name, server.url);
 });
