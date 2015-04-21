@@ -55,6 +55,11 @@ terminators="#">
     */
 
 
+
+
+
+
+
 var playandgetdigits = function (file, actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops, terminators, strip, digitcount, digitcountmax) {
 
 
@@ -312,6 +317,8 @@ var say = function (file, actionURL, tempURL, paramName, errorFile, digitTimeout
     var sms = function (actionURL, tempURL, to, message) {
 
 
+
+
         var doc = builder.create("document")
         .att("type", "text/freeswitch-httapi")
         .ele("variables")
@@ -336,6 +343,33 @@ var say = function (file, actionURL, tempURL, paramName, errorFile, digitTimeout
 var wait_for_answer = function (actionURL, tempURL) {
 
     return execute(actionURL, tempURL, 'wait_for_answer', '');
+};
+
+
+var Queue = function (actionURL, tempURL, skill, server, port) {
+
+
+    var socketInfo = util.format("%s:%s async full",server, port);
+
+    var doc = builder.create("document")
+        .att("type", "text/freeswitch-httapi")
+        .ele("variables")
+        .ele("skill")
+        .text(skill)
+        .up()
+        .up()
+        .ele("params")
+        .up()
+        .ele("work")
+        .ele("execute")
+        .att("action", actionURL)
+        .att("temp-action", tempURL)
+        .att("application", "socket")
+        .att("data", socketInfo)
+        .end({ pretty: true });
+
+
+    return doc;
 };
 
 
@@ -610,3 +644,4 @@ module.exports.VoiceMail = voicemail;
 module.exports.Continue = continuex;
 module.exports.WaitForAnswer = wait_for_answer;
 module.exports.DTMFType = dtmf_type;
+module.exports.Queue = Queue;

@@ -30,7 +30,8 @@ module.exports = {
 
     "uploadurl": 'http://upload.duovoice.com',
     "downloaddurl": 'http://download.duovoice.com',
-    "ruleservice": 'http://rule.duovoice.com'
+    "ruleservice": 'http://rule.duovoice.com',
+    "FreeARDS": 'http://ards.duovoice.com'
 
 
     }

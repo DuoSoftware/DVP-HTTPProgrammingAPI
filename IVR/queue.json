@@ -1,0 +1,7 @@
+{
+  "action": "queue",
+  "nexturl": "http://localhost/IVR/end.json",
+  "posturl": "http://localhost/IVR/end.json",
+  "result": "result",
+  "skill" : "123456"
+}

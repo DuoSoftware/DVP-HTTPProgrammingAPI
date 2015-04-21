@@ -191,7 +191,7 @@ function postData(req, res) {
 };
 
 
-function Operation(callData, fileID, mainServer, queryData, res, domain, profile){
+function Operation(callData, fileID, mainServer, queryData, res, domain, profile, ip, port){
 
     res.writeHead(200, {"Content-Type": "text/xml"});
     switch (callData["action"]) {
@@ -397,6 +397,12 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
         case "waitforanswer":
 
             res.write(messageGenerator.WaitForAnswer(mainServer, mainServer));
+
+            break;
+
+        case "queue":
+
+            res.write(messageGenerator.Queue(mainServer, mainServer,callData["skill"],ip, port));
 
             break;
 
@@ -666,7 +672,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                     if((config.Services && config.Services.ruleservice )) {
-                                        outbountruleurl = format("{0}/{1}/GetOutboundRule/{2}/{3}/{4}", config.Services.ruleservice, callData["callernumber"], callData["number"], callData["tenant"],callData["company"]);
+                                        outbountruleurl = format("{0}/{1}/GetOutboundRule/{2}/{3}/{4}", config.Services.ruleservice, callData["callernumber"], callData["number"], uuid_data["tenant"],uuid_data["company"]);
                                     }
 
 
@@ -686,7 +692,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                                 callData["callernumber"] = ruledata["ani"];
                                                 callData["number"] =  ruledata["dnis"];
-                                                calldata["gateway"] = ruledata["gateway"];
+                                                callData["gateway"] = ruledata["gateway"];
 
 
                                             }
@@ -740,7 +746,92 @@ function HandleFunction(queryData, req, res, next) {
                                         }
 
                                     });
-                                } else {
+                                }
+
+
+
+
+
+                                else if(callData["action"] == "queue"){
+
+
+                                    var queueURL;
+
+
+                                    if((config.Services && config.Services.FreeARDS )) {
+                                        queueURL = format("{0}/ardsurl/{1}/{2}", config.Services.FreeARDS,  uuid_data["tenant"],uuid_data["company"]);
+                                    }
+
+
+                                    request.get(queueURL, function (_error, _response, datax) {
+
+
+                                        try {
+                                            var urldata = _response.body;
+                                            if (!_error && _response.statusCode == 200 && ruledata) {
+
+
+
+
+                                                callData["ip"] =  urldata["ip"];
+                                                callData["port"] = urldata["port"];
+
+
+                                            }
+                                            else {
+
+                                                console.log("Get ARDS rule failed --------> ");
+                                                callData["ip"] =  "127.0.0.1";
+                                                callData["port"] = 8084;
+
+
+                                            }
+
+
+                                            Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], callData["ip"],  callData["port"]);
+
+                                            console.log("----------------------------------------------------> get result");
+
+                                            uuid_dev["result"] = callData["result"];
+
+                                            console.log("----------------------------------------------------> got result");
+
+
+                                            if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+
+                                                console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
+
+                                                uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
+                                            }
+                                            else {
+
+                                                console.log("----------------------------------------------------> no base url");
+
+                                                uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                uuid_dev["nexturl"] = callData["nexturl"];
+
+                                                console.log(uuid_dev["nexturl"]);
+                                            }
+
+
+                                            try {
+                                                var redisData = JSON.stringify(uuid_dev);
+                                                redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                            }
+                                            catch (e) {
+                                                console.error(e);
+                                            }
+                                        }
+                                        catch (reqex) {
+
+                                        }
+
+                                    });
+                                }
+
+
+                                else {
 
                                     ///////////////////////////////////////////////////////////////////////////
 
