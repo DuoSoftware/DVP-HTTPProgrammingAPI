@@ -16,7 +16,10 @@ var format = require("stringformat");
 
 
 
-var mainServer = config.LBServer.path;
+
+format("http://{0}:{1}", config.LBServer.ip, config.LBServer.port)
+
+//var mainServer = config.LBServer.path;
 
 ////////////////////////////////redis////////////////////////////////////////
 var redisClient = redis.createClient(config.Redis.port, config.Redis.ip);
@@ -527,6 +530,7 @@ function HandleFunction(queryData, req, res, next) {
                             
                             uuid_dev = { serverdata: queryData, nexturl: nxurl, currenturl: "none", result: "result", lastcommand: "none", lastresult: "none", company: uuid_data["company"], tenent: uuid_data["tenent"], posturl: "none", baseurl: basurl, appid:  uuid_data["appid"]}
                             redisClient.lpush(queryData["Caller-Destination-Number"] + "_live", queryData["session_id"], redis.print);
+                            //redisClient.lpush("APPID_" + uuid_data["appid"], queryData["session_id"], redis.print);
                         }
                         
                         
@@ -758,8 +762,8 @@ function HandleFunction(queryData, req, res, next) {
                                     var queueURL;
 
 
-                                    if((config.Services && config.Services.FreeARDS )) {
-                                        queueURL = format("{0}/ardsurl/{1}/{2}", config.Services.FreeARDS,  uuid_data["tenant"],uuid_data["company"]);
+                                    if((config.Services && config.Services.ards )) {
+                                        queueURL = format("{0}/ardsurl/{1}/{2}", config.Services.ards,  uuid_data["tenant"],uuid_data["company"]);
                                     }
 
 
@@ -769,8 +773,6 @@ function HandleFunction(queryData, req, res, next) {
                                         try {
                                             var urldata = _response.body;
                                             if (!_error && _response.statusCode == 200 && ruledata) {
-
-
 
 
                                                 callData["ip"] =  urldata["ip"];
@@ -932,7 +934,7 @@ server.post('/route', function(req,res, next){
 
 
     var destinationURL = format("http://{0}:8080/api/originate?", "127.0.0.1");
-    var params = format('{return_ring_ready=true,Originate_session_uuid={0}{1}',data.SessionID, '}');
+    var params = format('{originate_timeout=20,return_ring_ready=true,Originate_session_uuid={0}{1}',data.SessionID, '}');
     var socketdata = format('&socket({0}:{1} async full)', '127.0.0.1',2233);
     var args = format('{1} {0}user/{2} 5555',params, destinationURL, data.Extention);
 

@@ -101,7 +101,6 @@ var playandgetdigits = function (file, actionURL, tempURL, paramName, errorFile,
 };
 
 
-
 var playback = function (file, actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops, terminators, strip, digitcount, digitcountmax) {
 
     //"~\\d{1}"
@@ -183,7 +182,6 @@ var record = function (file, actionURL, tempURL, paramName, errorFile, digitTime
 };
 
 
-
 var pause = function (actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, milliseconds, terminators, strip, digitcount, digitcountmax) {
 
 
@@ -223,8 +221,6 @@ var pause = function (actionURL, tempURL, paramName, errorFile, digitTimeout, in
 
 
 };
-
-
 
 
 var speak = function (file, actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops, engine, voice, terminators, strip, digitcount, digitcountmax) {
@@ -268,6 +264,7 @@ var speak = function (file, actionURL, tempURL, paramName, errorFile, digitTimeo
 
 
 };
+
 
 var say = function (file, actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops, language, type, method, gender, terminators, strip, digitcount, digitcountmax) {
 
@@ -313,8 +310,7 @@ var say = function (file, actionURL, tempURL, paramName, errorFile, digitTimeout
 };
 
 
-
-    var sms = function (actionURL, tempURL, to, message) {
+var sms = function (actionURL, tempURL, to, message) {
 
 
 
@@ -393,7 +389,7 @@ var dtmf_type = function (actionURL, tempURL, dtmfType) {
 };
 
 
-    var execute = function (actionURL, tempURL, application, data) {
+var execute = function (actionURL, tempURL, application, data) {
 
 
         var doc = builder.create("document")
@@ -417,7 +413,7 @@ var dtmf_type = function (actionURL, tempURL, dtmfType) {
     };
 
 
-    var dial = function (actionURL, tempURL, context, dialplan, callername, callernumber, number) {
+var dial = function (actionURL, tempURL, context, dialplan, callername, callernumber, number) {
 
 
         var doc = builder.create("document")
@@ -444,7 +440,6 @@ var dtmf_type = function (actionURL, tempURL, dtmfType) {
     };
 
 
-
 var recordCall = function (actionURL, tempURL, limit, name) {
 
         var doc = builder.create("document")
@@ -468,8 +463,7 @@ var recordCall = function (actionURL, tempURL, limit, name) {
     };
 
 
-
-    var conference = function (actionURL, tempURL, profile, data) {
+var conference = function (actionURL, tempURL, profile, data) {
 
 
         var doc = builder.create("document")
@@ -572,7 +566,6 @@ var log = function (actionURL, tempURL, level, clean, message) {
 
 
     };
-
 
 
 var getVar = function (actionURL, tempURL, permenent, name) {

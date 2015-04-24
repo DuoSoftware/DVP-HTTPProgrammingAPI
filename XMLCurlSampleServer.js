@@ -82,8 +82,8 @@ server.post('/CallApp', function(req,res,next) {
                 .ele("extension").att("name", "test9")
                 .ele("condition").att("field", "destination_number").att("expression", "^5555$")
                 .ele("action").att("application", "multiset").att("data", "company=1 tenant=3 skill=123456").up()
-                //.ele("action").att("application", "socket").att("data", "127.0.0.1:8084 async full")
-                .ele("action").att("application", "httapi").att("data", "{url=http://127.0.0.1:8086}")
+                //.ele("action").att("application", "httapi").att("data", "{url=http://127.0.0.1:8086}").up()
+                .ele("action").att("application", "socket").att("data", "127.0.0.1:8084 async full")
                 //<action application="socket" data="127.0.0.1:8084 async full"/>
                 .end({pretty: true});
 
@@ -116,6 +116,6 @@ var convertUrlEncoded = function(payload){
 
 
 
-server.listen(9093, '192.168.0.79', function () {
+server.listen(9093, '192.168.0.47', function () {
     console.log('%s listening at %s', server.name, server.url);
 });

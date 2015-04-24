@@ -5,11 +5,6 @@ module.exports = {
   "password": 'devadmin'
   },
 
- "WebAPI" : {
-      "domain": '192.168.1.35',
-      "port": 80,
-      "path": '/CSRequestWebApi/api/'
-      },
 
 "Redis" : {
     "ip": '127.0.0.1',
@@ -22,7 +17,10 @@ module.exports = {
 
 
 "LBServer" : {
-    "path": 'http://127.0.0.1:8086/'
+
+    "ip": '127.0.0.1',
+    "port": 8086
+
     },
 
 
@@ -31,8 +29,7 @@ module.exports = {
     "uploadurl": 'http://upload.duovoice.com',
     "downloaddurl": 'http://download.duovoice.com',
     "ruleservice": 'http://rule.duovoice.com',
-    "FreeARDS": 'http://ards.duovoice.com'
-
+    "ards": 'http://ards.duovoice.com'
 
     }
 
