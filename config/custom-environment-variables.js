@@ -25,10 +25,10 @@ module.exports = {
 
     "Services": {
 
-        "uploadurl": "SYS_FILESERVICE",
-        "downloaddurl": "SYS_FILESERVICE",
-        "ruleservice": "SYS_RULESERVICE",
-        "ards": "SYS_ARDSCONNECTOR"
+        "uploadurl": "SYS_SERVICE_FILE",
+        "downloaddurl": "SYS_SERVICE_FILE",
+        "ruleservice": "SYS_SERVICE_RULE",
+        "ards": "SYS_SERVICE_ARDSCONNECTOR"
 
     }
 
