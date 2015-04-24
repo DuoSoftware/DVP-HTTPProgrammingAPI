@@ -29,7 +29,11 @@ module.exports = {
     "uploadurl": 'http://upload.duovoice.com',
     "downloaddurl": 'http://download.duovoice.com',
     "ruleservice": 'http://rule.duovoice.com',
-    "ards": 'http://ards.duovoice.com'
+    "ards": 'http://ards.duovoice.com',
+    "uploadurlVersion":"1.0",
+    "downloaddurlVersion" : "1.0",
+    "ruleserviceVersion": "1.0",
+    "ardsVersion": "1.0"
 
     }
 
