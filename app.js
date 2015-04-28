@@ -121,6 +121,10 @@ function postData(req, res) {
                         r._form = form;
                         r.setHeader('content-length', length);
 
+
+                        redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify({Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: JSON.stringify(response.body), SessionID: req.body["session_id"]  }), redis.print);
+
+
                     });
                 }else{
 
@@ -572,8 +576,9 @@ function HandleFunction(queryData, req, res, next) {
 
                                 }
                                 catch (e) {
-                                    
-                                    redisClient.lpush(queryData["Caller-Destination-Number"] + "_error", e + "\n" + response.body, redis.print);
+
+                                    redisClient.publish("SYS:HTTPPROGRAMMING:DATAERROR", JSON.stringify({Type: 'DATA', Code: '', URL: '', APPID: uuid_dev["appid"], Description: JSON.stringify(response.body), SessionID: queryData["session_id"]  }), redis.print)
+
                                     res.writeHead(200, { "Content-Type": "text/xml" });
                                     res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
                                     res.end();
@@ -880,7 +885,10 @@ function HandleFunction(queryData, req, res, next) {
                             }
                             else {
                                 
-                                redisClient.lpush(queryData["Caller-Destination-Number"] + "_error", response.statusCode + "\n" + uuid_dev["nexturl"], redis.print);
+                                //redisClient.lpush(queryData["Caller-Destination-Number"] + "_error", response.statusCode + "\n" + uuid_dev["nexturl"], redis.print);
+
+                                redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", JSON.stringify({Type: 'HTTP', Code: response.statusCode, URL: uuid_dev["nexturl"], APPID: uuid_dev["appid"], SessionID: queryData["session_id"]  }), redis.print)
+
                                 res.writeHead(200, { "Content-Type": "text/xml" });
                                 res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
                                 res.end();
