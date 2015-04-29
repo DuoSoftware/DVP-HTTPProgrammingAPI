@@ -69,7 +69,7 @@ server.post('/CallApp', function(req,res,next) {
     var varFromNumber = data["variable_FromNumber"];
 
 
-    var uuid_data = { path: "http://localhost/ivr/index.json", company: 1, tenent: 3, pbx: 'none', appid: '1111', domain:'192.168.8.100', profile: 'default' };
+    var uuid_data = { path: "http://localhost:3582/api", company: 1, tenent: 3, pbx: 'none', appid: '1111', domain:'192.168.8.100', profile: 'default', app: 'call' };
     var redisData = JSON.stringify(uuid_data);
     redisClient.set(varUuid + "_data", redisData, function(err, value) {
 
@@ -82,8 +82,8 @@ server.post('/CallApp', function(req,res,next) {
                 .ele("extension").att("name", "test9")
                 .ele("condition").att("field", "destination_number").att("expression", "^5555$")
                 .ele("action").att("application", "multiset").att("data", "company=1 tenant=3 skill=123456").up()
-                //.ele("action").att("application", "httapi").att("data", "{url=http://127.0.0.1:8086}").up()
-                .ele("action").att("application", "socket").att("data", "127.0.0.1:8084 async full")
+                .ele("action").att("application", "httapi").att("data", "{url=http://127.0.0.1:8086}").up()
+                //.ele("action").att("application", "socket").att("data", "127.0.0.1:8084 async full")
                 //<action application="socket" data="127.0.0.1:8084 async full"/>
                 .end({pretty: true});
 

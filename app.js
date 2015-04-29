@@ -17,7 +17,7 @@ var format = require("stringformat");
 
 
 
-format("http://{0}:{1}", config.LBServer.ip, config.LBServer.port)
+var mainServer = format("http://{0}:{1}", config.LBServer.ip, config.LBServer.port)
 
 //var mainServer = config.LBServer.path;
 
@@ -122,7 +122,7 @@ function postData(req, res) {
                         r.setHeader('content-length', length);
 
 
-                        redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify({Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: JSON.stringify(response.body), SessionID: req.body["session_id"]  }), redis.print);
+                        redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify({Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  }), redis.print);
 
 
                     });
@@ -552,7 +552,7 @@ function HandleFunction(queryData, req, res, next) {
                         var options = { url: uuid_dev["nexturl"], method: "POST", json: body };
                         
                         
-                        request.get(options, function (error, response, data) {
+                        request(options, function (error, response, data) {
                             
                             if (!error && response.statusCode == 200) {
                                 
@@ -577,7 +577,7 @@ function HandleFunction(queryData, req, res, next) {
                                 }
                                 catch (e) {
 
-                                    redisClient.publish("SYS:HTTPPROGRAMMING:DATAERROR", JSON.stringify({Type: 'DATA', Code: '', URL: '', APPID: uuid_dev["appid"], Description: JSON.stringify(response.body), SessionID: queryData["session_id"]  }), redis.print)
+                                    redisClient.publish("SYS:HTTPPROGRAMMING:DATAERROR", JSON.stringify({Type: 'DATA', Code: '', URL: '', APPID: uuid_dev["appid"], Description: JSON.stringify(response.body), SessionID: queryData["session_id"] }), redis.print)
 
                                     res.writeHead(200, { "Content-Type": "text/xml" });
                                     res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
@@ -629,10 +629,15 @@ function HandleFunction(queryData, req, res, next) {
                                                 }
 
                                                 ///////////////////////////////////////////////////////////////////////////
+                                                try {
 
+                                                    Operation(callData, fileID, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '', '');
+                                                }
+                                                catch(exxx){
 
-                                                Operation(callData, fileID, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"]);
+                                                    console.log(exxx);
 
+                                                }
                                                 console.log("----------------------------------------------------> get result");
 
                                                 uuid_dev["result"] = callData["result"];
@@ -715,7 +720,7 @@ function HandleFunction(queryData, req, res, next) {
                                             }
 
 
-                                            Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"]);
+                                            Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '',  '');
 
                                             console.log("----------------------------------------------------> get result");
 
@@ -756,10 +761,6 @@ function HandleFunction(queryData, req, res, next) {
 
                                     });
                                 }
-
-
-
-
 
                                 else if(callData["action"] == "queue"){
 
@@ -856,7 +857,7 @@ function HandleFunction(queryData, req, res, next) {
                                         console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                         uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                        uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
+                                        uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["app"]);
                                     }
                                     else {
 
@@ -887,7 +888,7 @@ function HandleFunction(queryData, req, res, next) {
                                 
                                 //redisClient.lpush(queryData["Caller-Destination-Number"] + "_error", response.statusCode + "\n" + uuid_dev["nexturl"], redis.print);
 
-                                redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", JSON.stringify({Type: 'HTTP', Code: response.statusCode, URL: uuid_dev["nexturl"], APPID: uuid_dev["appid"], SessionID: queryData["session_id"]  }), redis.print)
+                                redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", JSON.stringify({Type: 'HTTP', Code: response.statusCode, URL: uuid_dev["nexturl"], APPID: uuid_dev["appid"], SessionID: queryData["session_id"], Description: response.body  }), redis.print)
 
                                 res.writeHead(200, { "Content-Type": "text/xml" });
                                 res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
@@ -895,12 +896,6 @@ function HandleFunction(queryData, req, res, next) {
 
                             }
                         });
-
-
-
-                        //res.writeHead(200, { "Content-Type": "text/xml" });
-                        //res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
-                        //res.end();
                     }
                 });
             }
@@ -936,7 +931,7 @@ server.get('/', function CallHandle(req, res, next) {
 
 
 
-server.post('/route', function(req,res, next){
+server.post('/routex', function(req,res, next){
 
     var data = req.body;
 
