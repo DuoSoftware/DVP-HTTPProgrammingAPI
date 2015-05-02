@@ -471,7 +471,7 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
             if (callData["maxdigits"])
                 maxdigits = callData["maxdigits"];
 
-            debugdata.push({type: "play", info: "Play file started wait for terminator or timeout", data: callData});
+            debugdata.push({type:"action",action: "play", info: "Play file started wait for terminator or timeout", data: callData});
 
             //res.write(messageGenerator.Playback(fileID, mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
             break;
@@ -488,7 +488,7 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
                 error = callData["errorfile"];
 
 
-            debugdata.push({type: "playandgetdigits", info: "Play and get digit file started wait for terminator or timeout", data: callData});
+            debugdata.push({type:"action",action: "playandgetdigits", info: "Play and get digit file started wait for terminator or timeout", data: callData});
 
             break;
 
@@ -498,7 +498,7 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
             if (callData["maxdigits"])
                 maxdigits = callData["maxdigits"];
             //file, actionURL,tempURL, paramName, errorFile, digitTimeout, limit, terminators, strip
-            debugdata.push({type: "record", info: "record file started wait for terminator or timeout", data: callData});
+            debugdata.push({type:"action",action: "record", info: "record file started wait for terminator or timeout", data: callData});
 
             break;
 
@@ -508,7 +508,7 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
             if (callData["maxdigits"])
                 maxdigits = callData["maxdigits"];
             //var pause = function( actionURL,tempURL, paramName, errorFile, digitTimeout,inputTimeout, milliseconds, terminators, strip)
-            debugdata.push({type: "pause", info: "record file started wait for terminator or timeout", data: callData});
+            debugdata.push({type:"action",action: "pause", info: "record file started wait for terminator or timeout", data: callData});
 
             break;
 
@@ -518,7 +518,7 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
             if (callData["maxdigits"])
                 maxdigits = callData["maxdigits"];
             //var speak = function(file,actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops,engine,voice, terminators, strip)
-            debugdata.push({type: "speak", info: "speak started wait for terminator or timeout", data: callData});
+            debugdata.push({type:"action",action: "speak", info: "speak started wait for terminator or timeout", data: callData});
             break;
 
         case "say":
@@ -528,12 +528,12 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
                 maxdigits = callData["maxdigits"];
 
             //var say = function(file,actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops,language,type,method,gender, terminators, strip)
-            debugdata.push({type: "say", info: "say started wait for terminator or timeout", data: callData});
+            debugdata.push({type:"action",action: "say", info: "say started wait for terminator or timeout", data: callData});
             break;
 
         case "sms":
             //var sms = function(actionURL, tempURL,to,message)
-            debugdata.push({type: "sms", info: "sendsms", data: callData});
+            debugdata.push({type:"action",action: "sms", info: "sendsms", data: callData});
 
             break;
 
@@ -542,31 +542,31 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
             ////////////////////////new//////////////////////////////////
 
 
-            debugdata.push({type: "setdtmf", info: "setdtmf", data: callData});
+            debugdata.push({type:"action",action: "setdtmf", info: "setdtmf", data: callData});
 
             break;
 
 
         case "execute":
             //var execute = function(actionURL, tempURL,application,data)
-            debugdata.push({type: "execute", info: "execute", data: callData});
+            debugdata.push({type:"action",action: "execute", info: "execute", data: callData});
 
             break;
 
         case "dial":
             //var dial = function(actionURL, tempURL,context,dialplan,callername,callernumber,number)
-            debugdata.push({type: "dial", info: "dial", data: callData});
+            debugdata.push({type:"action",action: "dial", info: "dial", data: callData});
             break;
 
 
         case "dialuser":
 
-            debugdata.push({type: "dialuser", info: "dialuser", data: callData});
+            debugdata.push({type:"action",action: "dialuser", info: "dialuser", data: callData});
             break;
 
         case "dialdirect":
 
-            debugdata.push({type: "dialdirect", info: "dialdirect", data: callData});
+            debugdata.push({type:"action",action: "dialdirect", info: "dialdirect", data: callData});
             break;
 
         /*
@@ -587,66 +587,66 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
 
         case "recordcall":
             //var recordCall = function(actionURL, tempURL,limit,name)
-            debugdata.push({type: "recordcall", info: "recordcall", data: callData});
+            debugdata.push({type:"action",action: "recordcall", info: "recordcall", data: callData});
 
             break;
 
         case "conference":
             //var conference = function(actionURL, tempURL,profile,data)
-            debugdata.push({type: "conference", info: "conference", data: callData});
+            debugdata.push({type:"action",action: "conference", info: "conference", data: callData});
 
             break;
 
         case "break":
             //var breakx = function(actionURL, tempURL,cause)
-            debugdata.push({type: "break", info: "break", data: callData});
+            debugdata.push({type:"action",action: "break", info: "break", data: callData});
 
             break;
 
         case "waitforanswer":
 
-            debugdata.push({type: "waitforanswer", info: "waitforanswer", data: callData});
+            debugdata.push({type:"action",action: "waitforanswer", info: "waitforanswer", data: callData});
 
             break;
 
         case "queue":
 
-            debugdata.push({type: "queue", info: "queue", data: callData});
+            debugdata.push({type:"action",action: "queue", info: "queue", data: callData});
 
             break;
 
 
         case "log":
             //var log = function(actionURL, tempURL,level,clean,message)
-            debugdata.push({type: "log", info: "log", data: callData});
+            debugdata.push({type:"action",action: "log", info: "log", data: callData});
             break;
 
 
         case "getvar":
             //var getVar = function(actionURL, tempURL, permenent, name)
-            debugdata.push({type: "getvar", info: "getvar", data: callData});
+            debugdata.push({type:"action",action: "getvar", info: "getvar", data: callData});
 
             break;
 
 
         case "voicemail":
             //var voicemail = function(actionURL, tempURL, check, authonly, profile,domain,id)
-            debugdata.push({type: "voicemail", info: "voicemail", data: callData});
+            debugdata.push({type:"action",action: "voicemail", info: "voicemail", data: callData});
             break;
 
         case "hangup":
-            debugdata.push({type: "hangup", info: "hangup", data: callData});
+            debugdata.push({type:"action",action: "hangup", info: "hangup", data: callData});
 
             break;
 
         case "continue":
-            debugdata.push({type: "continue", info: "continue", data: callData});
+            debugdata.push({type:"action",action: "continue", info: "continue", data: callData});
 
             break;
 
 
         default:
-            debugdata.push({ type: "hangup",info: "Unknown command found from client application so drop call", data: callData});
+            debugdata.push({ type:"action",action: "hangup",info: "Unknown command found from client application so drop call", data: callData});
 
             break;
     }
@@ -1100,7 +1100,28 @@ function HandleFunction(queryData, req, res, next) {
                                 
                                 //redisClient.lpush(queryData["Caller-Destination-Number"] + "_error", response.statusCode + "\n" + uuid_dev["nexturl"], redis.print);
 
-                                redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", JSON.stringify({Type: 'HTTP', Code: response.statusCode, URL: uuid_dev["nexturl"], APPID: uuid_dev["appid"], SessionID: queryData["session_id"], Description: response.body  }), redis.print)
+                                if(response) {
+                                    redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", JSON.stringify({
+                                        Type: 'HTTP',
+                                        Code: response.statusCode,
+                                        URL: uuid_dev["nexturl"],
+                                        APPID: uuid_dev["appid"],
+                                        SessionID: queryData["session_id"],
+                                        Description: response.body
+                                    }), redis.print);
+                                }else{
+
+                                    redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", JSON.stringify({
+                                        Type: 'HTTP',
+                                        Code:0000,
+                                        URL: uuid_dev["nexturl"],
+                                        APPID: uuid_dev["appid"],
+                                        SessionID: queryData["session_id"],
+                                        Description: "no response"
+                                    }), redis.print);
+
+                                }
+
 
                                 res.writeHead(200, { "Content-Type": "text/xml" });
                                 res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
@@ -1215,10 +1236,11 @@ function HandleDebugFunction(queryData, req, res, next) {
 
 
                         var debugdata = [];
-                        debugdata.push({info: "Call user application", data: body});
+                        debugdata.push({type:"message", info: "Call user application", data: body, url:uuid_dev["nexturl"]});
 
 
-                        request(options, function (error, response, data) {
+
+                        request.get(options, function (error, response, data) {
 
                             if (!error && response.statusCode == 200) {
 
@@ -1226,7 +1248,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                 console.log(data);
                                 redisClient.lpush(queryData["session_id"] + "_command", JSON.stringify(response.body), redis.print);
 
-                                debugdata.push({info: "Receive data from client app", data: {url:uuid_dev["nexturl"], response: response.body, statuscode: response.statuscode}});
+                                debugdata.push({type:"message", info: "Receive data from client app", data: {url:uuid_dev["nexturl"], response: response.body, statuscode: response.statuscode}});
 
 
                                 var callData;
@@ -1246,7 +1268,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                 catch (e) {
 
 
-                                    debugdata.push({info: "Data recived not in correct format", error: e});
+                                    debugdata.push({type:"error", info: "Data recived not in correct format", error: e});
 
 
                                     res.writeHead(200, { "Content-Type": "application/json" });
@@ -1295,7 +1317,7 @@ function HandleDebugFunction(queryData, req, res, next) {
 
                                                 console.log("file resolution failed --------> ");
 
-                                                debugdata.push({info: "File resolution failed", file: filenamex});
+                                                debugdata.push({type:"warnning", info: "File resolution failed", file: filenamex});
 
 
                                             }
@@ -1566,7 +1588,7 @@ function HandleDebugFunction(queryData, req, res, next) {
 
                                 if(error)
                                 {
-                                    debugdata.push({info: "Error in developer app calling",
+                                    debugdata.push({type:"error", info: "Error in developer app calling",
                                         data: {
                                             Code: 000,
                                             URL: uuid_dev["nexturl"],
@@ -1578,7 +1600,7 @@ function HandleDebugFunction(queryData, req, res, next) {
 
                                 }else {
                                     if(response) {
-                                        debugdata.push({
+                                        debugdata.push({type:"error",
                                             info: "Error in developer app calling",
                                             data: {
                                                 Code: response.statusCode,
@@ -1588,7 +1610,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                             }
                                         });
                                     }else{
-                                        debugdata.push({
+                                        debugdata.push({type:"error",
                                             info: "Error in developer app calling",
                                             data: {
                                                 Code: 000,
