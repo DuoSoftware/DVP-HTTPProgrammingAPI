@@ -38,36 +38,36 @@ server.listen(config.HTTPServer.port);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var httpPOST = function (custumerData, section, data) {
-    
+
     //http://192.168.0.60/CSRequestWebApi/api/
     var post_domain = custumerData.domain;
     var post_port = custumerData.port;
     var post_path = custumerData.path;
-    
+
     //var post_data = querystring.stringify({  
     //  'your' : 'post',  
     //  'data': JSON.stringify( data )
     //});  
-    
+
     var post_data = JSON.stringify(data);
     var post_options = {
-        host: post_domain,  
-        port: post_port,  
-        path: post_path,  
-        method: 'POST',  
+        host: post_domain,
+        port: post_port,
+        path: post_path,
+        method: 'POST',
         headers: {
-            'Content-Type': 'application/json',  
+            'Content-Type': 'application/json',
             'Content-Length': post_data.length
         }
     };
-    
+
     var post_req = http.request(post_options, function (res) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
             console.log('Response: ' + chunk);
         });
     });
-    
+
     // write parameters to post body  
     post_req.write(post_data);
     post_req.end();
@@ -82,9 +82,9 @@ function postData(req, res) {
 
 
 
-    
+
     redisClient.get(req.body["session_id"] + "_dev", function (err, sessiondata) {
-        
+
         var uuid_data;
         if (err) {
 
@@ -92,8 +92,8 @@ function postData(req, res) {
 
         }
         else {
-            
-            
+
+
             uuid_data = JSON.parse(sessiondata);
             //var body = { session: req.body["session_id"], direction: req.body["Caller-Direction"], ani: req.body["Caller-Caller-ID-Number"], dnis: req.body["Caller-Destination-Number"], name: req.body["Caller-Caller-ID-Name"], result: "uploaded" };
 
@@ -142,7 +142,7 @@ function postData(req, res) {
 
             if (uuid_data["posturl"] && uuid_data["posturl"] != "none") {
                 //fs.createReadStream(req.files.result["path"]).pipe(request.post(uuid_data["posturl"]))
-                
+
                 try {
                     var form = new FormData();
                     form.append("sessionid", req.body["session_id"]);
@@ -163,7 +163,7 @@ function postData(req, res) {
 
                     console.log(ex);
                 }
-                
+
                 function requestCallback(err, res, body) {
 
                     if(res.statusCode == 200) {
@@ -369,17 +369,17 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
             break;
 
         /*
-        case "dialgateway":
+         case "dialgateway":
 
-            if(uuid_data['gateway'])
-                var number = format("sofia/{0}/{1}", uuid_data['gateway'], callData["number"]);
-            var context = "developer";
-            if (uuid_data['pbxcontext'])
-                var context = uuid_data['pbxcontext'];
-            res.write(messageGenerator.Dial(mainServer, mainServer, context, callData["dialplan"], callData["callername"], callData["callernumber"], number));
+         if(uuid_data['gateway'])
+         var number = format("sofia/{0}/{1}", uuid_data['gateway'], callData["number"]);
+         var context = "developer";
+         if (uuid_data['pbxcontext'])
+         var context = uuid_data['pbxcontext'];
+         res.write(messageGenerator.Dial(mainServer, mainServer, context, callData["dialplan"], callData["callername"], callData["callernumber"], number));
 
-            break;
-            */
+         break;
+         */
 
 
 
@@ -662,36 +662,36 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
 
 
 function HandleFunction(queryData, req, res, next) {
-    
-    
+
+
     //console.log(req.url);
     //var queryData = url.parse(req.url, true).query;
 
     var isdebug= false;
     var debugdata = {};
     var fileID = "";
-    
-    
+
+
     if (queryData["exiting"] == "true") {
-        
-        
+
+
         redisClient.del(queryData["session_id"] + "_dev", redis.print);
         redisClient.del(queryData["session_id"] + "_command", redis.print);
-       //redisClient.del(queryData["session_id"] + "_result", redis.print);
+        //redisClient.del(queryData["session_id"] + "_result", redis.print);
         redisClient.del(queryData["session_id"] + "_data", redis.print);
-       // redisClient.lrem(queryData["Caller-Destination-Number"] + "_live" , 0 , queryData["session_id"], redis.print);
-        
+        // redisClient.lrem(queryData["Caller-Destination-Number"] + "_live" , 0 , queryData["session_id"], redis.print);
+
         res.writeHead(200, { "Content-Type": "text/xml" });
         res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
         res.end();
-        
+
         return next();
 
     }
-    
-    
+
+
     redisClient.get(queryData["session_id"] + "_data", function (err, sessiondata) {
-        
+
         var uuid_dev;
         if (err) {
             console.error("error");
@@ -702,9 +702,9 @@ function HandleFunction(queryData, req, res, next) {
         else {
             //console.log("Worked: " + sessiondata);
             var uuid_data = JSON.parse(sessiondata);
-            
+
             if (!sessiondata) {
-                
+
                 uuid_data = { path: "http://localhost:8081", company: 1, tenent: 3, pbx: 'none', appid:'none', domain:'none', profile:'default', env:'production'};
             }
 
@@ -712,8 +712,8 @@ function HandleFunction(queryData, req, res, next) {
 
                 isdebug = true;
             }
-            
-            
+
+
             if (!uuid_data) {
                 res.writeHead(200, { "Content-Type": "text/xml" });
                 res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
@@ -722,7 +722,7 @@ function HandleFunction(queryData, req, res, next) {
             }
             else {
                 redisClient.get(queryData["session_id"] + "_dev", function (err, value) {
-                    
+
                     var uuid_dev;
                     if (err) {
                         console.error("error");
@@ -734,21 +734,21 @@ function HandleFunction(queryData, req, res, next) {
                         //console.log("Worked: " + value);
                         uuid_dev = JSON.parse(value);
                         if (!value) {
-                            
+
                             var basurl = "none";
                             var nxurl = uuid_data["path"];
                             if (uuid_data["app"]) {
                                 nxurl = format("{0}/{1}", uuid_data["path"], uuid_data["app"])
                                 basurl = uuid_data["path"];
                             }
-                            
-                            
+
+
                             uuid_dev = { serverdata: queryData, nexturl: nxurl, currenturl: "none", result: "result", lastcommand: "none", lastresult: "none", company: uuid_data["company"], tenent: uuid_data["tenent"], posturl: "none", baseurl: basurl, appid:  uuid_data["appid"]}
                             //redisClient.lpush(queryData["Caller-Destination-Number"] + "_live", queryData["session_id"], redis.print);
                             //redisClient.lpush("APPID_" + uuid_data["appid"], queryData["session_id"], redis.print);
                         }
-                        
-                        
+
+
                         var resultValue = "none";
                         if (queryData[uuid_dev["result"]]) {
                             resultValue = queryData[uuid_dev["result"]];
@@ -756,32 +756,32 @@ function HandleFunction(queryData, req, res, next) {
 
                         }
                         //redisClient.lpush(queryData["session_id"] + "_result", resultValue, redis.print);
-                        
+
                         var body = { session: queryData["session_id"], direction: queryData["Caller-Direction"], ani: queryData["Caller-Caller-ID-Number"], dnis: queryData["Caller-Destination-Number"], name: queryData["Caller-Caller-ID-Name"], result: resultValue };
                         // var data = JSON.stringify(body);
-                        
+
                         var options = { url: uuid_dev["nexturl"], method: "POST", json: body };
 
-                        
-                        
+
+
                         request.get(options, function (error, response, data) {
-                            
+
                             if (!error && response.statusCode == 200) {
-                                
+
                                 console.log(response.body)
                                 console.log(data);
                                 redisClient.lpush(queryData["session_id"] + "_command", JSON.stringify(response.body), redis.print);
-                                
-                                
+
+
                                 var callData;
                                 try {
                                     callData = response.body;
                                     uuid_dev["lastcommand"] = callData["action"];
-                                    
+
                                     if (callData["posturl"]) {
                                         uuid_dev["posturl"] = callData["posturl"];
                                     }
-                                    
+
                                     if (callData["baseurl"]) {
                                         uuid_dev["baseurl"] = callData["baseurl"];
                                     }
@@ -794,22 +794,22 @@ function HandleFunction(queryData, req, res, next) {
                                     res.writeHead(200, { "Content-Type": "text/xml" });
                                     res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
                                     res.end();
-                                    
+
                                     return next();
                                 }
-                                
-                                
+
+
                                 //console.log(callData);
 
 
                                 var url;
                                 /*
-                                if(process.env.envirnament && process.env.domain){
+                                 if(process.env.envirnament && process.env.domain){
 
-                                    url = format("{0}{1}/{2}/GetFileIDForName/{3}", process.env.envirnament, process.env.domain, filenamex, uuid_data['appid']);
+                                 url = format("{0}{1}/{2}/GetFileIDForName/{3}", process.env.envirnament, process.env.domain, filenamex, uuid_data['appid']);
 
-                                }
-                                else */
+                                 }
+                                 else */
 
                                 var filenamex = callData["file"];
 
@@ -821,75 +821,75 @@ function HandleFunction(queryData, req, res, next) {
 
                                 if((callData["action"] == "play" || callData["action"] == "playandgetdigits" ) ) {
 
-                                        request.get(url, function (_error, _response, datax) {
+                                    request.get(url, function (_error, _response, datax) {
 
-                                            var fileID = filenamex;
+                                        var fileID = filenamex;
 
-                                            try {
-                                                var filedata = _response.body;
-                                                if (!_error && _response.statusCode == 200 && filedata && filedata["fileID"]) {
+                                        try {
+                                            var filedata = _response.body;
+                                            if (!_error && _response.statusCode == 200 && filedata && filedata["fileID"]) {
 
-                                                    fileID = filedata["fileID"];
-
-
-                                                }
-                                                else {
-
-                                                    console.log("file resolution failed --------> ");
+                                                fileID = filedata["fileID"];
 
 
-                                                }
+                                            }
+                                            else {
 
-                                                ///////////////////////////////////////////////////////////////////////////
-                                                try {
+                                                console.log("file resolution failed --------> ");
 
-                                                    Operation(callData, fileID, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '', '');
-                                                }
-                                                catch(exxx){
-
-                                                    console.log(exxx);
-
-                                                }
-                                                console.log("----------------------------------------------------> get result");
-
-                                                uuid_dev["result"] = callData["result"];
-
-                                                console.log("----------------------------------------------------> got result");
-
-
-                                                if (uuid_dev["baseurl"] != "none" && callData["app"]) {
-
-                                                    console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
-
-                                                    uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                    uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
-                                                }
-                                                else {
-
-                                                    console.log("----------------------------------------------------> no base url");
-
-                                                    uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                    uuid_dev["nexturl"] = callData["nexturl"];
-
-                                                    console.log(uuid_dev["nexturl"]);
-                                                }
-
-
-                                                try {
-                                                    var redisData = JSON.stringify(uuid_dev);
-                                                    redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
-                                                }
-                                                catch (e) {
-                                                    console.error(e);
-                                                }
-
-
-                                            } catch (exx) {
 
                                             }
 
+                                            ///////////////////////////////////////////////////////////////////////////
+                                            try {
 
-                                        });
+                                                Operation(callData, fileID, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '', '');
+                                            }
+                                            catch(exxx){
+
+                                                console.log(exxx);
+
+                                            }
+                                            console.log("----------------------------------------------------> get result");
+
+                                            uuid_dev["result"] = callData["result"];
+
+                                            console.log("----------------------------------------------------> got result");
+
+
+                                            if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+
+                                                console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
+
+                                                uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
+                                            }
+                                            else {
+
+                                                console.log("----------------------------------------------------> no base url");
+
+                                                uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                uuid_dev["nexturl"] = callData["nexturl"];
+
+                                                console.log(uuid_dev["nexturl"]);
+                                            }
+
+
+                                            try {
+                                                var redisData = JSON.stringify(uuid_dev);
+                                                redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                            }
+                                            catch (e) {
+                                                console.error(e);
+                                            }
+
+
+                                        } catch (exx) {
+
+                                        }
+
+
+                                    });
 
                                 } else if(callData["action"] == "dialgateway"){
 
@@ -904,7 +904,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                     request.get(outbountruleurl, function (_error, _response, datax) {
 
-                                       // var fileID = filenamex;
+                                        // var fileID = filenamex;
 
                                         var ani;
                                         var gateway;
@@ -1097,7 +1097,7 @@ function HandleFunction(queryData, req, res, next) {
 
                             }
                             else {
-                                
+
                                 //redisClient.lpush(queryData["Caller-Destination-Number"] + "_error", response.statusCode + "\n" + uuid_dev["nexturl"], redis.print);
 
                                 if(response) {
@@ -1134,8 +1134,8 @@ function HandleFunction(queryData, req, res, next) {
             }
         }
     });
-    
-    
+
+
     return next();
 };
 
@@ -1596,7 +1596,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                         }
                                     });
 
-
+                                    console.log("Socket Disconnected");
                                 }else {
                                     if(response) {
                                         debugdata.push({type:"error",
@@ -1695,7 +1695,7 @@ server.post('/debug/push', function DataHandle(req, res, next) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 server.post('/', function DataHandle(req, res, next) {
-    
+
     console.log("POST recived .... ");
     postData(req, res);
     HandleFunction(req.body, req, res, next);
@@ -1704,11 +1704,11 @@ server.post('/', function DataHandle(req, res, next) {
 
 
 server.get('/', function CallHandle(req, res, next) {
-    
-    
+
+
     console.log(req.url);
     var queryData = url.parse(req.url, true).query;
-    
+
     HandleFunction(queryData, req, res, next);
 
 });
