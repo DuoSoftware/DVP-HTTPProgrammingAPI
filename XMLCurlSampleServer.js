@@ -69,7 +69,8 @@ server.post('/CallApp', function(req,res,next) {
     var varFromNumber = data["variable_FromNumber"];
 
 
-    var uuid_data = { path: "http://localhost:3582/api", company: 1, tenent: 3, pbx: 'none', appid: '1111', domain:'192.168.8.100', profile: 'default', app: 'call' };
+    //app: 'call'
+    var uuid_data = { path: "http://localhost/ivr/index.json", company: 1, tenent: 3, pbx: 'none', appid: '1111', domain:'192.168.8.100', profile: 'default' };
     var redisData = JSON.stringify(uuid_data);
     redisClient.set(varUuid + "_data", redisData, function(err, value) {
 
@@ -116,6 +117,6 @@ var convertUrlEncoded = function(payload){
 
 
 
-server.listen(9093, '192.168.0.47', function () {
+server.listen(9093, '127.0.0.1', function () {
     console.log('%s listening at %s', server.name, server.url);
 });

@@ -26,10 +26,10 @@ module.exports = {
 
 "Services": {
 
-    "uploadurl": 'http://upload.duovoice.com',
-    "downloaddurl": 'http://download.duovoice.com',
-    "ruleservice": 'http://rule.duovoice.com',
-    "ards": 'http://ards.duovoice.com',
+    "uploadurl": 'http://127.0.0.1',
+    "downloaddurl": 'http://127.0.0.1',
+    "ruleservice": 'http://127.0.0.1',
+    "ards": 'http://127.0.0.1',
     "uploadurlVersion":"1.0",
     "downloaddurlVersion" : "1.0",
     "ruleserviceVersion": "1.0",

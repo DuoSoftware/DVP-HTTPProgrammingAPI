@@ -661,7 +661,6 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
 }
 
 
-
 function HandleFunction(queryData, req, res, next) {
     
     
@@ -670,6 +669,7 @@ function HandleFunction(queryData, req, res, next) {
 
     var isdebug= false;
     var debugdata = {};
+    var fileID = "";
     
     
     if (queryData["exiting"] == "true") {
@@ -677,9 +677,9 @@ function HandleFunction(queryData, req, res, next) {
         
         redisClient.del(queryData["session_id"] + "_dev", redis.print);
         redisClient.del(queryData["session_id"] + "_command", redis.print);
-        redisClient.del(queryData["session_id"] + "_result", redis.print);
+       //redisClient.del(queryData["session_id"] + "_result", redis.print);
         redisClient.del(queryData["session_id"] + "_data", redis.print);
-        redisClient.lrem(queryData["Caller-Destination-Number"] + "_live" , 0 , queryData["session_id"], redis.print);
+       // redisClient.lrem(queryData["Caller-Destination-Number"] + "_live" , 0 , queryData["session_id"], redis.print);
         
         res.writeHead(200, { "Content-Type": "text/xml" });
         res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
@@ -744,7 +744,7 @@ function HandleFunction(queryData, req, res, next) {
                             
                             
                             uuid_dev = { serverdata: queryData, nexturl: nxurl, currenturl: "none", result: "result", lastcommand: "none", lastresult: "none", company: uuid_data["company"], tenent: uuid_data["tenent"], posturl: "none", baseurl: basurl, appid:  uuid_data["appid"]}
-                            redisClient.lpush(queryData["Caller-Destination-Number"] + "_live", queryData["session_id"], redis.print);
+                            //redisClient.lpush(queryData["Caller-Destination-Number"] + "_live", queryData["session_id"], redis.print);
                             //redisClient.lpush("APPID_" + uuid_data["appid"], queryData["session_id"], redis.print);
                         }
                         
@@ -755,7 +755,7 @@ function HandleFunction(queryData, req, res, next) {
                             uuid_dev["lastresult"] = resultValue;
 
                         }
-                        redisClient.lpush(queryData["session_id"] + "_result", resultValue, redis.print);
+                        //redisClient.lpush(queryData["session_id"] + "_result", resultValue, redis.print);
                         
                         var body = { session: queryData["session_id"], direction: queryData["Caller-Direction"], ani: queryData["Caller-Caller-ID-Number"], dnis: queryData["Caller-Destination-Number"], name: queryData["Caller-Caller-ID-Name"], result: resultValue };
                         // var data = JSON.stringify(body);
@@ -764,7 +764,7 @@ function HandleFunction(queryData, req, res, next) {
 
                         
                         
-                        request(options, function (error, response, data) {
+                        request.get(options, function (error, response, data) {
                             
                             if (!error && response.statusCode == 200) {
                                 
@@ -1140,7 +1140,6 @@ function HandleFunction(queryData, req, res, next) {
 };
 
 
-
 function HandleDebugFunction(queryData, req, res, next) {
 
 
@@ -1153,9 +1152,9 @@ function HandleDebugFunction(queryData, req, res, next) {
 
         redisClient.del(queryData["session_id"] + "_dev", redis.print);
         redisClient.del(queryData["session_id"] + "_command", redis.print);
-        redisClient.del(queryData["session_id"] + "_result", redis.print);
+        //redisClient.del(queryData["session_id"] + "_result", redis.print);
         redisClient.del(queryData["session_id"] + "_data", redis.print);
-        redisClient.lrem(queryData["Caller-Destination-Number"] + "_live" , 0 , queryData["session_id"], redis.print);
+        //redisClient.lrem(queryData["Caller-Destination-Number"] + "_live" , 0 , queryData["session_id"], redis.print);
 
         res.writeHead(200, { "Content-Type": "application/json" });
         res.write(JSON.stringify({info: "Call Drop NORMAL"}));
@@ -1215,7 +1214,7 @@ function HandleDebugFunction(queryData, req, res, next) {
 
 
                             uuid_dev = { serverdata: queryData, nexturl: nxurl, currenturl: "none", result: "result", lastcommand: "none", lastresult: "none", company: uuid_data["company"], tenent: uuid_data["tenent"], posturl: "none", baseurl: basurl, appid:  uuid_data["appid"]};
-                            redisClient.lpush(queryData["Caller-Destination-Number"] + "_live", queryData["session_id"], redis.print);
+                            //redisClient.lpush(queryData["Caller-Destination-Number"] + "_live", queryData["session_id"], redis.print);
 
                         }
 
@@ -1226,7 +1225,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                             uuid_dev["lastresult"] = resultValue;
 
                         }
-                        redisClient.lpush(queryData["session_id"] + "_result", resultValue, redis.print);
+                        //redisClient.lpush(queryData["session_id"] + "_result", resultValue, redis.print);
 
                         var body = { session: queryData["session_id"], direction: queryData["Caller-Direction"], ani: queryData["Caller-Caller-ID-Number"], dnis: queryData["Caller-Destination-Number"], name: queryData["Caller-Caller-ID-Name"], result: resultValue };
                         // var data = JSON.stringify(body);
@@ -1678,8 +1677,6 @@ server.post('/debug/create', function DataHandle(req, res, next) {
 
 
 });
-
-
 
 
 
