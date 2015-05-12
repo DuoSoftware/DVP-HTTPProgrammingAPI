@@ -211,6 +211,9 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
                 maxdigits = callData["maxdigits"];
 
             res.write(messageGenerator.Playback(fileID, mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
+
+
+
             break;
 
 
@@ -670,6 +673,8 @@ function HandleFunction(queryData, req, res, next) {
     var isdebug= false;
     var debugdata = {};
     var fileID = "";
+    var company = '';
+    var tenant = '';
     
     
     if (queryData["exiting"] == "true") {
@@ -680,7 +685,18 @@ function HandleFunction(queryData, req, res, next) {
        //redisClient.del(queryData["session_id"] + "_result", redis.print);
         redisClient.del(queryData["session_id"] + "_data", redis.print);
        // redisClient.lrem(queryData["Caller-Destination-Number"] + "_live" , 0 , queryData["session_id"], redis.print);
-        
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        var date = new Date();
+        var callreciveEvent = {EventClass:'APP',EventType:'EVENT', EventCategory:'SYSTEM', EventTime:date, EventName:'APPLICATIONEND',EventData:'',EventParams:'',CompanyId:company, TenantId: tenant, SessionId: queryData["session_id"]  };
+        redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
         res.writeHead(200, { "Content-Type": "text/xml" });
         res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
         res.end();
@@ -712,6 +728,9 @@ function HandleFunction(queryData, req, res, next) {
 
                 isdebug = true;
             }
+
+            company = uuid_data['company'];
+            tenant = uuid_data['tenent'];
             
             
             if (!uuid_data) {
@@ -762,6 +781,16 @@ function HandleFunction(queryData, req, res, next) {
                         
                         var options = { url: uuid_dev["nexturl"], method: "POST", json: body };
 
+                        ////////////////////////////////////////
+
+
+                        var date = new Date();
+                        var callreciveEvent = {EventClass:'APP',EventType:'EVENT', EventCategory:'SYSTEM', EventTime:date, EventName:'APPLICATIONFOUND',EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenent"], SessionId: queryData["session_id"]  };
+                        redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
+                        ////////////////////////////////////////
+
+
                         
                         
                         request.get(options, function (error, response, data) {
@@ -797,9 +826,16 @@ function HandleFunction(queryData, req, res, next) {
                                     
                                     return next();
                                 }
-                                
-                                
-                                //console.log(callData);
+
+
+                                ////////////////////////////////////////
+
+
+                                var date = new Date();
+                                var callreciveEvent = {EventClass:'APP',EventType:'COMMAND', EventCategory:'DEVELOPER', EventTime:date, EventName:callData["action"], EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenent"], SessionId: queryData["session_id"]  };
+                                redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
+                                ////////////////////////////////////////
 
 
                                 var url;
@@ -1713,7 +1749,6 @@ server.get('/', function CallHandle(req, res, next) {
 
 });
 //messageGenerator.Playback("file", "tempURL", "paramName", "errorFile", "digitTimeout", "inputTimeout", "loops", "terminators", "strip");
-
 
 
 server.post('/routex', function(req,res, next){

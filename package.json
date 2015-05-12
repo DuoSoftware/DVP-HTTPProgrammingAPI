@@ -4,6 +4,8 @@
   "description": "",
   "main": "MessageGenerator.js",
   "dependencies": {
+    "DVP-Common": "DuoSoftware/DVP-Common",
+    "DVP-DBModels": "DuoSoftware/DVP-DBModels",
     "colors": "^1.0.3",
     "config": "^1.12.0",
     "data2xml": "^1.2.0",
