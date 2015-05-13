@@ -203,7 +203,7 @@ function postData(req, res) {
 function Operation(callData, fileID, mainServer, queryData, res, domain, profile, ip, port){
 
     res.writeHead(200, {"Content-Type": "text/xml"});
-    
+
 
     switch (callData["action"]) {
 
@@ -950,6 +950,9 @@ function HandleFunction(queryData, req, res, next) {
                                                 }
 
 
+                                                logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s",queryData["session_id"], uuid_dev["nexturl"]);
+
+
                                                 try {
                                                     var redisData = JSON.stringify(uuid_dev);
                                                     redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
@@ -1043,6 +1046,9 @@ function HandleFunction(queryData, req, res, next) {
                                             }
 
 
+                                            logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s",queryData["session_id"], uuid_dev["nexturl"]);
+
+
                                             try {
                                                 var redisData = JSON.stringify(uuid_dev);
                                                 redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
@@ -1126,6 +1132,9 @@ function HandleFunction(queryData, req, res, next) {
                                             }
 
 
+                                            logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s",queryData["session_id"], uuid_dev["nexturl"]);
+
+
                                             try {
                                                 var redisData = JSON.stringify(uuid_dev);
                                                 redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
@@ -1173,7 +1182,13 @@ function HandleFunction(queryData, req, res, next) {
                                         uuid_dev["nexturl"] = callData["nexturl"];
 
                                         console.log(uuid_dev["nexturl"]);
+
+
+
                                     }
+
+
+                                    logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s",queryData["session_id"], uuid_dev["nexturl"]);
 
 
                                     try {
@@ -1195,24 +1210,35 @@ function HandleFunction(queryData, req, res, next) {
                                 //redisClient.lpush(queryData["Caller-Destination-Number"] + "_error", response.statusCode + "\n" + uuid_dev["nexturl"], redis.print);
 
                                 if(response) {
-                                    redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", JSON.stringify({
+
+                                    var callreciveEvent = JSON.stringify({
                                         Type: 'HTTP',
                                         Code: response.statusCode,
                                         URL: uuid_dev["nexturl"],
                                         APPID: uuid_dev["appid"],
                                         SessionID: queryData["session_id"],
                                         Description: response.body
-                                    }), redis.print);
+                                    });
+
+                                    redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
+
+
+                                    logger.debug("HTTPProgrammingAPI.Handler REDIS Publish error for event flow %s",queryData["session_id"], callreciveEvent);
+
                                 }else{
 
-                                    redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", JSON.stringify({
+                                    var callreciveEvent = JSON.stringify({
                                         Type: 'HTTP',
                                         Code:0000,
                                         URL: uuid_dev["nexturl"],
                                         APPID: uuid_dev["appid"],
                                         SessionID: queryData["session_id"],
                                         Description: "no response"
-                                    }), redis.print);
+                                    });
+                                    redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
+
+
+                                    logger.debug("HTTPProgrammingAPI.Handler REDIS Publish error for event flow %s",queryData["session_id"], callreciveEvent);
 
                                 }
 
