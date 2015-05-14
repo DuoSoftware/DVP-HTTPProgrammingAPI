@@ -794,7 +794,7 @@ function HandleFunction(queryData, req, res, next) {
                         
                         var body = { session: queryData["session_id"], direction: queryData["Caller-Direction"], ani: queryData["Caller-Caller-ID-Number"], dnis: queryData["Caller-Destination-Number"], name: queryData["Caller-Caller-ID-Name"], result: resultValue };
 
-                        logger.debug("HTTPProgrammingAPI.Handler RequestOut DeveloperAPP Data %s",queryData["session_id"], body);
+                        logger.debug("HTTPProgrammingAPI.Handler RequestOut DeveloperAPP Data %s %j",queryData["session_id"], body);
 
                         // var data = JSON.stringify(body);
                         
@@ -809,13 +809,13 @@ function HandleFunction(queryData, req, res, next) {
                         var callreciveEvent = {EventClass:'APP',EventType:'EVENT', EventCategory:'SYSTEM', EventTime:date, EventName:'APPLICATIONFOUND',EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenent"], SessionId: queryData["session_id"]  };
                         redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
 
-                        logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data for event flow %s",queryData["session_id"], callreciveEvent);
+                        logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data for event flow %s %j",queryData["session_id"], callreciveEvent);
 
 
                         ////////////////////////////////////////
 
 
-                        logger.debug("HTTPProgrammingAPI.Handler RequestOut DeveloperAPP URL", uuid_dev["nexturl"]);
+                        logger.debug("HTTPProgrammingAPI.Handler RequestOut DeveloperAPP URL %s", uuid_dev["nexturl"]);
                         
                         
                         request.get(options, function (error, response, data) {
@@ -823,7 +823,7 @@ function HandleFunction(queryData, req, res, next) {
                             if (!error && response.statusCode == 200) {
 
 
-                                logger.debug("HTTPProgrammingAPI.Handler RequestOut DeveloperAPP Success %s", queryData["session_id"], response.body);
+                                logger.debug("HTTPProgrammingAPI.Handler RequestOut DeveloperAPP Success %s %j", queryData["session_id"], response.body);
                                 
                                 //console.log(response.body)
                                 //console.log(data);
@@ -853,7 +853,7 @@ function HandleFunction(queryData, req, res, next) {
                                     res.end();
 
 
-                                    logger.error("HTTPProgrammingAPI.Handler RequestOut DeveloperAPP DataError %s", queryData["session_id"], callData);
+                                    logger.error("HTTPProgrammingAPI.Handler RequestOut DeveloperAPP DataError %s %j", queryData["session_id"], callData);
                                     
                                     return next();
                                 }
@@ -866,7 +866,7 @@ function HandleFunction(queryData, req, res, next) {
                                 var callreciveEvent = {EventClass:'APP',EventType:'COMMAND', EventCategory:'DEVELOPER', EventTime:date, EventName:callData["action"], EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenent"], SessionId: queryData["session_id"]  };
                                 redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
 
-                                logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data for event flow %s",queryData["session_id"], callreciveEvent);
+                                logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data for event flow %s %j",queryData["session_id"], callreciveEvent);
 
                                 ////////////////////////////////////////
 
@@ -916,7 +916,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 ///////////////////////////////////////////////////////////////////////////
                                                 try {
 
-                                                    logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %s %s %s %s", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
+                                                    logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
 
                                                     Operation(callData, fileID, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '', '');
                                                 }
@@ -999,7 +999,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 callData["gateway"] = ruledata["gateway"];
 
 
-                                                logger.debug("HTTPProgrammingAPI.Handler Request Gateway resolution %s %s", queryData["session_id"],ruledata);
+                                                logger.debug("HTTPProgrammingAPI.Handler Request Gateway resolution %s %j", queryData["session_id"],ruledata);
 
 
                                             }
@@ -1014,7 +1014,7 @@ function HandleFunction(queryData, req, res, next) {
                                             }
 
 
-                                            logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %s %s %s %s", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
+                                            logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
 
 
                                             Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '',  '');
@@ -1086,7 +1086,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 callData["ip"] =  urldata["ip"];
                                                 callData["port"] = urldata["port"];
 
-                                                logger.debug("HTTPProgrammingAPI.Handler Request Queue resolution %s %s", queryData["session_id"], urldata);
+                                                logger.debug("HTTPProgrammingAPI.Handler Request Queue resolution %s %j", queryData["session_id"], urldata);
 
 
                                             }
@@ -1102,7 +1102,7 @@ function HandleFunction(queryData, req, res, next) {
                                             }
 
 
-                                            logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %s %s %s %s", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
+                                            logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
 
 
                                             Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], callData["ip"],  callData["port"]);
@@ -1155,7 +1155,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                     ///////////////////////////////////////////////////////////////////////////
 
-                                    logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %s %s %s %s", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
+                                    logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
 
 
                                     Operation(callData, callData["file"], mainServer, queryData, res,uuid_data["domain"],uuid_data["profile"]);
@@ -1223,7 +1223,7 @@ function HandleFunction(queryData, req, res, next) {
                                     redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
 
 
-                                    logger.debug("HTTPProgrammingAPI.Handler REDIS Publish error for event flow %s",queryData["session_id"], callreciveEvent);
+                                    logger.debug("HTTPProgrammingAPI.Handler REDIS Publish error for event flow %s %j",queryData["session_id"], callreciveEvent);
 
                                 }else{
 
@@ -1238,13 +1238,13 @@ function HandleFunction(queryData, req, res, next) {
                                     redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
 
 
-                                    logger.debug("HTTPProgrammingAPI.Handler REDIS Publish error for event flow %s",queryData["session_id"], callreciveEvent);
+                                    logger.debug("HTTPProgrammingAPI.Handler REDIS Publish error for event flow %s %j",queryData["session_id"], callreciveEvent);
 
                                 }
 
 
 
-                                logger.error("HTTPProgrammingAPI.Handler RequestOut %s with response %s", queryData["session_id"], response);
+                                logger.error("HTTPProgrammingAPI.Handler RequestOut %s with response %j", queryData["session_id"], response);
 
 
                                 res.writeHead(200, { "Content-Type": "text/xml" });
