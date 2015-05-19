@@ -26,9 +26,9 @@ module.exports = {
     "Services": {
 
         "uploadurl": "SYS_SERVICE_FILE",
-        "uploadurlVersion":"SYS_SERVICE_FILEVERSION",
+        "uploadurlVersion":"SYS_SERVICE_FILE_VERSION",
         "downloaddurl": "SYS_SERVICE_FILE",
-        "downloaddurlVersion" : "SYS_SERVICE_FILEVERSION",
+        "downloaddurlVersion" : "SYS_SERVICE_FILE_VERSION",
         "ruleservice": "SYS_SERVICE_RULE",
         "ruleserviceVersion": "SYS_SERVICE_RULE_VERSION",
         "ards": "SYS_SERVICE_ARDSCONNECTOR",

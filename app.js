@@ -12,7 +12,7 @@ var FormData = require('form-data');
 var Regex = require("regex");
 var format = require("stringformat");
 var uuid = require('node-uuid');
-var logger = require('DVP-Common/CommonLogHandler.js').logger;
+var logger = require('DVP-Common/LogHandler/CommonLogHandler.js').logger;
 
 //console.log(messageGenerator.DTMFType("xxxxxxxxxx", "yyyyyyyyyyyyyyyyy", "inband"));
 
