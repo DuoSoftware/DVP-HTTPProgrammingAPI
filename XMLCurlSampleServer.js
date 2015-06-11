@@ -70,7 +70,8 @@ server.post('/CallApp', function(req,res,next) {
 
 
     //app: 'call'
-    var uuid_data = { path: "http://localhost/ivr/index.json", company: 1, tenent: 3, pbx: 'none', appid: '1111', domain:'192.168.8.100', profile: 'default' };
+    // "http://localhost/ivr/index.json"
+    var uuid_data = { path: "http://45.55.179.9/DVP-Demo/done/start.php", company: 1, tenent: 3, pbx: 'none', appid: '1111', domain:'192.168.8.100', profile: 'default' };
     var redisData = JSON.stringify(uuid_data);
     redisClient.set(varUuid + "_data", redisData, function(err, value) {
 
@@ -99,7 +100,7 @@ server.post('/CallApp', function(req,res,next) {
 
 
 
-             .ele("action").att("application", "httapi").att("data", "{url=http://45.55.179.9:8807}").up()
+             .ele("action").att("application", "httapi").att("data", "{url=http://127.0.0.1:8086}").up()
                 //.ele("action").att("application", "socket").att("data", "127.0.0.1:8084 async full")
                 //<action application="socket" data="127.0.0.1:8084 async full"/>
                 .end({pretty: true});

@@ -320,7 +320,8 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
                 else {
 
                     console.log("------------------------------------------------------> INBAND");
-                    var msg = messageGenerator.DTMFType(mainServer, mainServer, "INBAND");
+                    //var msg = messageGenerator.DTMFType(mainServer, mainServer, "INBAND");
+                    var msg = messageGenerator.Continue(mainServer);
                     console.log("------------------------------------------------------>" + msg);
                     res.write(msg);
 
@@ -334,7 +335,8 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
                 ////////////////////////////////////////////////////////////////
 
                 console.log("------------------------------------------------------>" + callData["dtmftype"]);
-                var msg = messageGenerator.DTMFType(mainServer, mainServer, callData["dtmftype"]);
+                //var msg = messageGenerator.DTMFType(mainServer, mainServer, callData["dtmftype"]);
+                var msg = messageGenerator.Continue(mainServer);
                 console.log("------------------------------------------------------>" + msg);
                 //var sms = function(actionURL, tempURL,to,message)
                 res.write(msg);
