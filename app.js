@@ -19,7 +19,7 @@ var logger = require('DVP-Common/LogHandler/CommonLogHandler.js').logger;
 
 
 
-var mainServer = format("http://{0}:{1}", config.LBServer.ip, config.LBServer.port)
+var mainServer = format("http://{0}:{1}", config.LBServer.ip, config.LBServer.port);
 
 //var mainServer = config.LBServer.path;
 
@@ -742,7 +742,7 @@ function HandleFunction(queryData, req, res, next) {
             }
 
             company = uuid_data['company'];
-            tenant = uuid_data['tenent'];
+            tenant = uuid_data['tenant'];
             
             
             if (!uuid_data) {
@@ -962,7 +962,10 @@ function HandleFunction(queryData, req, res, next) {
                                                     uuid_dev["currenturl"] = uuid_dev["nexturl"];
                                                     uuid_dev["nexturl"] = callData["nexturl"];
 
-                                                    console.log(uuid_dev["nexturl"]);
+                                                    console.log("DEV DATA -------------> %j",uuid_dev);
+                                                    console.log("CALL DATA -------------> %j",callData);
+
+
                                                 }
 
 

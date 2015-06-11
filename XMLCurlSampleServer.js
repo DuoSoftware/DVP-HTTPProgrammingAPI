@@ -79,11 +79,27 @@ server.post('/CallApp', function(req,res,next) {
             var doc = builder.create("document")
                 .att("type", "freeswitch/xml")
                 .ele("section").att("name", "dialplan").att("description", "RE Dial Plan For FreeSwitch")
-                .ele("context").att("name", "default")
+                .ele("context").att("name", "public")
                 .ele("extension").att("name", "test9")
-                .ele("condition").att("field", "destination_number").att("expression", "^5555$")
-                .ele("action").att("application", "multiset").att("data", "company=1 tenant=3 skill=123456").up()
-                .ele("action").att("application", "httapi").att("data", "{url=http://127.0.0.1:8086}").up()
+                .ele("condition").att("field", "destination_number").att("expression", "[^\\s]*")
+                .ele("action").att("application", "answer").up()
+               // .ele("action").att("application", "multiset").att("data", "company=1 tenant=3 skill=123456").up()
+                //.ele("action").att("application", "play_and_get_digits").att("data", "1 5 1 7000 # $${base_dir}/sounds/en/us/callie/conference/8000/conf-pin.wav /invalid.wav foobar \\S+").up()
+               // .ele("action").att("application", "log").att("data", "CRIT ${foobar}").up()
+               // .ele("action").att("application", "log").att("data", "CRIT ${read_result}").up()
+               // .ele("action").att("application", "log").att("data", "CRIT ${read_terminator_used}").up()
+                //.ele("action").att("application", "lua").att("data", "lua/AutoAttendant.lua 1 3 1111 Internal Internal").up()
+
+
+/*
+                <condition field="destination_number" expression="3">
+            <action application="playback" data="foo.wav" />
+            </condition>*/
+
+
+
+
+             .ele("action").att("application", "httapi").att("data", "{url=http://45.55.179.9:8807}").up()
                 //.ele("action").att("application", "socket").att("data", "127.0.0.1:8084 async full")
                 //<action application="socket" data="127.0.0.1:8084 async full"/>
                 .end({pretty: true});
