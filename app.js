@@ -990,6 +990,8 @@ function HandleFunction(queryData, req, res, next) {
 
                                             } catch (exx) {
 
+                                                console.error(e);
+
                                             }
 
 
