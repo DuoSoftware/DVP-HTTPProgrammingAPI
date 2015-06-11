@@ -307,9 +307,12 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
 
                 if (ismatch && ismatch.length > 0) {
 
+                    var dtmfPayload = format("rtp_payload_number={0}",ismatch[0]);
+
+
 
                     console.log("------------------------------------------------------> outband");
-                    var msg = messageGenerator.Continue(mainServer);
+                    var msg = messageGenerator.DTMFType(mainServer, mainServer, dtmfPayload);
                     console.log("------------------------------------------------------>" + msg);
                     res.write(msg);
 
@@ -320,7 +323,7 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
                 else {
 
                     console.log("------------------------------------------------------> INBAND");
-                    //var msg = messageGenerator.DTMFType(mainServer, mainServer, "INBAND");
+                    //var msg = messageGenerator.DTMFType(mainServer, mainServer, dtmfPayload);
                     var msg = messageGenerator.Continue(mainServer);
                     console.log("------------------------------------------------------>" + msg);
                     res.write(msg);
@@ -902,6 +905,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                 if((config.Services && config.Services.downloaddurl && uuid_data['appid'])) {
                                     url = format("{0}/{1}/GetFileIDForName/{2}", config.Services.downloaddurl, filenamex, uuid_data['appid']);
+                                    logger.debug("Calling FILE service URL %s",url);
                                 }
 
 
@@ -1462,6 +1466,8 @@ function HandleDebugFunction(queryData, req, res, next) {
 
                                 if((config.Services && config.Services.downloaddurl && uuid_data['appid'])) {
                                     url = format("{0}/{1}/GetFileIDForName/{2}", config.Services.downloaddurl, filenamex, uuid_data['appid']);
+
+                                    logger.debug("Calling FILE service URL %s",url);
                                 }
 
 

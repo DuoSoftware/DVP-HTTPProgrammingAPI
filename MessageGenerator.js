@@ -381,7 +381,8 @@ var dtmf_type = function (actionURL, tempURL, dtmfType) {
             .ele("execute")
             .att("action", actionURL)
             .att("temp-action", tempURL)
-            .att("application", "start_dtmf")
+            .att("application", "set")
+            .att("data", dtmfType)
             .end({ pretty: true });
     
     
