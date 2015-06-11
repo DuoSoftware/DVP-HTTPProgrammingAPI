@@ -742,7 +742,7 @@ function HandleFunction(queryData, req, res, next) {
             }
 
 
-            logger.debug("Session Data included ----------------------> %j", sessiondata);
+            //logger.debug("Session Data included ----------------------> %j", sessiondata);
 
             if(uuid_data["env"] == "debug"){
 
