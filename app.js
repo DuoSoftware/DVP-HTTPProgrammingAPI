@@ -975,6 +975,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 try {
                                                     var redisData = JSON.stringify(uuid_dev);
                                                     redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                                    logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
                                                 }
                                                 catch (e) {
                                                     console.error(e);
@@ -1074,6 +1075,7 @@ function HandleFunction(queryData, req, res, next) {
                                             try {
                                                 var redisData = JSON.stringify(uuid_dev);
                                                 redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                                logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
                                             }
                                             catch (e) {
                                                 console.error(e);
@@ -1163,6 +1165,7 @@ function HandleFunction(queryData, req, res, next) {
                                             try {
                                                 var redisData = JSON.stringify(uuid_dev);
                                                 redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                                logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
                                             }
                                             catch (e) {
                                                 console.error(e);
@@ -1222,6 +1225,7 @@ function HandleFunction(queryData, req, res, next) {
                                     try {
                                         var redisData = JSON.stringify(uuid_dev);
                                         redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                        logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
                                     }
                                     catch (e) {
                                         console.error(e);
@@ -1376,6 +1380,7 @@ function HandleDebugFunction(queryData, req, res, next) {
 
                             uuid_dev = { serverdata: queryData, nexturl: nxurl, currenturl: "none", result: "result", lastcommand: "none", lastresult: "none", company: uuid_data["company"], tenent: uuid_data["tenent"], posturl: "none", baseurl: basurl, appid:  uuid_data["appid"]};
                             //redisClient.lpush(queryData["Caller-Destination-Number"] + "_live", queryData["session_id"], redis.print);
+                            console.log("Update UUID_DEV ----> %j",uuid_dev)
 
                         }
 
@@ -1522,6 +1527,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                             try {
                                                 var redisData = JSON.stringify(uuid_dev);
                                                 redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                                logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
                                             }
                                             catch (e) {
                                                 console.error(e);
@@ -1606,6 +1612,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                             try {
                                                 var redisData = JSON.stringify(uuid_dev);
                                                 redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                                logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
                                             }
                                             catch (e) {
                                                 console.error(e);
@@ -1682,6 +1689,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                             try {
                                                 var redisData = JSON.stringify(uuid_dev);
                                                 redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                                logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
                                             }
                                             catch (e) {
                                                 console.error(e);
@@ -1729,6 +1737,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                     try {
                                         var redisData = JSON.stringify(uuid_dev);
                                         redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                        logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
                                     }
                                     catch (e) {
                                         console.error(e);
