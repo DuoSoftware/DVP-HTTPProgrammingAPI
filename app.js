@@ -1287,7 +1287,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
 
-                                logger.error("HTTPProgrammingAPI.Handler RequestOut %s with response %j", queryData["session_id"], response);
+                                logger.error("HTTPProgrammingAPI.Handler RequestOut %s with response", queryData["session_id"]);
 
 
                                 var date = new Date();
