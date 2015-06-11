@@ -1061,6 +1061,9 @@ function HandleFunction(queryData, req, res, next) {
 
                                                 console.log(uuid_dev["nexturl"]);
 
+                                                console.log("DEV DATA -------------> %j",uuid_dev);
+                                                console.log("CALL DATA -------------> %j",callData);
+
 
                                             }
 
@@ -1148,6 +1151,9 @@ function HandleFunction(queryData, req, res, next) {
                                                 uuid_dev["nexturl"] = callData["nexturl"];
 
                                                 console.log(uuid_dev["nexturl"]);
+
+                                                console.log("DEV DATA -------------> %j",uuid_dev);
+                                                console.log("CALL DATA -------------> %j",callData);
                                             }
 
 
@@ -1202,6 +1208,9 @@ function HandleFunction(queryData, req, res, next) {
 
                                         console.log(uuid_dev["nexturl"]);
 
+
+                                        console.log("DEV DATA -------------> %j",uuid_dev);
+                                        console.log("CALL DATA -------------> %j",callData);
 
 
                                     }
