@@ -70,8 +70,9 @@ server.post('/CallApp', function(req,res,next) {
 
 
     //app: 'call'
+    // "http://45.55.179.9/DVP-Demo/done/start.php
     // "http://localhost/ivr/index.json"
-    var uuid_data = { path: "http://45.55.179.9/DVP-Demo/done/start.php", company: 1, tenent: 3, pbx: 'none', appid: '1111', domain:'192.168.8.100', profile: 'default' };
+    var uuid_data = { path: "http://localhost/ivr/index.json", company: 1, tenent: 3, pbx: 'none', appid: '6', domain:'192.168.8.100', profile: 'default' };
     var redisData = JSON.stringify(uuid_data);
     redisClient.set(varUuid + "_data", redisData, function(err, value) {
 

@@ -922,15 +922,16 @@ function HandleFunction(queryData, req, res, next) {
                                             var fileID = filenamex;
 
                                             try {
-                                                var filedata = _response.body;
+                                                var filedata = JSON.parse(_response.body);
 
 
 
-                                                logger.debug("HTTPProgrammingAPI.Handler Request File resolution Responsedata %j", _response);
+                                                logger.debug("HTTPProgrammingAPI.Handler Request File resolution Responsedata %d %j %j ", _response.statusCode, filedata, filedata.Result);
 
                                                 if (!_error && _response.statusCode == 200 && filedata && filedata.Result && filedata.Result["UniqueId"]) {
 
-                                                    fileID = filedata.Result["UniqueId"];
+                                                    var ext = filedata.Result.FileStructure.split(/[/]+/).pop();
+                                                    fileID = format("{0}.{1}", filedata.Result["UniqueId"],ext);
 
                                                     logger.debug("HTTPProgrammingAPI.Handler Request File resolution %s %s", queryData["session_id"],fileID);
 
@@ -1005,7 +1006,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                             } catch (exx) {
 
-                                                console.error(e);
+                                                console.error(exx);
 
                                             }
 
