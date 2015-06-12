@@ -907,7 +907,9 @@ function HandleFunction(queryData, req, res, next) {
                                 var filenamex = callData["file"];
 
                                 if((config.Services && config.Services.downloaddurl && uuid_data['appid'])) {
-                                    url = format("{0}/{1}/GetFileIDForName/{2}", config.Services.downloaddurl, filenamex, uuid_data['appid']);
+
+                                    ///DVP/API/'+version+'/FIleService/FileHandler/:filename/FileInfoForApplicationId/:appId
+                                    url = format("{0}/DVP/API/{1}/FIleService/FileHandler/{2}/FileInfoForApplicationId/{3}", config.Services.downloaddurl,config.Services.uploadurlVersion, filenamex, uuid_data['appid']);
                                     logger.debug("Calling FILE service URL %s",url);
                                 }
 
@@ -921,9 +923,9 @@ function HandleFunction(queryData, req, res, next) {
 
                                             try {
                                                 var filedata = _response.body;
-                                                if (!_error && _response.statusCode == 200 && filedata && filedata["fileID"]) {
+                                                if (!_error && _response.statusCode == 200 && filedata && filedata["UniqueId"]) {
 
-                                                    fileID = filedata["fileID"];
+                                                    fileID = filedata["UniqueId"];
 
                                                     logger.debug("HTTPProgrammingAPI.Handler Request File resolution %s %s", queryData["session_id"],fileID);
 
@@ -933,8 +935,8 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                                     //uuid_data["tenant"],uuid_data["company"]
-                                                    var companyLocation = format("{0}_{1}",uuid_data["tenant"], uuid_data["company"]);
-                                                    fileID = format("{0}/{1}",companyLocation, filenamex);
+                                                    //var companyLocation = format("{0}_{1}",uuid_data["tenant"], uuid_data["company"]);
+                                                    //fileID = format("{0}/{1}",companyLocation, filenamex);
 
                                                     logger.error("HTTPProgrammingAPI.Handler Request File resolution %s", queryData["session_id"]);
 
