@@ -926,7 +926,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
 
-                                                logger.debug("HTTPProgrammingAPI.Handler Request File resolution Responsedata %j %d %j %j %s", _error,fileID, _response.statusCode, filedata, filedata.Result,filedata.Result["UniqueId"] );
+                                                logger.debug("HTTPProgrammingAPI.Handler Request File resolution Responsedata %j", _response);
 
                                                 if (!_error && _response.statusCode == 200 && filedata && filedata.Result && filedata.Result["UniqueId"]) {
 
