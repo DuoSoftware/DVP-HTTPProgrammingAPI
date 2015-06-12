@@ -930,11 +930,11 @@ function HandleFunction(queryData, req, res, next) {
 
                                                 }
                                                 else {
-                                                    
+
 
                                                     //uuid_data["tenant"],uuid_data["company"]
                                                     var companyLocation = format("{0}_{1}",uuid_data["tenant"], uuid_data["company"]);
-                                                    fileID = format("{0}/{1}",companyLocation, filenamex);
+                                                    fileID = format("/{0}/{1}",companyLocation, filenamex);
 
                                                     logger.error("HTTPProgrammingAPI.Handler Request File resolution %s", queryData["session_id"]);
 
