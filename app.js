@@ -923,9 +923,9 @@ function HandleFunction(queryData, req, res, next) {
 
                                             try {
                                                 var filedata = _response.body;
-                                                if (!_error && _response.statusCode == 200 && filedata && filedata["UniqueId"]) {
+                                                if (!_error && _response.statusCode == 200 && filedata && filedata.Result && filedata.Result["UniqueId"]) {
 
-                                                    fileID = filedata["UniqueId"];
+                                                    fileID = filedata.Result["UniqueId"];
 
                                                     logger.debug("HTTPProgrammingAPI.Handler Request File resolution %s %s", queryData["session_id"],fileID);
 
