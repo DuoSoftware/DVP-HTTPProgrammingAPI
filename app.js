@@ -1487,7 +1487,8 @@ function HandleDebugFunction(queryData, req, res, next) {
 
                                                 console.log("file resolution failed --------> ");
 
-                                                var companyLocation = format("{0}_{1}",fileData.tenent, fileData.company);
+                                                //uuid_data["tenant"],uuid_data["company"]
+                                                var companyLocation = format("{0}_{1}",uuid_data["tenant"], uuid_data["company"]);
                                                 fileID = format("{0}/{1}",companyLocation, filenamex);
 
                                                 debugdata.push({type:"warnning", info: "File resolution failed", file: filenamex});
