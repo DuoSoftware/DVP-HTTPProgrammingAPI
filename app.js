@@ -923,6 +923,11 @@ function HandleFunction(queryData, req, res, next) {
 
                                             try {
                                                 var filedata = _response.body;
+
+
+
+                                                logger.debug("HTTPProgrammingAPI.Handler Request File resolution Responsedata %j %d %j %j %s", _error,fileID, _response.statusCode, filedata, filedata.Result,filedata.Result["UniqueId"] );
+
                                                 if (!_error && _response.statusCode == 200 && filedata && filedata.Result && filedata.Result["UniqueId"]) {
 
                                                     fileID = filedata.Result["UniqueId"];
