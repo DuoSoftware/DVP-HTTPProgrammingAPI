@@ -1455,17 +1455,9 @@ function HandleDebugFunction(queryData, req, res, next) {
                                 }
 
 
-                                //console.log(callData);
-
 
                                 var url;
-                                /*
-                                 if(process.env.envirnament && process.env.domain){
 
-                                 url = format("{0}{1}/{2}/GetFileIDForName/{3}", process.env.envirnament, process.env.domain, filenamex, uuid_data['appid']);
-
-                                 }
-                                 else */
 
                                 var filenamex = callData["file"];
 
@@ -1494,6 +1486,9 @@ function HandleDebugFunction(queryData, req, res, next) {
                                             else {
 
                                                 console.log("file resolution failed --------> ");
+
+                                                var companyLocation = format("{0}_{1}",fileData.tenent, fileData.company);
+                                                fileID = format("{0}/{1}",companyLocation, filenamex);
 
                                                 debugdata.push({type:"warnning", info: "File resolution failed", file: filenamex});
 
