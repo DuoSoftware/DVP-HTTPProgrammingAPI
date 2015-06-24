@@ -909,7 +909,7 @@ function HandleFunction(queryData, req, res, next) {
                                 if((config.Services && config.Services.downloaddurl && uuid_data['appid'])) {
 
                                     ///DVP/API/'+version+'/FIleService/FileHandler/:filename/FileInfoForApplicationId/:appId
-                                    url = format("{0}/DVP/API/{1}/FIleService/FileHandler/{2}/FileInfoForApplicationId/{3}", config.Services.downloaddurl,config.Services.uploadurlVersion, filenamex, uuid_data['appid']);
+                                    url = format("http://{0}/DVP/API/{1}/FIleService/FileHandler/{2}/FileInfoForApplicationId/{3}", config.Services.downloaddurl,config.Services.uploadurlVersion, filenamex, uuid_data['appid']);
                                     logger.debug("Calling FILE service URL %s",url);
                                 }
 
@@ -1020,7 +1020,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                     if((config.Services && config.Services.ruleservice )) {
-                                        outbountruleurl = format("{0}/{1}/GetOutboundRule/{2}/{3}/{4}", config.Services.ruleservice, callData["callernumber"], callData["number"], uuid_data["tenant"],uuid_data["company"]);
+                                        outbountruleurl = format("http://{0}/{1}/GetOutboundRule/{2}/{3}/{4}", config.Services.ruleservice, callData["callernumber"], callData["number"], uuid_data["tenant"],uuid_data["company"]);
                                     }
 
 
@@ -1119,7 +1119,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                     if((config.Services && config.Services.ards )) {
-                                        queueURL = format("{0}/ardsurl/{1}/{2}", config.Services.ards,  uuid_data["tenant"],uuid_data["company"]);
+                                        queueURL = format("http://{0}/ardsurl/{1}/{2}", config.Services.ards,  uuid_data["tenant"],uuid_data["company"]);
                                     }
 
 
@@ -1475,7 +1475,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                 var filenamex = callData["file"];
 
                                 if((config.Services && config.Services.downloaddurl && uuid_data['appid'])) {
-                                    url = format("{0}/{1}/GetFileIDForName/{2}", config.Services.downloaddurl, filenamex, uuid_data['appid']);
+                                    url = format("http://{0}/{1}/GetFileIDForName/{2}", config.Services.downloaddurl, filenamex, uuid_data['appid']);
 
                                     logger.debug("Calling FILE service URL %s",url);
                                 }
@@ -1570,7 +1570,7 @@ function HandleDebugFunction(queryData, req, res, next) {
 
 
                                     if((config.Services && config.Services.ruleservice )) {
-                                        outbountruleurl = format("{0}/{1}/GetOutboundRule/{2}/{3}/{4}", config.Services.ruleservice, callData["callernumber"], callData["number"], uuid_data["tenant"],uuid_data["company"]);
+                                        outbountruleurl = format("http://{0}/{1}/GetOutboundRule/{2}/{3}/{4}", config.Services.ruleservice, callData["callernumber"], callData["number"], uuid_data["tenant"],uuid_data["company"]);
                                     }
 
 
@@ -1654,7 +1654,7 @@ function HandleDebugFunction(queryData, req, res, next) {
 
 
                                     if((config.Services && config.Services.ards )) {
-                                        queueURL = format("{0}/ardsurl/{1}/{2}", config.Services.ards,  uuid_data["tenant"],uuid_data["company"]);
+                                        queueURL = format("http://{0}/ardsurl/{1}/{2}", config.Services.ards,  uuid_data["tenant"],uuid_data["company"]);
                                     }
 
 

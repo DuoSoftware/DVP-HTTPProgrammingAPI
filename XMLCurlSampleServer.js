@@ -92,6 +92,8 @@ server.post('/CallApp', function(req,res,next) {
                // .ele("action").att("application", "log").att("data", "CRIT ${read_terminator_used}").up()
                 //.ele("action").att("application", "lua").att("data", "lua/AutoAttendant.lua 1 3 1111 Internal Internal").up()
 
+                .ele("action").att("application", "lua").att("data", "lua/VoicePortal.lua 1111 1 2 AVAILABLE 4 5 6 7").up()
+
 
 /*
                 <condition field="destination_number" expression="3">
@@ -101,10 +103,10 @@ server.post('/CallApp', function(req,res,next) {
 
 
 
-             .ele("action").att("application", "httapi").att("data", "{url=http://127.0.0.1:8086}").up()
+             //.ele("action").att("application", "httapi").att("data", "{url=http://127.0.0.1:8086}").up()
                 //.ele("action").att("application", "socket").att("data", "127.0.0.1:8084 async full")
                 //<action application="socket" data="127.0.0.1:8084 async full"/>
-                .end({pretty: true});
+              .end({pretty: true});
 
 
         //<action application="multiset" data="effective_caller_id_name=FreeSwitch effective_caller_id_number=12345678"/>

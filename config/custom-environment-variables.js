@@ -6,13 +6,15 @@ module.exports = {
     },
 
 
-    "Redis" : {
-        "ip": "REDIS_IP",
-        "port": "REDIS_PORT"
+    "Redis":
+    {
+        "ip": "SYS_REDIS_HOST",
+        "port": "SYS_REDIS_PORT"
+
     },
 
     "HTTPServer" : {
-        "port": "HOST_PORT"
+        "port": "HOST_HTTPPROGRAMMINGAPI_PORT"
     },
 
 
@@ -25,16 +27,26 @@ module.exports = {
 
     "Services": {
 
-        "uploadurl": "SYS_SERVICE_FILE",
-        "uploadurlVersion":"SYS_SERVICE_FILE_VERSION",
-        "downloaddurl": "SYS_SERVICE_FILE",
-        "downloaddurlVersion" : "SYS_SERVICE_FILE_VERSION",
-        "ruleservice": "SYS_SERVICE_RULE",
-        "ruleserviceVersion": "SYS_SERVICE_RULE_VERSION",
-        "ards": "SYS_SERVICE_ARDSCONNECTOR",
-        "ardsVersion": "SYS_SERVICE_ARDSCONNECTOR_VERSION"
+        "uploadurl": "SYS_FILESERVICE_HOST",
+        "uploadurlVersion":"SYS_FILESERVICE_VERSION",
+        "downloaddurl": "SYS_FILESERVICE_HOST",
+        "downloaddurlVersion" : "SYS_FILESERVICE_VERSION",
+        "ruleservice": "SYS_RULESERVICE_HOST",
+        "ruleserviceVersion": "SYS_RULESERVICE_VERSION",
+        "ards": "SYS_ARDS_HOST",
+        "ardsVersion": "SYS_ARDS_VERSION"
 
+    },
+
+
+    "Host":
+    {
+        "vdomain": "VIRTUAL_HOST",
+        "domain": "HOST_NAME",
+        "port": "HOST_HTTPPROGRAMMINGAPI_PORT",
+        "version": "HOST_VERSION"
     }
+
 
 
 

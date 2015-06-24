@@ -26,10 +26,10 @@ module.exports = {
 
 "Services": {
 
-    "uploadurl": 'http://45.55.179.9:8860/',
-    "downloaddurl": 'http://45.55.179.9:8860/',
-    "ruleservice": 'http://127.0.0.1',
-    "ards": 'http://127.0.0.1',
+    "uploadurl": '45.55.179.9:8860',
+    "downloaddurl": '45.55.179.9:8860',
+    "ruleservice": '127.0.0.1',
+    "ards": '127.0.0.1',
     "uploadurlVersion":"1.0.0",
     "downloaddurlVersion" : "1.0.0",
     "ruleserviceVersion": "1.0.0",
