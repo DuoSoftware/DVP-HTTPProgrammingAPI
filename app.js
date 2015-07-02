@@ -104,7 +104,11 @@ function postData(req, res) {
             try {
 
                 if(config.Services && config.Services.uploadurl) {
-                    var urloadurl = config.Services.uploadurl;
+
+
+
+                    var urloadurl = format("http://{0}/DVP/API/{1}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadurlVersion);
+
 
 
                     var form = new FormData();
@@ -909,7 +913,7 @@ function HandleFunction(queryData, req, res, next) {
                                 if((config.Services && config.Services.downloaddurl && uuid_data['appid'])) {
 
                                     ///DVP/API/'+version+'/FIleService/FileHandler/:filename/FileInfoForApplicationId/:appId
-                                    url = format("http://{0}/DVP/API/{1}/FIleService/FileHandler/{2}/FileInfoForApplicationId/{3}", config.Services.downloaddurl,config.Services.uploadurlVersion, filenamex, uuid_data['appid']);
+                                    url = format("http://{0}/DVP/API/{1}/FileService/File/{2}/Info/{3}", config.Services.downloaddurl,config.Services.uploadurlVersion, filenamex, uuid_data['appid']);
                                     logger.debug("Calling FILE service URL %s",url);
                                 }
 
@@ -931,7 +935,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 if (!_error && _response.statusCode == 200 && filedata && filedata.Result && filedata.Result["UniqueId"]) {
 
                                                     var ext = filedata.Result.FileStructure.split(/[/]+/).pop();
-                                                    fileID = format("{0}.{1}", filedata.Result["UniqueId"],ext);
+                                                    fileID = format("{0}.{1}", filedata.Result.UniqueId,ext);
 
                                                     logger.debug("HTTPProgrammingAPI.Handler Request File resolution %s %s", queryData["session_id"],fileID);
 
@@ -1020,7 +1024,8 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                     if((config.Services && config.Services.ruleservice )) {
-                                        outbountruleurl = format("http://{0}/{1}/GetOutboundRule/{2}/{3}/{4}", config.Services.ruleservice, callData["callernumber"], callData["number"], uuid_data["tenant"],uuid_data["company"]);
+                                        //, uuid_data["tenant"],uuid_data["company"]
+                                        outbountruleurl = format("http://{0}/DVP/API/{1}/CallRule/Outbound/ANI/{2}/DNIS/{3}", config.Services.ruleservice, config.Services.ruleserviceVersion, callData["callernumber"], callData["number"]);
                                     }
 
 
@@ -1038,9 +1043,9 @@ function HandleFunction(queryData, req, res, next) {
 
 
 
-                                                callData["callernumber"] = ruledata["ani"];
-                                                callData["number"] =  ruledata["dnis"];
-                                                callData["gateway"] = ruledata["gateway"];
+                                                callData["callernumber"] = ruledata["ANI"];
+                                                callData["number"] =  ruledata["DNIS"];
+                                                callData["gateway"] = ruledata["GatewayCode"];
 
 
                                                 logger.debug("HTTPProgrammingAPI.Handler Request Gateway resolution %s %j", queryData["session_id"],ruledata);
