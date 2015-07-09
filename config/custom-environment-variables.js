@@ -28,10 +28,13 @@ module.exports = {
     "Services": {
 
         "uploadurl": "SYS_FILESERVICE_HOST",
+        "uploadport":"SYS_FILESERVICE_PORT",
         "uploadurlVersion":"SYS_FILESERVICE_VERSION",
-        "downloaddurl": "SYS_FILESERVICE_HOST",
+        "downloadurl": "SYS_FILESERVICE_HOST",
+        "downloadport":"SYS_FILESERVICE_PORT",
         "downloaddurlVersion" : "SYS_FILESERVICE_VERSION",
         "ruleservice": "SYS_RULESERVICE_HOST",
+        "ruleserviceport": "SYS_RULESERVICE_PORT",
         "ruleserviceVersion": "SYS_RULESERVICE_VERSION",
         "ards": "SYS_ARDS_HOST",
         "ardsVersion": "SYS_ARDS_VERSION"

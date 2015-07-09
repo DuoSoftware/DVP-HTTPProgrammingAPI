@@ -26,9 +26,12 @@ module.exports = {
 
 "Services": {
 
-    "uploadurl": '45.55.179.9:8860',
-    "downloaddurl": '45.55.179.9:8860',
+    "uploadurl": '45.55.179.9',
+    "uploadport": '8860',
+    "downloadurl": '45.55.179.9',
+    "downloadport": '8860',
     "ruleservice": '127.0.0.1',
+    "ruleserviceport":'8888',
     "ards": '127.0.0.1',
     "uploadurlVersion":"1.0.0",
     "downloaddurlVersion" : "1.0.0",
