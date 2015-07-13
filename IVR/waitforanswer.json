@@ -1,0 +1,4 @@
+{
+  "action": "waitforanswer",
+  "nexturl": "http://localhost/IVR/index.json"
+}

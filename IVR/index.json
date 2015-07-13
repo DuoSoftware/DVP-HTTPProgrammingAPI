@@ -1,7 +1,7 @@
 {
     "action": "playandgetdigits",
     "file": "Duo_IVR_Menu.wav",
-    "nexturl": "http://localhost/IVR/queue.json",
+    "nexturl": "http://localhost/IVR/hangup.json",
     "result": "result",
     "errorfile": "",
     "digittimeout" : 5,
