@@ -20,8 +20,8 @@ module.exports = {
 
     "LBServer" : {
 
-        "ip": "LB_IP",
-        "port": "LB_PORT"
+        "ip": "LB_FRONTEND_HOST",
+        "port": "LB_FRONTEND_PORT"
 
     },
 
@@ -37,6 +37,7 @@ module.exports = {
         "ruleserviceport": "SYS_RULESERVICE_PORT",
         "ruleserviceVersion": "SYS_RULESERVICE_VERSION",
         "ards": "SYS_ARDS_HOST",
+        "ardsport": "SYS_ARDS_PORT",
         "ardsVersion": "SYS_ARDS_VERSION"
 
     },

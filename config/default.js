@@ -33,6 +33,7 @@ module.exports = {
     "ruleservice": '127.0.0.1',
     "ruleserviceport":'8888',
     "ards": '127.0.0.1',
+    "ardsport": '8080',
     "uploadurlVersion":"1.0.0",
     "downloaddurlVersion" : "1.0.0",
     "ruleserviceVersion": "1.0.0",

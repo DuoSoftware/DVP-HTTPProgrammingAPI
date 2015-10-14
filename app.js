@@ -12,14 +12,16 @@ var FormData = require('form-data');
 var Regex = require("regex");
 var format = require("stringformat");
 var uuid = require('node-uuid');
+var validator = require('validator');
 var logger = require('DVP-Common/LogHandler/CommonLogHandler.js').logger;
 
 //console.log(messageGenerator.DTMFType("xxxxxxxxxx", "yyyyyyyyyyyyyyyyy", "inband"));
 
 
+var mainServer = format("http://{0}", config.LBServer.ip);
 
-
-var mainServer = format("http://{0}:{1}", config.LBServer.ip, config.LBServer.port);
+if(validator.isIP(config.LBServer.ip))
+    mainServer = format("http://{0}:{1}", config.LBServer.ip, config.LBServer.port);
 
 //var mainServer = config.LBServer.path;
 
@@ -107,7 +109,12 @@ function postData(req, res) {
 
 
 
-                    var urloadurl = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadport,config.Services.uploadurlVersion);
+                    var urloadurl = format("http://{0}/DVP/API/{1}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadurlVersion);
+
+
+                    if(validator.isIP(config.Services.uploadurl))
+                        urloadurl = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadport,config.Services.uploadurlVersion);
+
 
 
 
@@ -913,7 +920,17 @@ function HandleFunction(queryData, req, res, next) {
                                 if((config.Services && config.Services.downloadurl && config.Services.downloadport && uuid_data['appid'])) {
 
                                     ///DVP/API/'+version+'/FIleService/FileHandler/:filename/FileInfoForApplicationId/:appId
-                                    url = format("http://{0}:{1}/DVP/API/{2}/FileService/File/{3}/Info/{4}", config.Services.downloadurl,config.Services.downloadport,config.Services.uploadurlVersion, filenamex, uuid_data['appid']);
+
+
+
+                                    url = format("http://{0}/DVP/API/{1}/FileService/File/{2}/ofApplication/{3}", config.Services.downloadurl,config.Services.uploadurlVersion, filenamex, uuid_data['appid']);
+
+
+                                    if(validator.isIP(config.Services.downloadurl))
+                                        url = format("http://{0}:{1}/DVP/API/{2}/FileService/File/{3}/ofApplication/{4}", config.Services.downloadurl,config.Services.downloadport,config.Services.uploadurlVersion, filenamex, uuid_data['appid']);
+
+
+
                                     logger.debug("Calling FILE service URL %s",url);
                                 }
 
@@ -1025,7 +1042,12 @@ function HandleFunction(queryData, req, res, next) {
 
                                     if((config.Services && config.Services.ruleservice && config.Services.ruleserviceport)) {
                                         //, uuid_data["tenant"],uuid_data["company"]
-                                        outbountruleurl = format("http://{0}:{1}/DVP/API/{2}/CallRule/Outbound/ANI/{3}/DNIS/{4}", config.Services.ruleservice,config.Services.ruleserviceport, config.Services.ruleserviceVersion, callData["callernumber"], callData["number"]);
+
+                                        outbountruleurl = format("http://{0}/DVP/API/{1}/CallRule/Outbound/ANI/{2}/DNIS/{3}", config.Services.ruleservice, config.Services.ruleserviceVersion, callData["callernumber"], callData["number"]);
+
+
+                                        if(validator.isIP(config.Services.ruleservice))
+                                            outbountruleurl = format("http://{0}:{1}/DVP/API/{2}/CallRule/Outbound/ANI/{3}/DNIS/{4}", config.Services.ruleservice,config.Services.ruleserviceport, config.Services.ruleserviceVersion, callData["callernumber"], callData["number"]);
                                     }
 
 
@@ -1124,7 +1146,17 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                     if((config.Services && config.Services.ards )) {
+
+
+
+
                                         queueURL = format("http://{0}/ardsurl/{1}/{2}", config.Services.ards,  uuid_data["tenant"],uuid_data["company"]);
+
+
+                                        if(validator.isIP(config.Services.ards))
+                                            queueURL = format("http://{0}:{1}/ardsurl/{2}/{3}", config.Services.ards,config.Services.ardsport,  uuid_data["tenant"],uuid_data["company"]);
+
+
                                     }
 
 
@@ -1480,7 +1512,12 @@ function HandleDebugFunction(queryData, req, res, next) {
                                 var filenamex = callData["file"];
 
                                 if((config.Services && config.Services.downloadurl && config.Services.downloadport && uuid_data['appid'])) {
-                                    url = format("http://{0}:{1}/{2}/GetFileIDForName/{3}", config.Services.downloadurl,config.Services.downloadport, filenamex, uuid_data['appid']);
+
+
+                                    url = format("http://{0}/{1}/GetFileIDForName/{2}", config.Services.downloadurl, filenamex, uuid_data['appid']);
+
+                                    if(validator.isIP(config.Services.downloadurl))
+                                        url = format("http://{0}:{1}/{2}/GetFileIDForName/{3}", config.Services.downloadurl,config.Services.downloadport, filenamex, uuid_data['appid']);
 
                                     logger.debug("Calling FILE service URL %s",url);
                                 }
@@ -1575,7 +1612,13 @@ function HandleDebugFunction(queryData, req, res, next) {
 
 
                                     if((config.Services && config.Services.ruleservice && config.Services.ruleserviceport)) {
-                                        outbountruleurl = format("http://{0}:{1}/{2}/GetOutboundRule/{3}/{4}/{5}", config.Services.ruleservice,config.Services.ruleserviceport, callData["callernumber"], callData["number"], uuid_data["tenant"],uuid_data["company"]);
+
+
+                                        outbountruleurl = format("http://{0}/{1}/GetOutboundRule/{2}/{3}/{4}", config.Services.ruleservice, callData["callernumber"], callData["number"], uuid_data["tenant"],uuid_data["company"]);
+
+
+                                        if(validator.isIP(config.Services.ruleservice))
+                                            outbountruleurl = format("http://{0}:{1}/{2}/GetOutboundRule/{3}/{4}/{5}", config.Services.ruleservice,config.Services.ruleserviceport, callData["callernumber"], callData["number"], uuid_data["tenant"],uuid_data["company"]);
                                     }
 
 
@@ -1659,7 +1702,13 @@ function HandleDebugFunction(queryData, req, res, next) {
 
 
                                     if((config.Services && config.Services.ards )) {
+
                                         queueURL = format("http://{0}/ardsurl/{1}/{2}", config.Services.ards,  uuid_data["tenant"],uuid_data["company"]);
+
+
+                                        if(validator.isIP(config.Services.ards))
+                                            queueURL = format("http://{0}:{1}/ardsurl/{2}/{3}", config.Services.ards,config.Services.ardsport,  uuid_data["tenant"],uuid_data["company"]);
+
                                     }
 
 
