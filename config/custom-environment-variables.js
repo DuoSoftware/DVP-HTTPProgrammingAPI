@@ -1,7 +1,7 @@
 module.exports = {
     "Freeswitch" : {
-        "ip": "FS_IP",
-        "port": "FS_PORT",
+        "ip": "SYS_FREESWITCH_HOST",
+        "port": "SYS_EVENTSOCKET_PORT",
         "password": "FS_PASSWORD"
     },
 
