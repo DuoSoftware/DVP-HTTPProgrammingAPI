@@ -20,8 +20,8 @@ module.exports = {
 
     "LBServer" : {
 
-        "ip": "LB_FRONTEND_HOST",
-        "port": "LB_FRONTEND_PORT"
+        "ip": "LB_FRONTEND",
+        "port": "LB_PORT"
 
     },
 
