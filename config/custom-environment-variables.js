@@ -1,7 +1,7 @@
 module.exports = {
     "Freeswitch" : {
-        "ip": "FS_IP",
-        "port": "FS_PORT",
+        "ip": "SYS_FREESWITCH_HOST",
+        "port": "SYS_EVENTSOCKET_PORT",
         "password": "FS_PASSWORD"
     },
 
@@ -20,8 +20,8 @@ module.exports = {
 
     "LBServer" : {
 
-        "ip": "LB_FRONTEND_HOST",
-        "port": "LB_FRONTEND_PORT"
+        "ip": "LB_FRONTEND",
+        "port": "LB_PORT"
 
     },
 
@@ -36,16 +36,16 @@ module.exports = {
         "ruleservice": "SYS_RULESERVICE_HOST",
         "ruleserviceport": "SYS_RULESERVICE_PORT",
         "ruleserviceVersion": "SYS_RULESERVICE_VERSION",
-        "ards": "SYS_ARDS_HOST",
-        "ardsport": "SYS_ARDS_PORT",
-        "ardsVersion": "SYS_ARDS_VERSION"
+        "ards": "SYS_ARDSLITESERVICE_HOST",
+        "ardsport": "SYS_ARDSLITESERVICE_PORT",
+        "ardsVersion": "SYS_ARDSLITESERVICE_VERSION"
 
     },
 
 
     "Host":
     {
-        "vdomain": "VIRTUAL_HOST",
+        "vdomain": "LB_FRONTEND",
         "domain": "HOST_NAME",
         "port": "HOST_HTTPPROGRAMMINGAPI_PORT",
         "version": "HOST_VERSION"
