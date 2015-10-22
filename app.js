@@ -837,7 +837,7 @@ function HandleFunction(queryData, req, res, next) {
                         logger.debug("HTTPProgrammingAPI.Handler RequestOut DeveloperAPP URL %s", uuid_dev["nexturl"]);
                         
                         
-                        request.get(options, function (error, response, data) {
+                        request(options, function (error, response, data) {
                             
                             if (!error && response.statusCode == 200) {
 
@@ -1466,7 +1466,7 @@ function HandleDebugFunction(queryData, req, res, next) {
 
 
 
-                        request.get(options, function (error, response, data) {
+                        request(options, function (error, response, data) {
 
                             if (!error && response.statusCode == 200) {
 
