@@ -38,7 +38,11 @@ module.exports = {
         "ruleserviceVersion": "SYS_RULESERVICE_VERSION",
         "ards": "SYS_ARDSLITESERVICE_HOST",
         "ardsport": "SYS_ARDSLITESERVICE_PORT",
-        "ardsVersion": "SYS_ARDSLITESERVICE_VERSION"
+        "ardsVersion": "SYS_ARDSLITESERVICE_VERSION",
+
+        "qmusicurl": 'SYS_QUEUEMUSIC_HOST',
+        "qmusicport": 'SYS_QUEUEMUSIC_PORT',
+        "ardsVersion": "SYS_QUEUEMUSIC_VERSION"
 
     },
 

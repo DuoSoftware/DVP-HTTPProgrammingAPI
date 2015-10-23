@@ -15,7 +15,7 @@ var uuid = require('node-uuid');
 var validator = require('validator');
 var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
 
-//console.log(messageGenerator.DTMFType("xxxxxxxxxx", "yyyyyyyyyyyyyyyyy", "inband"));
+//console.log(messageGenerator.ARDS("XXXX","XXXXX","123","1","3"));
 
 
 var mainServer = format("http://{0}", config.LBServer.ip);
@@ -433,6 +433,19 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
         case "queue":
 
             res.write(messageGenerator.Queue(mainServer, mainServer,callData["skill"],ip, port));
+
+            break;
+
+        case "ards":
+
+            /*
+
+             callData["MOH"] =  "";
+             callData["Announcement"] = "";
+             callData["FirstAnnounement"] = "";
+             callData["AnnouncementTime"] = "";
+             */
+            res.write(messageGenerator.ARDS(mainServer, mainServer,callData["skill"],callData["company"],callData["tenant"],callData["MOH"],callData["FirstAnnounement"],callData["Announcement"],callData["AnnouncementTime"]));
 
             break;
 
@@ -1238,6 +1251,121 @@ function HandleFunction(queryData, req, res, next) {
 
                                     });
                                 }
+
+                                /////////////////////////////////////////ards command////////////////////////////////////////////////////////////////////////////
+                                else if(callData["action"] == "ards"){
+
+
+                                    var profileURL;
+
+
+                                    if((config.Services && config.Services.qmusicurl )) {
+
+
+
+
+                                        profileURL = format("http://{0}/DVP/API/{1}/QueueMusic/Profile/{2}", config.Services.qmusicurl,  config.Services.qmusicVersion,callData["profile"]);
+
+
+                                        if(validator.isIP(config.Services.qmusicurl))
+                                            profileURL = format("http://{0}:{1}/DVP/API/{2}/QueueMusic/Profile/{3}", config.Services.qmusicurl,config.Services.qmusicport,   config.Services.qmusicVersion,callData["profile"]);
+
+
+                                    }
+
+
+                                    request.get(profileURL, function (_error, _response, datax) {
+
+
+                                        try {
+
+
+                                            var profileData = JSON.parse(_response.body);
+                                            if (!_error && _response.statusCode == 200 && profileData && profileData.Result) {
+
+
+                                                callData["MOH"] =  profileData.Result.MOH;
+                                                callData["Announcement"] = profileData.Result.Announcement;
+                                                callData["FirstAnnounement"] = profileData.Result.FirstAnnounement;
+                                                callData["AnnouncementTime"] = profileData.Result.AnnouncementTime;
+                                                callData['company'] = uuid_data['company'];
+                                                callData['tenant'] = uuid_data['tenant'];
+
+                                                logger.debug("HTTPProgrammingAPI.Handler Request profile resolution %s %j", queryData["session_id"], profileData);
+
+
+                                            }
+                                            else {
+
+                                                console.log("Get ARDS rule failed --------> ");
+                                                callData["MOH"] =  "";
+                                                callData["Announcement"] = "";
+                                                callData["FirstAnnounement"] = "";
+                                                callData["AnnouncementTime"] = "";
+                                                callData['company'] = "";
+                                                callData['tenant'] = "";
+
+
+                                                logger.error("HTTPProgrammingAPI.Handler Request Profile resolution %s", queryData["session_id"]);
+
+
+                                            }
+
+
+                                            logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
+
+
+                                            Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], callData["ip"],  callData["port"]);
+
+                                            console.log("----------------------------------------------------> get result");
+
+                                            uuid_dev["result"] = callData["result"];
+
+                                            console.log("----------------------------------------------------> got result");
+
+
+                                            if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+
+                                                console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
+
+                                                uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
+                                            }
+                                            else {
+
+                                                console.log("----------------------------------------------------> no base url");
+
+                                                uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                uuid_dev["nexturl"] = callData["nexturl"];
+
+                                                console.log(uuid_dev["nexturl"]);
+
+                                                console.log("DEV DATA -------------> %j",uuid_dev);
+                                                console.log("CALL DATA -------------> %j",callData);
+                                            }
+
+
+                                            logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s",queryData["session_id"], uuid_dev["nexturl"]);
+
+
+                                            try {
+                                                var redisData = JSON.stringify(uuid_dev);
+                                                redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                                logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
+                                            }
+                                            catch (e) {
+                                                console.error(e);
+                                            }
+                                        }
+                                        catch (reqex) {
+
+                                        }
+
+                                    });
+                                }
+
+
+                                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
                                 else {

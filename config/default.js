@@ -34,10 +34,16 @@ module.exports = {
     "ruleserviceport":'8888',
     "ards": '127.0.0.1',
     "ardsport": '8080',
+
+    "qmusicurl": '45.55.179.9',
+    "qmusicport": '8860',
+    "ardsVersion": "1.0.0",
+
     "uploadurlVersion":"1.0.0",
     "downloaddurlVersion" : "1.0.0",
     "ruleserviceVersion": "1.0.0",
-    "ardsVersion": "1.0.0"
+    "qmusicVersion": "1.0.0"
+
 
     }
 

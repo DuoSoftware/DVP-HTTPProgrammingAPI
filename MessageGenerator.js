@@ -10,7 +10,7 @@ doc.begin('root')
     .att('for', 'node-js')
     .ele('repo')
       .att('type', 'git')
-      .txt('git://github.com/oozcitak/xmlbuilder-js.git') 
+      .txt('git://github.com/oozcitak/xmlbuilder-js.git')
     .up()
   .up()
   .ele('test')
@@ -46,12 +46,12 @@ terminators="#">
 
 
 
-<document type="text/freeswitch-httapi"> 
-<work> 
-<execute application="play_and_get_digits" data="1 4 1 5000 # ivr/ivr-please_enter_the_number_where_we_can_reach_you.wav '' myChannelVar \d+" /> 
-<getVariable name=" myChannelVar "/> 
-</work> 
-</document> 
+<document type="text/freeswitch-httapi">
+<work>
+<execute application="play_and_get_digits" data="1 4 1 5000 # ivr/ivr-please_enter_the_number_where_we_can_reach_you.wav '' myChannelVar \d+" />
+<getVariable name=" myChannelVar "/>
+</work>
+</document>
     */
 
 
@@ -369,8 +369,52 @@ var Queue = function (actionURL, tempURL, skill, server, port) {
 };
 
 
+var Ards = function (actionURL, tempURL, skill, company, tenant, ardsholdmusic, ardsfirstannouncement, ardsannouncement, announcementtime) {
+
+
+
+    var doc = builder.create("document")
+        .att("type", "text/freeswitch-httapi")
+        .ele("variables")
+        .ele("ards_skill")
+        .text(skill)
+        .up()
+        .ele("companyid")
+        .text(company)
+        .up()
+        .ele("tenantid")
+        .text(tenant)
+        .up()
+        .ele("ards_hold_music")
+        .text(ardsholdmusic)
+        .up()
+        .ele("ards_first_announcement")
+        .text(ardsfirstannouncement)
+        .up()
+        .ele("ards_announcement")
+        .text(ardsannouncement)
+        .up()
+        .ele("ards_announcement_time")
+        .text(announcementtime)
+        .up()
+        .up()
+        .ele("params")
+        .up()
+        .ele("work")
+        .ele("execute")
+        .att("action", actionURL)
+        .att("temp-action", tempURL)
+        .att("application", "ards")
+        .end({ pretty: true });
+
+
+    return doc;
+};
+
+
+
 var dtmf_type = function (actionURL, tempURL, dtmfType) {
-    
+
     var doc = builder.create("document")
         .att("type", "text/freeswitch-httapi")
         .ele("variables")
@@ -384,8 +428,8 @@ var dtmf_type = function (actionURL, tempURL, dtmfType) {
             .att("application", "set")
             .att("data", dtmfType)
             .end({ pretty: true });
-    
-    
+
+
     return doc;
 };
 
@@ -639,3 +683,4 @@ module.exports.Continue = continuex;
 module.exports.WaitForAnswer = wait_for_answer;
 module.exports.DTMFType = dtmf_type;
 module.exports.Queue = Queue;
+module.exports.ARDS = Ards;
