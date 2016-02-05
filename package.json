@@ -1,0 +1,39 @@
+{
+  "name": "dvp-httpprogrammingapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "MessageGenerator.js",
+  "dependencies": {
+    "colors": "^1.0.3",
+    "config": "^1.12.0",
+    "data2xml": "^1.2.0",
+    "dvp-common": "^0.0.16",
+    "dvp-dbmodels": "^0.0.35",
+    "express": "^5.0.0-alpha.1",
+    "form-data": "^0.2.0",
+    "js2xmlparser": "^0.1.9",
+    "node-uuid": "^1.4.3",
+    "redis": "^0.12.1",
+    "regex": "^0.1.1",
+    "request": "^2.55.0",
+    "restify": "^3.0.2",
+    "stringformat": "^0.0.5",
+    "validator": "^4.1.0",
+    "xmlbuilder": "^2.6.2",
+    "yaml": "^0.2.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DuoSoftware/DVP-HTTPProgrammingAPI.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DuoSoftware/DVP-HTTPProgrammingAPI/issues"
+  },
+  "homepage": "https://github.com/DuoSoftware/DVP-HTTPProgrammingAPI#readme"
+}
