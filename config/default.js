@@ -23,6 +23,10 @@ module.exports = {
 
     },
 
+    "Host":{
+
+        "token": "abcdefghijklmnopqrstuvwxyz"
+    },
 
 "Services": {
 

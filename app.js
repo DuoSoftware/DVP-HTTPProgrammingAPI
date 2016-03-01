@@ -25,6 +25,9 @@ if(validator.isIP(config.LBServer.ip))
 
 //var mainServer = config.LBServer.path;
 
+
+var token = format("Bearer {0}",config.Host.token);
+
 ////////////////////////////////redis////////////////////////////////////////
 var redisClient = redis.createClient(config.Redis.port, config.Redis.ip);
 redisClient.on('error', function (err) {
@@ -130,7 +133,7 @@ function postData(req, res) {
                             console.log(err);
                         }
 
-                        var r = request.post(urloadurl, requestCallback);
+                        var r = request.post(urloadurl,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, requestCallback);
                         r._form = form;
                         r.setHeader('content-length', length);
 
@@ -166,7 +169,7 @@ function postData(req, res) {
                             console.log(err);
                         }
 
-                        var r = request.post(uuid_data["posturl"], requestCallbackDev);
+                        var r = request.post(uuid_data["posturl"],{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, requestCallbackDev);
                         r._form = form;
                         r.setHeader('content-length', length);
 
@@ -830,7 +833,7 @@ function HandleFunction(queryData, req, res, next) {
 
                         // var data = JSON.stringify(body);
                         
-                        var options = { url: uuid_dev["nexturl"], method: "POST", json: body };
+                        var options = { url: uuid_dev["nexturl"], method: "POST", json: body, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])} };
 
                         ////////////////////////////////////////
 
@@ -951,7 +954,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                 if((callData["action"] == "play" || callData["action"] == "playandgetdigits" ) ) {
 
-                                        request.get(url, function (_error, _response, datax) {
+                                        request.get(url,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}},  {headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}},function (_error, _response, datax) {
 
                                             var fileID = filenamex;
 
@@ -1064,7 +1067,7 @@ function HandleFunction(queryData, req, res, next) {
                                     }
 
 
-                                    request.get(outbountruleurl, function (_error, _response, datax) {
+                                    request.get(outbountruleurl,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
 
                                        // var fileID = filenamex;
 
@@ -1161,8 +1164,6 @@ function HandleFunction(queryData, req, res, next) {
                                     if((config.Services && config.Services.ards )) {
 
 
-
-
                                         queueURL = format("http://{0}/ardsurl/{1}/{2}", config.Services.ards,  uuid_data["tenant"],uuid_data["company"]);
 
 
@@ -1173,7 +1174,7 @@ function HandleFunction(queryData, req, res, next) {
                                     }
 
 
-                                    request.get(queueURL, function (_error, _response, datax) {
+                                    request.get(queueURL,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
 
 
                                         try {
@@ -1274,7 +1275,7 @@ function HandleFunction(queryData, req, res, next) {
                                     }
 
 
-                                    request.get(profileURL, function (_error, _response, datax) {
+                                    request.get(profileURL,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
 
 
                                         try {
@@ -1585,7 +1586,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                         var body = { session: queryData["session_id"], direction: queryData["Caller-Direction"], ani: queryData["Caller-Caller-ID-Number"], dnis: queryData["Caller-Destination-Number"], name: queryData["Caller-Caller-ID-Name"], result: resultValue };
                         // var data = JSON.stringify(body);
 
-                        var options = { url: uuid_dev["nexturl"], method: "POST", json: body };
+                        var options = { url: uuid_dev["nexturl"],headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}, method: "POST", json: body };
 
 
 
@@ -1654,7 +1655,7 @@ function HandleDebugFunction(queryData, req, res, next) {
 
                                 if((callData["action"] == "play" || callData["action"] == "playandgetdigits" ) ) {
 
-                                    request.get(url, function (_error, _response, datax) {
+                                    request.get(url,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
 
                                         var fileID = filenamex;
 
@@ -1750,7 +1751,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                     }
 
 
-                                    request.get(outbountruleurl, function (_error, _response, datax) {
+                                    request.get(outbountruleurl,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
 
                                         // var fileID = filenamex;
 
@@ -1840,7 +1841,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                     }
 
 
-                                    request.get(queueURL, function (_error, _response, datax) {
+                                    request.get(queueURL,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
 
 
                                         try {

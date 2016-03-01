@@ -52,7 +52,8 @@ module.exports = {
         "vdomain": "LB_FRONTEND",
         "domain": "HOST_NAME",
         "port": "HOST_HTTPPROGRAMMINGAPI_PORT",
-        "version": "HOST_VERSION"
+        "version": "HOST_VERSION",
+        "token": "HOST_TOKEN"
     }
 
 
