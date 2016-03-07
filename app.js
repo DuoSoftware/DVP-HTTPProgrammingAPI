@@ -1076,10 +1076,11 @@ function HandleFunction(queryData, req, res, next) {
                                         var dnis;
 
                                         try {
-                                            var ruledata = _response.body;
-                                            if (!_error && _response.statusCode == 200 && ruledata) {
+
+                                            if (!_error && _response.statusCode == 200 && _response.body && _response.body.IsSuccess) {
 
 
+                                                var ruledata = _response.body.Result;
 
                                                 callData["callernumber"] = ruledata["ANI"];
                                                 callData["number"] =  ruledata["DNIS"];
@@ -1178,9 +1179,11 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                         try {
-                                            var urldata = _response.body;
-                                            if (!_error && _response.statusCode == 200 && ruledata) {
 
+                                            if (!_error && _response.statusCode == 200 && _response.body &&_response.body.IsSuccess) {
+
+
+                                                var urldata = _response.body.Result;
 
                                                 callData["ip"] =  urldata["ip"];
                                                 callData["port"] = urldata["port"];
@@ -1282,7 +1285,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                             var profileData = JSON.parse(_response.body);
-                                            if (!_error && _response.statusCode == 200 && profileData && profileData.Result) {
+                                            if (!_error && _response.statusCode == 200 && profileData && profileData.IsSuccess && profileData.Result) {
 
 
                                                 callData["MOH"] =  profileData.Result.MOH;
@@ -1743,11 +1746,11 @@ function HandleDebugFunction(queryData, req, res, next) {
                                     if((config.Services && config.Services.ruleservice && config.Services.ruleserviceport)) {
 
 
-                                        outbountruleurl = format("http://{0}/{1}/GetOutboundRule/{2}/{3}/{4}", config.Services.ruleservice, callData["callernumber"], callData["number"], uuid_data["tenant"],uuid_data["company"]);
+                                        outbountruleurl = format("http://{0}/Outbound/ANI/{1}/DNIS/{2}", config.Services.ruleservice, callData["callernumber"], callData["number"]);
 
 
                                         if(validator.isIP(config.Services.ruleservice))
-                                            outbountruleurl = format("http://{0}:{1}/{2}/GetOutboundRule/{3}/{4}/{5}", config.Services.ruleservice,config.Services.ruleserviceport, callData["callernumber"], callData["number"], uuid_data["tenant"],uuid_data["company"]);
+                                            outbountruleurl = format("http://{0}:{1}/Outbound/ANI/{2}/DNIS/{3}", config.Services.ruleservice,config.Services.ruleserviceport, callData["callernumber"], callData["number"]);
                                     }
 
 
@@ -1760,10 +1763,11 @@ function HandleDebugFunction(queryData, req, res, next) {
                                         var dnis;
 
                                         try {
-                                            var ruledata = _response.body;
-                                            if (!_error && _response.statusCode == 200 && ruledata) {
+
+                                            if (!_error && _response.statusCode == 200 && _response.body && _response.body.IsSuccess) {
 
 
+                                                var ruledata = _response.body.Result;
 
                                                 callData["callernumber"] = ruledata["ani"];
                                                 callData["number"] =  ruledata["dnis"];
