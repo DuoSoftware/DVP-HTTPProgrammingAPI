@@ -947,7 +947,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
 
-                                    logger.debug("Calling FILE service URL %s",url);
+                                    logger.debug("Calling FILE service URL %s",urlx);
                                 }
 
 
@@ -956,110 +956,115 @@ function HandleFunction(queryData, req, res, next) {
 
                                         request.get({url:urlx, headers: {authorization: token, companyinfo: format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}},function (_error, _response, datax) {
 
-                                            var fileID = filenamex;
-
-                                            try {
-                                                var filedata = JSON.parse(_response.body);
 
 
 
-                                                logger.debug("HTTPProgrammingAPI.Handler Request File resolution Responsedata %d %j %j ", _response.statusCode, filedata, filedata.Result);
-
-                                                if (!_error && _response.statusCode == 200 && filedata && filedata.Result && filedata.Result["UniqueId"]) {
-
-                                                    var ext = filedata.Result.FileStructure.split(/[/]+/).pop();
-                                                    fileID = format("{0}.{1}", filedata.Result.UniqueId,ext);
-
-                                                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                                                    ///DVP/API/'+version+'/FileService/File/Download/:id/:displayname
-
-                                                    fileID = format("http://{0}/DVP/API/{1}/FileService/File/Download/{2}/{3}", config.Services.downloadurl,config.Services.uploadurlVersion, filedata.Result.UniqueId,filenamex);
-
-
-                                                    if(validator.isIP(config.Services.downloadurl))
-                                                        fileID = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Download/{3}/{4}", config.Services.downloadurl,config.Services.downloadport,config.Services.uploadurlVersion, filedata.Result.UniqueId,filenamex);
-
-                                                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                                                    //fileID = "http://localhost/IVR/Duo_IVR_Menu.wav";
-
-                                                    logger.debug("HTTPProgrammingAPI.Handler Request File resolution %s %s", queryData["session_id"],fileID);
-
-
-                                                }
-                                                else {
-
-
-                                                    //uuid_data["tenant"],uuid_data["company"]
-                                                    //var companyLocation = format("{0}_{1}",uuid_data["tenant"], uuid_data["company"]);
-                                                    //fileID = format("{0}/{1}",companyLocation, filenamex);
-
-                                                    logger.error("HTTPProgrammingAPI.Handler Request File resolution %s", queryData["session_id"]);
-
-
-
-
-                                                }
-
-                                                ///////////////////////////////////////////////////////////////////////////
-                                                try {
-
-                                                    logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
-
-                                                    Operation(callData, fileID, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '', '');
-                                                }
-                                                catch(exxx){
-
-                                                    console.log(exxx);
-
-                                                }
-                                                console.log("----------------------------------------------------> get result");
-
-                                                uuid_dev["result"] = callData["result"];
-
-                                                console.log("----------------------------------------------------> got result");
-
-
-                                                if (uuid_dev["baseurl"] != "none" && callData["app"]) {
-
-                                                    console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
-
-                                                    uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                    uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
-                                                }
-                                                else {
-
-                                                    console.log("----------------------------------------------------> no base url");
-
-                                                    uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                    uuid_dev["nexturl"] = callData["nexturl"];
-
-                                                    console.log("DEV DATA -------------> %j",uuid_dev);
-                                                    console.log("CALL DATA -------------> %j",callData);
-
-
-                                                }
-
-
-                                                logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s",queryData["session_id"], uuid_dev["nexturl"]);
-
+                                                var fileID = filenamex;
 
                                                 try {
-                                                    var redisData = JSON.stringify(uuid_dev);
-                                                    redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
-                                                    logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
+
+                                                    if (!_error && _response && _response.statusCode == 200 && filedata && filedata.Result && filedata.Result["UniqueId"]) {
+
+
+                                                        var filedata = JSON.parse(_response.body);
+
+
+                                                        logger.debug("HTTPProgrammingAPI.Handler Request File resolution Responsedata %d %j %j ", _response.statusCode, filedata, filedata.Result);
+
+
+
+                                                        var ext = filedata.Result.FileStructure.split(/[/]+/).pop();
+                                                        fileID = format("{0}.{1}", filedata.Result.UniqueId, ext);
+
+                                                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                                                        ///DVP/API/'+version+'/FileService/File/Download/:id/:displayname
+
+                                                        fileID = format("http://{0}/DVP/API/{1}/FileService/File/Download/{2}/{3}", config.Services.downloadurl, config.Services.uploadurlVersion, filedata.Result.UniqueId, filenamex);
+
+
+                                                        if (validator.isIP(config.Services.downloadurl))
+                                                            fileID = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Download/{3}/{4}", config.Services.downloadurl, config.Services.downloadport, config.Services.uploadurlVersion, filedata.Result.UniqueId, filenamex);
+
+                                                        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                                                        //fileID = "http://localhost/IVR/Duo_IVR_Menu.wav";
+
+                                                        logger.debug("HTTPProgrammingAPI.Handler Request File resolution %s %s", queryData["session_id"], fileID);
+
+
+                                                    }
+                                                    else {
+
+
+                                                        //uuid_data["tenant"],uuid_data["company"]
+                                                        //var companyLocation = format("{0}_{1}",uuid_data["tenant"], uuid_data["company"]);
+                                                        //fileID = format("{0}/{1}",companyLocation, filenamex);
+
+                                                        logger.error("HTTPProgrammingAPI.Handler Request File resolution %s", queryData["session_id"]);
+
+
+                                                    }
+
+                                                    ///////////////////////////////////////////////////////////////////////////
+                                                    try {
+
+                                                        logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"], callData, uuid_data["domain"], uuid_data["profile"], queryData);
+
+                                                        Operation(callData, fileID, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '', '');
+                                                    }
+                                                    catch (exxx) {
+
+                                                        console.log(exxx);
+
+                                                    }
+                                                    console.log("----------------------------------------------------> get result");
+
+                                                    uuid_dev["result"] = callData["result"];
+
+                                                    console.log("----------------------------------------------------> got result");
+
+
+                                                    if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+
+                                                        console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
+
+                                                        uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                        uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
+                                                    }
+                                                    else {
+
+                                                        console.log("----------------------------------------------------> no base url");
+
+                                                        uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                        uuid_dev["nexturl"] = callData["nexturl"];
+
+                                                        console.log("DEV DATA -------------> %j", uuid_dev);
+                                                        console.log("CALL DATA -------------> %j", callData);
+
+
+                                                    }
+
+
+                                                    logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s", queryData["session_id"], uuid_dev["nexturl"]);
+
+
+                                                    try {
+                                                        var redisData = JSON.stringify(uuid_dev);
+                                                        redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                                        logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j", redisData);
+                                                    }
+                                                    catch (e) {
+                                                        console.error(e);
+                                                    }
+
+
+                                                } catch (exx) {
+
+                                                    console.error(exx);
+
                                                 }
-                                                catch (e) {
-                                                    console.error(e);
-                                                }
 
-
-                                            } catch (exx) {
-
-                                                console.error(exx);
-
-                                            }
 
 
                                         });
