@@ -133,7 +133,7 @@ function postData(req, res) {
                             console.log(err);
                         }
 
-                        var r = request.post(urloadurl,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, requestCallback);
+                        var r = request.post({url:urloadurl,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, requestCallback);
                         r._form = form;
                         r.setHeader('content-length', length);
 
@@ -169,7 +169,7 @@ function postData(req, res) {
                             console.log(err);
                         }
 
-                        var r = request.post(uuid_data["posturl"],{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, requestCallbackDev);
+                        var r = request.post({url:uuid_data["posturl"],headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, requestCallbackDev);
                         r._form = form;
                         r.setHeader('content-length', length);
 
@@ -833,7 +833,7 @@ function HandleFunction(queryData, req, res, next) {
 
                         // var data = JSON.stringify(body);
                         
-                        var options = { url: uuid_dev["nexturl"], method: "POST", json: body, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])} };
+                        var options = { url: uuid_dev["nexturl"], method: "GET", json: body, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])} };
 
                         ////////////////////////////////////////
 
@@ -922,7 +922,7 @@ function HandleFunction(queryData, req, res, next) {
                                 ////////////////////////////////////////
 
 
-                                var url;
+                                var urlx;
                                 /*
                                 if(process.env.envirnament && process.env.domain){
 
@@ -939,11 +939,11 @@ function HandleFunction(queryData, req, res, next) {
 
 
 
-                                    url = format("http://{0}/DVP/API/{1}/FileService/File/{2}/ofApplication/{3}", config.Services.downloadurl,config.Services.uploadurlVersion, filenamex, uuid_data['appid']);
+                                    urlx = format("http://{0}/DVP/API/{1}/FileService/File/{2}/ofApplication/{3}", config.Services.downloadurl,config.Services.uploadurlVersion, filenamex, uuid_data['appid']);
 
 
                                     if(validator.isIP(config.Services.downloadurl))
-                                        url = format("http://{0}:{1}/DVP/API/{2}/FileService/File/{3}/ofApplication/{4}", config.Services.downloadurl,config.Services.downloadport,config.Services.uploadurlVersion, filenamex, uuid_data['appid']);
+                                        urlx = format("http://{0}:{1}/DVP/API/{2}/FileService/File/{3}/ofApplication/{4}", config.Services.downloadurl,config.Services.downloadport,config.Services.uploadurlVersion, filenamex, uuid_data['appid']);
 
 
 
@@ -954,7 +954,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                 if((callData["action"] == "play" || callData["action"] == "playandgetdigits" ) ) {
 
-                                        request.get(url,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}},  {headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}},function (_error, _response, datax) {
+                                        request.get({url:urlx, headers: {authorization: token, companyinfo: format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}},function (_error, _response, datax) {
 
                                             var fileID = filenamex;
 
@@ -981,6 +981,8 @@ function HandleFunction(queryData, req, res, next) {
                                                         fileID = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Download/{3}/{4}", config.Services.downloadurl,config.Services.downloadport,config.Services.uploadurlVersion, filedata.Result.UniqueId,filenamex);
 
                                                     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                                                    //fileID = "http://localhost/IVR/Duo_IVR_Menu.wav";
 
                                                     logger.debug("HTTPProgrammingAPI.Handler Request File resolution %s %s", queryData["session_id"],fileID);
 
@@ -1079,7 +1081,7 @@ function HandleFunction(queryData, req, res, next) {
                                     }
 
 
-                                    request.get(outbountruleurl,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
+                                    request.get({url:outbountruleurl,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
 
                                        // var fileID = filenamex;
 
@@ -1187,7 +1189,7 @@ function HandleFunction(queryData, req, res, next) {
                                     }
 
 
-                                    request.get(queueURL,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
+                                    request.get({url:queueURL,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
 
 
                                         try {
@@ -1290,7 +1292,7 @@ function HandleFunction(queryData, req, res, next) {
                                     }
 
 
-                                    request.get(profileURL,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
+                                    request.get({url:profileURL,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
 
 
                                         try {
@@ -1670,7 +1672,7 @@ function HandleDebugFunction(queryData, req, res, next) {
 
                                 if((callData["action"] == "play" || callData["action"] == "playandgetdigits" ) ) {
 
-                                    request.get(url,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
+                                    request.get({url:url,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
 
                                         var fileID = filenamex;
 
@@ -1766,7 +1768,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                     }
 
 
-                                    request.get(outbountruleurl,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
+                                    request.get({url:outbountruleurl,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
 
                                         // var fileID = filenamex;
 
@@ -1857,7 +1859,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                     }
 
 
-                                    request.get(queueURL,{headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
+                                    request.get({url:queueURL,headers: {authorization: token, companyinfo: format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
 
 
                                         try {

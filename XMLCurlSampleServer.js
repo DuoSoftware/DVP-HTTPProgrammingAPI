@@ -72,7 +72,7 @@ server.post('/CallApp', function(req,res,next) {
     //app: 'call'
     // "http://45.55.179.9/DVP-Demo/done/start.php
     // "http://localhost/ivr/index.json"
-    var uuid_data = { path: "http://localhost/ivr/index.json", company: 1, tenent: 3, pbx: 'none', appid: '6', domain:'192.168.8.100', profile: 'default' };
+    var uuid_data = { path: "http://localhost/IVR/index.json", company: 1, tenent: 3, pbx: 'none', appid: '3', domain:'192.168.0.97', profile: 'default' };
     var redisData = JSON.stringify(uuid_data);
     redisClient.set(varUuid + "_data", redisData, function(err, value) {
 
@@ -81,7 +81,7 @@ server.post('/CallApp', function(req,res,next) {
             var doc = builder.create("document")
                 .att("type", "freeswitch/xml")
                 .ele("section").att("name", "dialplan").att("description", "RE Dial Plan For FreeSwitch")
-                .ele("context").att("name", "public")
+                .ele("context").att("name", "default")
                 .ele("extension").att("name", "test9")
                 .ele("condition").att("field", "destination_number").att("expression", "[^\\s]*")
                 .ele("action").att("application", "answer").up()
@@ -92,7 +92,7 @@ server.post('/CallApp', function(req,res,next) {
                // .ele("action").att("application", "log").att("data", "CRIT ${read_terminator_used}").up()
                 //.ele("action").att("application", "lua").att("data", "lua/AutoAttendant.lua 1 3 1111 Internal Internal").up()
 
-                .ele("action").att("application", "lua").att("data", "lua/VoicePortal.lua 1111 1 2 AVAILABLE 4 5 6 7").up()
+                //.ele("action").att("application", "lua").att("data", "lua/VoicePortal.lua 1111 1 2 AVAILABLE 4 5 6 7").up()
 
 
 /*
@@ -103,7 +103,7 @@ server.post('/CallApp', function(req,res,next) {
 
 
 
-             //.ele("action").att("application", "httapi").att("data", "{url=http://127.0.0.1:8086}").up()
+             .ele("action").att("application", "httapi").att("data", "{url=http://127.0.0.1:8086}").up()
                 //.ele("action").att("application", "socket").att("data", "127.0.0.1:8084 async full")
                 //<action application="socket" data="127.0.0.1:8084 async full"/>
               .end({pretty: true});
@@ -112,7 +112,7 @@ server.post('/CallApp', function(req,res,next) {
         //<action application="multiset" data="effective_caller_id_name=FreeSwitch effective_caller_id_number=12345678"/>
 
 
-            res.end(doc);
+            res.end(doc.toString());
 
             console.log(doc)
         }
