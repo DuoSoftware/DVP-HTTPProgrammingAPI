@@ -833,7 +833,7 @@ function HandleFunction(queryData, req, res, next) {
 
                         // var data = JSON.stringify(body);
                         
-                        var options = { url: uuid_dev["nexturl"], method: "GET", json: body, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])} };
+                        var options = { url: uuid_dev["nexturl"], method: "POST", json: body, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])} };
 
                         ////////////////////////////////////////
 
@@ -963,10 +963,17 @@ function HandleFunction(queryData, req, res, next) {
 
                                                 try {
 
+
+
+                                                    var filedata
+
+                                                    if(_response )
+                                                        filedata = JSON.parse(_response.body);
+
                                                     if (!_error && _response && _response.statusCode == 200 && filedata && filedata.Result && filedata.Result["UniqueId"]) {
 
 
-                                                        var filedata = JSON.parse(_response.body);
+
 
 
                                                         logger.debug("HTTPProgrammingAPI.Handler Request File resolution Responsedata %d %j %j ", _response.statusCode, filedata, filedata.Result);

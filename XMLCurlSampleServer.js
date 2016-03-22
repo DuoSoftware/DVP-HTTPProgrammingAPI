@@ -72,7 +72,7 @@ server.post('/CallApp', function(req,res,next) {
     //app: 'call'
     // "http://45.55.179.9/DVP-Demo/done/start.php
     // "http://localhost/ivr/index.json"
-    var uuid_data = { path: "http://localhost/IVR/index.json", company: 1, tenent: 3, pbx: 'none', appid: '3', domain:'192.168.0.97', profile: 'default' };
+    var uuid_data = { path: "http://162.243.81.39/IVR/LassanaFloraIVR/start.php", company: 1, tenent: 3, pbx: 'none', appid: '3', domain:'192.168.0.97', profile: 'default' };
     var redisData = JSON.stringify(uuid_data);
     redisClient.set(varUuid + "_data", redisData, function(err, value) {
 
