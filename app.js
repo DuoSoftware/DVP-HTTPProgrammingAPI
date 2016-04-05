@@ -29,9 +29,21 @@ if(validator.isIP(config.LBServer.ip))
 var token = format("Bearer {0}",config.Host.token);
 
 ////////////////////////////////redis////////////////////////////////////////
-var redisClient = redis.createClient(config.Redis.port, config.Redis.ip);
+var redisip = config.Redis.ip;
+var redisport = config.Redis.port;
+var redisuser = config.Redis.user;
+var redispass = config.Redis.password;
+
+
+//[redis:]//[user][:password@][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]
+//redis://user:secret@localhost:6379
+var redisClient = redis.createClient(redisport, redisip);
 redisClient.on('error', function (err) {
     console.log('Error '.red, err);
+});
+
+redisClient.auth(redispass, function (error) {
+    console.log("Error Redis : " + error);
 });
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1037,7 +1049,7 @@ function HandleFunction(queryData, req, res, next) {
                                                         console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                                         uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                        uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
+                                                        uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["nexturl"]);
                                                     }
                                                     else {
 
@@ -1145,7 +1157,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["nexturl"]);
                                             }
                                             else {
 
@@ -1247,7 +1259,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["nexturl"]);
                                             }
                                             else {
 
@@ -1359,7 +1371,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["nexturl"]);
                                             }
                                             else {
 
@@ -1419,7 +1431,7 @@ function HandleFunction(queryData, req, res, next) {
                                         console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                         uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                        uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["app"]);
+                                        uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["nexturl"]);
                                     }
                                     else {
 
@@ -1733,7 +1745,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["nexturl"]);
                                             }
                                             else {
 
@@ -1825,7 +1837,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["nexturl"]);
                                             }
                                             else {
 
@@ -1908,7 +1920,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["nexturl"]);
                                             }
                                             else {
 
@@ -1956,7 +1968,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                         console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                         uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                        uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["app"]);
+                                        uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["nexturl"]);
                                     }
                                     else {
 

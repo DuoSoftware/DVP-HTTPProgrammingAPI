@@ -34,7 +34,21 @@ var server = restify.createServer({
 });
 
 
-var redisClient = redis.createClient(config.Redis.port, config.Redis.ip);
+
+
+var redisip = config.Redis.ip;
+var redisport = config.Redis.port;
+var redisuser = config.Redis.user;
+var redispass = config.Redis.password;
+
+
+//[redis:]//[user][:password@][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]
+//redis://user:secret@localhost:6379
+var url = "redis://"+redisuser+":"+redispass+"@"+redisip+":"+redisport;
+var redisClient = redis.createClient({url:url});
+
+
+//var redisClient = redis.createClient(config.Redis.port, config.Redis.ip);
 redisClient.on('error', function (err) {
     console.log('Error '.red, err);
 });
@@ -71,8 +85,9 @@ server.post('/CallApp', function(req,res,next) {
 
     //app: 'call'
     // "http://45.55.179.9/DVP-Demo/done/start.php
-    // "http://localhost/ivr/index.json"
-    var uuid_data = { path: "http://162.243.81.39/IVR/LassanaFloraIVR/start.php", company: 1, tenent: 3, pbx: 'none', appid: '3', domain:'192.168.0.97', profile: 'default' };
+    // http://localhost/IVR/index.json
+    //http://162.243.81.39/IVR/LassanaFloraIVR/start.php
+    var uuid_data = { path: "http://127.0.0.1:9998", company: 1, tenent: 3, pbx: 'none', appid: '3', domain:'192.168.0.97', profile: 'default' };
     var redisData = JSON.stringify(uuid_data);
     redisClient.set(varUuid + "_data", redisData, function(err, value) {
 
@@ -100,6 +115,7 @@ server.post('/CallApp', function(req,res,next) {
             <action application="playback" data="foo.wav" />
             </condition>*/
 
+                //.ele("action").att("application", "playback").att("data", "http://www.wavsource.com/snds_2016-03-13_7646817315637486/animals/bird_chirping2.wav").up()
 
 
 
