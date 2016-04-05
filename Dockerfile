@@ -7,7 +7,7 @@
 
 #EXPOSE 8807
 
-FROM node:argon
+FROM node:httpprogrammingapi
 RUN git clone git://github.com/DuoSoftware/DVP-HTTPProgrammingAPI.git /usr/local/src/httpprogrammingapi
 RUN cd /usr/local/src/httpprogrammingapi;
 WORKDIR /usr/local/src/httpprogrammingapi
