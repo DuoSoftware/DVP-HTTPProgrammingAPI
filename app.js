@@ -145,7 +145,7 @@ function postData(req, res) {
                             console.log(err);
                         }
 
-                        var r = request.post({url:urloadurl,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, requestCallback);
+                        var r = request.post({url:urloadurl,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, requestCallback);
                         r._form = form;
                         r.setHeader('content-length', length);
 
@@ -181,7 +181,7 @@ function postData(req, res) {
                             console.log(err);
                         }
 
-                        var r = request.post({url:uuid_data["posturl"],headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, requestCallbackDev);
+                        var r = request.post({url:uuid_data["posturl"],headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, requestCallbackDev);
                         r._form = form;
                         r.setHeader('content-length', length);
 
@@ -774,7 +774,7 @@ function HandleFunction(queryData, req, res, next) {
             
             if (!sessiondata) {
                 
-                uuid_data = { path: "http://localhost:8081", company: 1, tenent: 3, pbx: 'none', appid:'none', domain:'none', profile:'default', env:'production'};
+                uuid_data = { path: "http://localhost:8081", company: 1, tenant: 3, pbx: 'none', appid:'none', domain:'none', profile:'default', env:'production'};
 
                 logger.debug("HTTPProgrammingAPI.Handler no sessiondata found create new");
 
@@ -821,7 +821,7 @@ function HandleFunction(queryData, req, res, next) {
                             }
                             
                             
-                            uuid_dev = { serverdata: queryData, nexturl: nxurl, currenturl: "none", result: "result", lastcommand: "none", lastresult: "none", company: uuid_data["company"], tenent: uuid_data["tenent"], posturl: "none", baseurl: basurl, appid:  uuid_data["appid"]}
+                            uuid_dev = { serverdata: queryData, nexturl: nxurl, currenturl: "none", result: "result", lastcommand: "none", lastresult: "none", company: uuid_data["company"], tenant: uuid_data["tenant"], posturl: "none", baseurl: basurl, appid:  uuid_data["appid"]}
                             //redisClient.lpush(queryData["Caller-Destination-Number"] + "_live", queryData["session_id"], redis.print);
                             //redisClient.lpush("APPID_" + uuid_data["appid"], queryData["session_id"], redis.print);
 
@@ -845,7 +845,7 @@ function HandleFunction(queryData, req, res, next) {
 
                         // var data = JSON.stringify(body);
                         
-                        var options = { url: uuid_dev["nexturl"], method: "POST", json: body, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])} };
+                        var options = { url: uuid_dev["nexturl"], method: "POST", json: body, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])} };
 
                         ////////////////////////////////////////
 
@@ -853,7 +853,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
                         var date = new Date();
-                        var callreciveEvent = {EventClass:'APP',EventType:'EVENT', EventCategory:'SYSTEM', EventTime:date, EventName:'APPLICATIONFOUND',EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenent"], SessionId: queryData["session_id"]  };
+                        var callreciveEvent = {EventClass:'APP',EventType:'EVENT', EventCategory:'SYSTEM', EventTime:date, EventName:'APPLICATIONFOUND',EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenant"], SessionId: queryData["session_id"]  };
                         redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
 
                         logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j",queryData["session_id"], callreciveEvent);
@@ -904,7 +904,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                     var date = new Date();
-                                    var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'DEVELOPER', EventTime:date, EventName:'DEVELOPERDATAERROR',EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenent"], SessionId: queryData["session_id"]  };
+                                    var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'DEVELOPER', EventTime:date, EventName:'DEVELOPERDATAERROR',EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenant"], SessionId: queryData["session_id"]  };
                                     redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
 
                                     logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j",queryData["session_id"], callreciveEvent);
@@ -926,7 +926,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                 var date = new Date();
-                                var callreciveEvent = {EventClass:'APP',EventType:'COMMAND', EventCategory:'DEVELOPER', EventTime:date, EventName:callData["action"], EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenent"], SessionId: queryData["session_id"]  };
+                                var callreciveEvent = {EventClass:'APP',EventType:'COMMAND', EventCategory:'DEVELOPER', EventTime:date, EventName:callData["action"], EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenant"], SessionId: queryData["session_id"]  };
                                 redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
 
                                 logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j",queryData["session_id"], callreciveEvent);
@@ -966,7 +966,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                 if((callData["action"] == "play" || callData["action"] == "playandgetdigits" ) ) {
 
-                                        request.get({url:urlx, headers: {authorization: token, companyinfo: format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}},function (_error, _response, datax) {
+                                        request.get({url:urlx, headers: {authorization: token, companyinfo: format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}},function (_error, _response, datax) {
 
 
 
@@ -1105,7 +1105,7 @@ function HandleFunction(queryData, req, res, next) {
                                     }
 
 
-                                    request.get({url:outbountruleurl,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
+                                    request.get({url:outbountruleurl,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function (_error, _response, datax) {
 
                                        // var fileID = filenamex;
 
@@ -1213,7 +1213,7 @@ function HandleFunction(queryData, req, res, next) {
                                     }
 
 
-                                    request.get({url:queueURL,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
+                                    request.get({url:queueURL,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function (_error, _response, datax) {
 
 
                                         try {
@@ -1316,7 +1316,7 @@ function HandleFunction(queryData, req, res, next) {
                                     }
 
 
-                                    request.get({url:profileURL,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
+                                    request.get({url:profileURL,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function (_error, _response, datax) {
 
 
                                         try {
