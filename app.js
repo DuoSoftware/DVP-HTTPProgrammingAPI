@@ -1511,7 +1511,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                 var date = new Date();
-                                var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'DEVELOPER', EventTime:date, EventName:'DEVELOPERHTTPERROR',EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenent"], SessionId: queryData["session_id"]  };
+                                var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'DEVELOPER', EventTime:date, EventName:'DEVELOPERHTTPERROR',EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenant"], SessionId: queryData["session_id"]  };
                                 redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
 
                                 logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j",queryData["session_id"], callreciveEvent);
@@ -1575,7 +1575,7 @@ function HandleDebugFunction(queryData, req, res, next) {
 
             if (!sessiondata) {
 
-                uuid_data = { path: "http://localhost:8081", company: 1, tenent: 3, pbx: 'none', appid:'none', domain:'none', profile:'default', env:'debug'};
+                uuid_data = { path: "http://localhost:8081", company: 1, tenant: 3, pbx: 'none', appid:'none', domain:'none', profile:'default', env:'debug'};
             }
 
 
@@ -1609,7 +1609,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                             }
 
 
-                            uuid_dev = { serverdata: queryData, nexturl: nxurl, currenturl: "none", result: "result", lastcommand: "none", lastresult: "none", company: uuid_data["company"], tenent: uuid_data["tenent"], posturl: "none", baseurl: basurl, appid:  uuid_data["appid"]};
+                            uuid_dev = { serverdata: queryData, nexturl: nxurl, currenturl: "none", result: "result", lastcommand: "none", lastresult: "none", company: uuid_data["company"], tenant: uuid_data["tenant"], posturl: "none", baseurl: basurl, appid:  uuid_data["appid"]};
                             //redisClient.lpush(queryData["Caller-Destination-Number"] + "_live", queryData["session_id"], redis.print);
                             console.log("Update UUID_DEV ----> %j",uuid_dev)
 
@@ -1627,7 +1627,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                         var body = { session: queryData["session_id"], direction: queryData["Caller-Direction"], ani: queryData["Caller-Caller-ID-Number"], dnis: queryData["Caller-Destination-Number"], name: queryData["Caller-Caller-ID-Name"], result: resultValue };
                         // var data = JSON.stringify(body);
 
-                        var options = { url: uuid_dev["nexturl"],headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}, method: "POST", json: body };
+                        var options = { url: uuid_dev["nexturl"],headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}, method: "POST", json: body };
 
 
 
@@ -1696,7 +1696,7 @@ function HandleDebugFunction(queryData, req, res, next) {
 
                                 if((callData["action"] == "play" || callData["action"] == "playandgetdigits" ) ) {
 
-                                    request.get({url:url,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
+                                    request.get({url:url,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function (_error, _response, datax) {
 
                                         var fileID = filenamex;
 
@@ -1792,7 +1792,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                     }
 
 
-                                    request.get({url:outbountruleurl,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
+                                    request.get({url:outbountruleurl,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function (_error, _response, datax) {
 
                                         // var fileID = filenamex;
 
@@ -1883,7 +1883,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                     }
 
 
-                                    request.get({url:queueURL,headers: {authorization: token, companyinfo: format("{0}:{1}",uuid_data["tenent"],uuid_data["company"])}}, function (_error, _response, datax) {
+                                    request.get({url:queueURL,headers: {authorization: token, companyinfo: format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function (_error, _response, datax) {
 
 
                                         try {
@@ -2075,7 +2075,7 @@ server.post('/debug/create', function DataHandle(req, res, next) {
 
 
 
-    var uuid_data = { path: url, company: company, tenent: tenant, pbx: 'none', appid: appid, domain:'192.168.8.100', profile: 'default', app: app };
+    var uuid_data = { path: url, company: company, tenant: tenant, pbx: 'none', appid: appid, domain:'192.168.8.100', profile: 'default', app: app };
     var redisData = JSON.stringify(uuid_data);
     redisClient.set(varUuid + "_data", redisData, function(err, value) {
 
