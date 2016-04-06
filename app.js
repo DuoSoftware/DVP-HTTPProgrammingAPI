@@ -1044,7 +1044,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     console.log("----------------------------------------------------> got result");
 
 
-                                                    if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+                                                    if (uuid_dev["baseurl"] != "none" ) {
 
                                                         console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
@@ -1152,7 +1152,7 @@ function HandleFunction(queryData, req, res, next) {
                                             console.log("----------------------------------------------------> got result");
 
 
-                                            if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+                                            if (uuid_dev["baseurl"] != "none" ) {
 
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
@@ -1254,7 +1254,7 @@ function HandleFunction(queryData, req, res, next) {
                                             console.log("----------------------------------------------------> got result");
 
 
-                                            if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+                                            if (uuid_dev["baseurl"] != "none" ) {
 
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
@@ -1366,7 +1366,7 @@ function HandleFunction(queryData, req, res, next) {
                                             console.log("----------------------------------------------------> got result");
 
 
-                                            if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+                                            if (uuid_dev["baseurl"] != "none" ) {
 
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
@@ -1426,7 +1426,7 @@ function HandleFunction(queryData, req, res, next) {
                                     console.log("----------------------------------------------------> got result");
 
 
-                                    if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+                                    if (uuid_dev["baseurl"] != "none" ) {
 
                                         console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
@@ -1740,7 +1740,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                             console.log("----------------------------------------------------> got result");
 
 
-                                            if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+                                            if (uuid_dev["baseurl"] != "none" ) {
 
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
@@ -1832,7 +1832,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                             console.log("----------------------------------------------------> got result");
 
 
-                                            if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+                                            if (uuid_dev["baseurl"] != "none" ) {
 
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
@@ -1915,7 +1915,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                             console.log("----------------------------------------------------> got result");
 
 
-                                            if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+                                            if (uuid_dev["baseurl"] != "none" ) {
 
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
@@ -1963,7 +1963,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                     console.log("----------------------------------------------------> got result");
 
 
-                                    if (uuid_dev["baseurl"] != "none" && callData["app"]) {
+                                    if (uuid_dev["baseurl"] != "none" ) {
 
                                         console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
