@@ -1049,7 +1049,7 @@ function HandleFunction(queryData, req, res, next) {
                                                         console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                                         uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                        uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["nexturl"]);
+                                                        uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
                                                     }
                                                     else {
 
@@ -1157,7 +1157,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["nexturl"]);
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
                                             }
                                             else {
 
@@ -1259,7 +1259,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["nexturl"]);
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
                                             }
                                             else {
 
@@ -1371,7 +1371,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["nexturl"]);
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
                                             }
                                             else {
 
@@ -1431,7 +1431,7 @@ function HandleFunction(queryData, req, res, next) {
                                         console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                         uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                        uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["nexturl"]);
+                                        uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["app"]);
                                     }
                                     else {
 
@@ -1745,7 +1745,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["nexturl"]);
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
                                             }
                                             else {
 
@@ -1837,7 +1837,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["nexturl"]);
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
                                             }
                                             else {
 
@@ -1920,7 +1920,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["nexturl"]);
+                                                uuid_dev["nexturl"] = util.format("%s/%s", uuid_dev["baseurl"], callData["app"]);
                                             }
                                             else {
 
@@ -1968,7 +1968,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                         console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
                                         uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                        uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["nexturl"]);
+                                        uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["app"]);
                                     }
                                     else {
 
