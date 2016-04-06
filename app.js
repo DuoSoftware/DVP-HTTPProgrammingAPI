@@ -816,7 +816,7 @@ function HandleFunction(queryData, req, res, next) {
                             var basurl = "none";
                             var nxurl = uuid_data["path"];
                             if (uuid_data["app"]) {
-                                nxurl = format("{0}/{1}", uuid_data["path"], uuid_data["nexturl"])
+                                nxurl = format("{0}/{1}", uuid_data["path"], uuid_data["app"])
                                 basurl = uuid_data["path"];
                             }
                             
