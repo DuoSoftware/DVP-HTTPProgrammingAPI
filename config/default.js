@@ -53,10 +53,18 @@ module.exports = {
     "qmusicport": '8860',
     "ardsVersion": "1.0.0",
 
+    "fileserviceurl": '192.168.0.88',
+    "fileserviceport": '8081',
+    "fileserviceVersion":"6.0",
+
+
     "uploadurlVersion":"6.0",
     "downloaddurlVersion" : "6.0",
     "ruleserviceVersion": "1.0.0",
     "qmusicVersion": "1.0.0"
+
+
+
 
 
     }
