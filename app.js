@@ -999,11 +999,11 @@ function HandleFunction(queryData, req, res, next) {
 
                                                         ///DVP/API/'+version+'/FileService/File/Download/:id/:displayname
 
-                                                        fileID = format("http://{0}/DVP/API/{1}/FileService/File/Download/{2}/{3}", config.Services.downloadurl, config.Services.uploadurlVersion, filedata.Result.UniqueId, filenamex);
+                                                        fileID = format("http://{0}/DVP/API/{1}/FileService/File/Download/{2}/{3}", config.Services.downloadurl, config.Services.downloaddurlVersion, filedata.Result.UniqueId, filenamex);
 
 
                                                         if (validator.isIP(config.Services.downloadurl))
-                                                            fileID = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Download/{3}/{4}", config.Services.downloadurl, config.Services.downloadport, config.Services.uploadurlVersion, filedata.Result.UniqueId, filenamex);
+                                                            fileID = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Download/{3}/{4}", config.Services.downloadurl, config.Services.downloadport, config.Services.downloaddurlVersion, filedata.Result.UniqueId, filenamex);
 
                                                         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
