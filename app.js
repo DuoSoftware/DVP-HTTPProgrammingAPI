@@ -845,7 +845,7 @@ function HandleFunction(queryData, req, res, next) {
 
                         // var data = JSON.stringify(body);
                         
-                        var options = { url: uuid_dev["nexturl"], method: "POST", json: body, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])} };
+                        var options = { url: uuid_dev["nexturl"], method: "GET", json: body, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])} };
 
                         ////////////////////////////////////////
 
@@ -1329,18 +1329,39 @@ function HandleFunction(queryData, req, res, next) {
                                         try {
 
 
-                                            var profileData = JSON.parse(_response.body);
-                                            if (!_error && _response.statusCode == 200 && profileData && profileData.IsSuccess && profileData.Result) {
+
+                                            if (!_error &&_response && _response.statusCode == 200 ) {
+
+                                                var profileData = JSON.parse(_response.body);
+
+                                                if(profileData && profileData.IsSuccess && profileData.Result) {
 
 
-                                                callData["MOH"] =  profileData.Result.MOH;
-                                                callData["Announcement"] = profileData.Result.Announcement;
-                                                callData["FirstAnnounement"] = profileData.Result.FirstAnnounement;
-                                                callData["AnnouncementTime"] = profileData.Result.AnnouncementTime;
-                                                callData['company'] = uuid_data['company'];
-                                                callData['tenant'] = uuid_data['tenant'];
+                                                    callData["MOH"] = profileData.Result.MOH;
+                                                    callData["Announcement"] = profileData.Result.Announcement;
+                                                    callData["FirstAnnounement"] = profileData.Result.FirstAnnounement;
+                                                    callData["AnnouncementTime"] = profileData.Result.AnnouncementTime;
+                                                    callData['company'] = uuid_data['company'];
+                                                    callData['tenant'] = uuid_data['tenant'];
 
-                                                logger.debug("HTTPProgrammingAPI.Handler Request profile resolution %s %j", queryData["session_id"], profileData);
+                                                    logger.debug("HTTPProgrammingAPI.Handler Request profile resolution %s %j", queryData["session_id"], profileData);
+                                                }else{
+
+                                                    console.log("Get ARDS rule failed --------> ");
+                                                    callData["MOH"] =  "";
+                                                    callData["Announcement"] = "";
+                                                    callData["FirstAnnounement"] = "";
+                                                    callData["AnnouncementTime"] = "";
+                                                    callData['company'] = "";
+                                                    callData['tenant'] = "";
+
+
+                                                    logger.error("HTTPProgrammingAPI.Handler Request Profile resolution %s", queryData["session_id"]);
+
+
+
+
+                                                }
 
 
                                             }
@@ -1351,8 +1372,8 @@ function HandleFunction(queryData, req, res, next) {
                                                 callData["Announcement"] = "";
                                                 callData["FirstAnnounement"] = "";
                                                 callData["AnnouncementTime"] = "";
-                                                callData['company'] = "";
-                                                callData['tenant'] = "";
+                                                callData['company'] = uuid_data['company'];
+                                                callData['tenant'] = uuid_data['tenant'];
 
 
                                                 logger.error("HTTPProgrammingAPI.Handler Request Profile resolution %s", queryData["session_id"]);

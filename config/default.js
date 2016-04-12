@@ -49,11 +49,11 @@ module.exports = {
     "ards": '127.0.0.1',
     "ardsport": '8080',
 
-    "qmusicurl": '45.55.179.9',
+    "qmusicurl": 'queuemusic.104.131.67.21.xip.io',
     "qmusicport": '8860',
     "ardsVersion": "1.0.0",
 
-    "fileserviceurl": '192.168.0.88',
+    "fileserviceurl": 'fileservice.104.131.67.21.xip.io',
     "fileserviceport": '8081',
     "fileserviceVersion":"6.0",
 

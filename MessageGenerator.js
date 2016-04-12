@@ -405,6 +405,7 @@ var Ards = function (actionURL, tempURL, skill, company, tenant, ardsholdmusic, 
         .att("action", actionURL)
         .att("temp-action", tempURL)
         .att("application", "ards")
+        .att("data", skill+","+tenant+","+company+",")
         .end({ pretty: true });
 
 
