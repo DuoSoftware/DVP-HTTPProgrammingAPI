@@ -943,30 +943,37 @@ function HandleFunction(queryData, req, res, next) {
                                 }
                                 else */
 
-                                var filenamex = callData["file"];
 
-                                if((config.Services && config.Services.fileserviceurl && config.Services.fileserviceport && uuid_data['appid'])) {
-
-                                    ///DVP/API/'+version+'/FIleService/FileHandler/:filename/FileInfoForApplicationId/:appId
-
-
-
-                                    urlx = format("http://{0}/DVP/API/{1}/FileService/File/{2}/ofApplication/{3}", config.Services.fileserviceurl,config.Services.fileserviceVersion, filenamex, uuid_data['appid']);
-
-
-                                    if(validator.isIP(config.Services.fileserviceurl))
-                                        urlx = format("http://{0}:{1}/DVP/API/{2}/FileService/File/{3}/ofApplication/{4}", config.Services.fileserviceurl,config.Services.fileserviceport,config.Services.fileserviceVersion, filenamex, uuid_data['appid']);
-
-
-
-                                    logger.debug("Calling FILE service URL %s",urlx);
-                                }
 
 
 
                                 if((callData["action"] == "play" || callData["action"] == "playandgetdigits" ) ) {
 
                                         request.get({url:urlx, headers: {authorization: token, companyinfo: format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}},function (_error, _response, datax) {
+
+
+
+
+
+                                            var filenamex = callData["file"];
+
+                                            if((config.Services && config.Services.fileserviceurl && config.Services.fileserviceport && uuid_data['appid'])) {
+
+                                                ///DVP/API/'+version+'/FIleService/FileHandler/:filename/FileInfoForApplicationId/:appId
+
+
+
+                                                urlx = format("http://{0}/DVP/API/{1}/FileService/File/{2}/ofApplication/{3}", config.Services.fileserviceurl,config.Services.fileserviceVersion, filenamex, uuid_data['appid']);
+
+
+                                                if(validator.isIP(config.Services.fileserviceurl))
+                                                    urlx = format("http://{0}:{1}/DVP/API/{2}/FileService/File/{3}/ofApplication/{4}", config.Services.fileserviceurl,config.Services.fileserviceport,config.Services.fileserviceVersion, filenamex, uuid_data['appid']);
+
+
+
+                                                logger.debug("Calling FILE service URL %s",urlx);
+                                            }
+
 
 
 
