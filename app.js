@@ -1028,6 +1028,7 @@ function HandleFunction(queryData, req, res, next) {
                                                         //fileID = format("{0}/{1}",companyLocation, filenamex);
 
                                                         logger.error("HTTPProgrammingAPI.Handler Request File resolution %s", queryData["session_id"]);
+                                                        logger.error("Errors -----> "+_error+ " "+_response);
 
 
                                                     }
