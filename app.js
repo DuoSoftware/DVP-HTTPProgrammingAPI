@@ -1002,11 +1002,11 @@ function HandleFunction(queryData, req, res, next) {
 
                                                         ///DVP/API/'+version+'/FileService/File/Download/:id/:displayname
 
-                                                        fileID = format("http://{0}/DVP/API/{1}/FileService/File/Download/{2}/{3}", config.Services.downloadurl, config.Services.downloaddurlVersion, filedata.Result.UniqueId, filenamex);
+                                                        fileID = format("http://{0}/DVP/API/{1}/FileService/File/DownloadLatest/{2}/{3}/{4}", config.Services.downloadurl, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
 
 
                                                         if (validator.isIP(config.Services.downloadurl))
-                                                            fileID = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Download/{3}/{4}", config.Services.downloadurl, config.Services.downloadport, config.Services.downloaddurlVersion, filedata.Result.UniqueId, filenamex);
+                                                            fileID = format("http://{0}:{1}/DVP/API/{2}/FileService/File/DownloadLatest/{3}/{4}/{5}", config.Services.downloadurl, config.Services.downloadport, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
 
                                                         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
