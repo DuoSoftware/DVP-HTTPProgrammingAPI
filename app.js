@@ -124,37 +124,37 @@ function postData(req, res) {
 
 
 
-                    var urloadurl = format("http://{0}/DVP/API/{1}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadurlVersion);
-
-
-                    if(validator.isIP(config.Services.uploadurl))
-                        urloadurl = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadport,config.Services.uploadurlVersion);
 
 
 
 
-                    var form = new FormData();
-                    form.append("sessionid", req.body["session_id"]);
-                    form.append("filename", fs.createReadStream(req.files.result["path"]));
-                    form.append("displayname", req.files.result["name"]);
-                    form.append("hostname", req.body["hostname"]);
-                    form.append("appid", uuid_data["appid"])
-
-                    form.getLength(function (err, length) {
-                        if (err) {
-                            console.log(err);
-                        }
-
-                        var r = request.post({url:urloadurl,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, requestCallback);
-                        r._form = form;
-                        r.setHeader('content-length', length);
+                     var urloadurl = format("http://{0}/DVP/API/{1}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadurlVersion);
 
 
-                        redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify({Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  }), redis.print);
+                     if(validator.isIP(config.Services.uploadurl))
+                     urloadurl = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadport,config.Services.uploadurlVersion);
 
 
-                    });
+                     var FormData = {
+                     sessionid: req.body["session_id"],
+                     file: fs.createReadStream(req.files.result["path"]),
+                     filename: req.body["session_id"]+".wav",
+                     display: req.files.result["name"],
+                     class: "CALLSERVER",
+                     type:"CALL",
+                     category:"VOICEMAIL",
+                     referenceid:req.body["session_id"],
+                     mediatype:"audio",
+                     filetype:"wav"}
+
+                     var r = request.post({url:urloadurl,formData: FormData, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, requestCallback);
+                     redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify({Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  }), redis.print);
+
+
                 }else{
+
+
+                    console.log("Upload url is not configured");
 
 
                 }
@@ -167,25 +167,22 @@ function postData(req, res) {
 
             /////////////////////////////////////////////upload to client post url//////////////////////////////////////////
 
+
+            /*
+
             if (uuid_data["posturl"] && uuid_data["posturl"] != "none") {
-                //fs.createReadStream(req.files.result["path"]).pipe(request.post(uuid_data["posturl"]))
-                
+
+
                 try {
-                    var form = new FormData();
-                    form.append("sessionid", req.body["session_id"]);
-                    form.append("filename", fs.createReadStream(req.files.result["path"]));
-                    form.append("displayname", req.files.result["name"]);
+                    var FormData = {
+                     sessionid: req.body["session_id"],
+                     file: fs.createReadStream(req.files.result["path"]),
+                     filename: req.body["session_id"],
+                     displayname: req.files.result["name"]}
 
-                    form.getLength(function (err, length) {
-                        if (err) {
-                            console.log(err);
-                        }
+                      request.post({url:uuid_data["posturl"],formData: FormData, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, requestCallbackDev);
 
-                        var r = request.post({url:uuid_data["posturl"],headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, requestCallbackDev);
-                        r._form = form;
-                        r.setHeader('content-length', length);
 
-                    });
                 }catch(ex){
 
                     console.log(ex);
@@ -196,7 +193,7 @@ function postData(req, res) {
                     if(res.statusCode == 200) {
 
                         console.log(body);
-                        //////////////////////////////////////////////push activities///////////////////
+
 
                     }else{
 
@@ -209,7 +206,7 @@ function postData(req, res) {
                     if(res.statusCode == 200) {
 
                         console.log(body);
-                        //////////////////////////////////////////////push activities///////////////////
+
 
 
                     }else{
@@ -218,7 +215,7 @@ function postData(req, res) {
 
                     }
                 }
-            }
+            }*/
 
         }
     });

@@ -1,7 +1,7 @@
 {
     "action": "playandgetdigits",
     "file": "Duo_IVR_Menu(1).wav",
-    "nexturl": "http://localhost/IVR/dial.json",
+    "nexturl": "http://localhost/IVR/record.json",
     "result": "result",
     "errorfile": "",
     "digittimeout" : 5,

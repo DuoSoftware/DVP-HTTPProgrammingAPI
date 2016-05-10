@@ -41,8 +41,8 @@ module.exports = {
 "Services": {
 
     "uploadurl": '192.168.0.88',
-    "uploadport": '8081',
-    "downloadurl": '192.168.0.88',
+    "uploadport": '8888',
+    "downloadurl": 'internalfileservice.104.131.67.21.xip.io',
     "downloadport": '8081',
     "ruleservice": '127.0.0.1',
     "ruleserviceport":'8888',
@@ -58,10 +58,10 @@ module.exports = {
     "fileserviceVersion":"6.0",
 
 
-    "uploadurlVersion":"6.0",
-    "downloaddurlVersion" : "6.0",
-    "ruleserviceVersion": "1.0.0",
-    "qmusicVersion": "1.0.0"
+    "uploadurlVersion":"1.0.0.0",
+    "downloaddurlVersion" : "1.0.0.0",
+    "ruleserviceVersion": "1.0.0.0",
+    "qmusicVersion": "1.0.0.0"
 
 
 
