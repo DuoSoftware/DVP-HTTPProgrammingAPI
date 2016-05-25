@@ -451,12 +451,12 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
         case "ards":
 
             /*
-
              callData["MOH"] =  "";
              callData["Announcement"] = "";
              callData["FirstAnnounement"] = "";
              callData["AnnouncementTime"] = "";
              */
+
             res.write(messageGenerator.ARDS(mainServer, mainServer,callData["skill"],callData["company"],callData["tenant"],callData["MOH"],callData["FirstAnnounement"],callData["Announcement"],callData["AnnouncementTime"]));
 
             break;
@@ -923,7 +923,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                 var date = new Date();
-                                var callreciveEvent = {EventClass:'APP',EventType:'COMMAND', EventCategory:'DEVELOPER', EventTime:date, EventName:callData["action"], EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenant"], SessionId: queryData["session_id"]  };
+                                var callreciveEvent = {EventClass:'APP',EventType:'COMMAND', EventCategory:'DEVELOPER', EventTime:date, EventName:callData["action"], EventData:uuid_data["appid"],EventParams:callData["display"],CompanyId:uuid_data["company"], TenantId: uuid_data["tenant"], SessionId: queryData["session_id"]  };
                                 redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
 
                                 logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j",queryData["session_id"], callreciveEvent);
