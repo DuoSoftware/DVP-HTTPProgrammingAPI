@@ -734,64 +734,84 @@ function HandleSMS(req, res, next){
 
         }else {
 
+            try {
 
-            redisClient.del("SMS:"+sessionid, redis.print);
+                redisClient.del("SMS:" + sessionid, redis.print);
 
-            if (sessiondata) {
+                if (sessiondata) {
 
-                console.log("session data found", sessiondata);
+                    console.log("session data found", sessiondata);
 
-                var url= sessiondata["Url"];
-                var destination= sessiondata["DestinationNumber"];
-                var from= sessiondata["FromNumber"];
-                var direction= sessiondata["Direction"];
-                var company= sessiondata["CompanyId"];
-                var tenant= sessiondata["TenantId"];
-                var message= sessiondata["Message"];
+                    var url = sessiondata["Url"];
+                    var destination = sessiondata["DestinationNumber"];
+                    var from = sessiondata["FromNumber"];
+                    var direction = sessiondata["Direction"];
+                    var company = sessiondata["CompanyId"];
+                    var tenant = sessiondata["TenantId"];
+                    var message = sessiondata["Message"];
 
-                var body = { session: sessionid, direction: direction, ani: from, dnis: to, name: from, result: message, systemid: systemid};
-                var options = { url: url, method: "POST", json: body, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",tenant,company)} };
+                    var body = {
+                        session: sessionid,
+                        direction: direction,
+                        ani: from,
+                        dnis: to,
+                        name: from,
+                        result: message,
+                        systemid: systemid
+                    };
+                    var options = {
+                        url: url,
+                        method: "POST",
+                        json: body,
+                        headers: {'authorization': token, 'companyinfo': format("{0}:{1}", tenant, company)}
+                    };
 
 
-                console.log("body", body);
-                console.log("options", options);
-                if(url) {
-                    console.log("url found");
-                    request(options, function (error, response, data) {
+                    console.log("body", body);
+                    console.log("options", options);
+                    if (url) {
+                        console.log("url found");
+                        request(options, function (error, response, data) {
 
-                        if (!error && response.statusCode == 200) {
+                            if (!error && response.statusCode == 200) {
 
-                            console.log("successfuly called external application", response);
+                                console.log("successfuly called external application", response);
 
 
-                        }else{
+                            } else {
 
-                            console.log("Error calling external url.....");
-                            if(error){
+                                console.log("Error calling external url.....");
+                                if (error) {
 
-                                console.log("there is an error calling external", err);
-                            }else{
+                                    console.log("there is an error calling external", err);
+                                } else {
 
-                                console.log("response is ",response);
+                                    console.log("response is ", response);
+                                }
+
+
                             }
 
+                        });
+                    } else {
+
+                        console.log("No url found ..... ");
+                    }
+
+                } else {
 
 
-                        }
+                    console.log("No session data found " + sessionid)
 
-                    });
-                }else{
-
-                    console.log("No url found ..... ");
                 }
+            }catch(ex){
 
-            }else{
+                console.log(ex);
 
-
-                console.log("No session data found " + sessionid )
 
             }
         }
+
 
     });
 
