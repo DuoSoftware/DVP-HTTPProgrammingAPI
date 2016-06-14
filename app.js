@@ -754,7 +754,7 @@ function HandleSMS(req, res, next){
                         session: sessionid,
                         direction: direction,
                         ani: from,
-                        dnis: to,
+                        dnis: destination,
                         name: from,
                         result: message,
                         systemid: systemid
