@@ -714,7 +714,7 @@ function HandleSMS(req, res, next){
 
 
     console.log(req);
-    var queryData = url.parse(req.url, true).query;
+    var queryData = req.params;
 
 
 
