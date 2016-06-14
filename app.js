@@ -708,6 +708,20 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
 }
 
 
+
+function HandleSMS(req, res, next){
+
+
+
+    console.log(req.body);
+    res.end();
+    next();
+
+
+
+}
+
+
 function HandleFunction(queryData, req, res, next) {
     
     
@@ -2123,7 +2137,6 @@ server.post('/debug/create', function DataHandle(req, res, next) {
 });
 
 
-
 server.post('/debug/push', function DataHandle(req, res, next) {
 
 
@@ -2134,7 +2147,6 @@ server.post('/debug/push', function DataHandle(req, res, next) {
     HandleDebugFunction(req.body, req, res, next);
 
 });
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2156,6 +2168,15 @@ server.get('/', function CallHandle(req, res, next) {
     HandleFunction(queryData, req, res, next);
 
 });
+
+
+server.post('/sms', function CallHandle(req, res, next) {
+
+
+    HandleSMS(req, res, next);
+
+});
+
 //messageGenerator.Playback("file", "tempURL", "paramName", "errorFile", "digitTimeout", "inputTimeout", "loops", "terminators", "strip");
 
 
