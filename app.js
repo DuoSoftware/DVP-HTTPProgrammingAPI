@@ -712,12 +712,86 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
 function HandleSMS(req, res, next){
 
 
+    var queryData = url.parse(req.body, true).query;
 
-    console.log(req.body);
+
+
+    console.log(queryData);
+
+    var from = queryData["from"];
+    var content = queryData["content"];
+    var sessionid = queryData["to"];
+    var systemid = queryData["id"];
+
+    redisClient.get("SMS:"+sessionid, function (err, sessiondata) {
+
+        if(err){
+
+            console.log("error in searching data", err)
+
+        }else {
+
+
+            redisClient.del("SMS:"+sessionid, redis.print);
+
+            if (sessiondata) {
+
+                console.log("session data found", sessiondata);
+
+                var url= sessiondata["Url"];
+                var destination= sessiondata["DestinationNumber"];
+                var from= sessiondata["FromNumber"];
+                var direction= sessiondata["Direction"];
+                var company= sessiondata["CompanyId"];
+                var tenant= sessiondata["TenantId"];
+                var message= sessiondata["Message"];
+
+                var body = { session: sessionid, direction: direction, ani: from, dnis: to, name: from, result: message, systemid: systemid};
+                var options = { url: url, method: "POST", json: body, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])} };
+
+
+                if(url) {
+                    request(options, function (error, response, data) {
+
+                        if (!error && response.statusCode == 200) {
+
+                            console.log("successfuly called external application", response);
+
+
+                        }else{
+
+                            console.log("Error calling external url.....");
+                            if(error){
+
+                                console.log("there is an error calling external", err);
+                            }else{
+
+                                console.log("response is ",response);
+                            }
+
+
+
+                        }
+
+                    });
+                }else{
+
+                    console.log("No url found ..... ");
+                }
+
+            }else{
+
+
+                console.log("No session data found" + sessionid )
+
+            }
+        }
+
+    });
+
+
     res.end();
     next();
-
-
 
 }
 
