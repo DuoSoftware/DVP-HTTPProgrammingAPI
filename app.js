@@ -712,7 +712,10 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
 function HandleSMS(req, res, next){
 
 
-    var queryData = url.parse(req.body, true).query;
+
+    console.log(req);
+    var queryData = url.parse(req.url, true).query;
+
 
 
 
@@ -782,7 +785,7 @@ function HandleSMS(req, res, next){
             }else{
 
 
-                console.log("No session data found" + sessionid )
+                console.log("No session data found " + sessionid )
 
             }
         }
