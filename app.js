@@ -728,6 +728,8 @@ function HandleSMS(req, res, next){
 
     redisClient.get("SMS:"+sessionid, function (err, sessiondata) {
 
+        sessiondata = JSON.parse(sessiondata);
+
         if(err){
 
             console.log("error in searching data", err)
