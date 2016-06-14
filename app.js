@@ -713,13 +713,10 @@ function HandleSMS(req, res, next){
 
 
 
-    console.log(req);
+    //console.log(req);
     var queryData = req.params;
 
-
-
-
-    console.log(queryData);
+    //console.log(queryData);
 
     var from = queryData["from"];
     var content = queryData["content"];
@@ -732,7 +729,13 @@ function HandleSMS(req, res, next){
 
         if(err){
 
-            console.log("error in searching data", err)
+            console.log("error in searching data", err);
+
+            var date = new Date();
+            var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'SYSTEM', EventTime:date, EventName:'NOSESSION',EventData:'',EventParams:'',CompanyId:company, TenantId: tenant, SessionId: sessionid  };
+            redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
+
 
         }else {
 
@@ -769,15 +772,26 @@ function HandleSMS(req, res, next){
                     };
 
 
-                    console.log("body", body);
-                    console.log("options", options);
+
+                    var date = new Date();
+                    var callreciveEvent = {EventClass:'APP',EventType:'DATA', EventCategory:'SYSTEM', EventTime:date, EventName:'SYSTEMDATA',EventData:body,EventParams:'',CompanyId:company, TenantId: tenant, SessionId: sessionid  };
+                    redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
+                    //console.log("body", body);
+                    //console.log("options", options);
                     if (url) {
                         console.log("url found");
                         request(options, function (error, response, data) {
 
-                            if (!error && response.statusCode == 200) {
+                            if (!error && response && response.statusCode == 200) {
 
                                 console.log("successfuly called external application", response);
+
+
+                                var date = new Date();
+                                var callreciveEvent = {EventClass:'APP',EventType:'DATA', EventCategory:'DEVELOPER', EventTime:date, EventName:'REMOTEEXECUTED',EventData:response.body,EventParams:url,CompanyId:company, TenantId: tenant, SessionId: sessionid  };
+                                redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
 
 
                             } else {
@@ -790,6 +804,12 @@ function HandleSMS(req, res, next){
 
                                     console.log("response is ", response);
                                 }
+
+
+                                var date = new Date();
+                                var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'DEVELOPER', EventTime:date, EventName:'REMOTEERROR',EventData:err,EventParams:response,CompanyId:company, TenantId: tenant, SessionId: sessionid  };
+                                redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
 
 
                             }
