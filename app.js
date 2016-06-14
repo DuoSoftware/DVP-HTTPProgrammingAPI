@@ -750,10 +750,13 @@ function HandleSMS(req, res, next){
                 var message= sessiondata["Message"];
 
                 var body = { session: sessionid, direction: direction, ani: from, dnis: to, name: from, result: message, systemid: systemid};
-                var options = { url: url, method: "POST", json: body, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])} };
+                var options = { url: url, method: "POST", json: body, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",tenant,company)} };
 
 
+                console.log("body", body);
+                console.log("options", options);
                 if(url) {
+                    console.log("url found");
                     request(options, function (error, response, data) {
 
                         if (!error && response.statusCode == 200) {
