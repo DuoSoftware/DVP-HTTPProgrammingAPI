@@ -793,6 +793,7 @@ function HandleSMS(req, res, next){
     });
 
 
+    res.write("ACK/Jasmin");
     res.end();
     next();
 
