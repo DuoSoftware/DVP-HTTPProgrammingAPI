@@ -457,6 +457,8 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
              callData["AnnouncementTime"] = "";
              */
 
+
+
             res.write(messageGenerator.ARDS(mainServer, mainServer,callData["skill"],callData["company"],callData["tenant"],callData["MOH"],callData["FirstAnnounement"],callData["Announcement"],callData["AnnouncementTime"]));
 
             break;
@@ -1477,19 +1479,28 @@ function HandleFunction(queryData, req, res, next) {
 
                                                     if(profileData.Result.MOH)
                                                         callData["MOH"] = profileData.Result.MOH;
+                                                    else
+                                                        callData["MOH"] ="";
 
                                                     if(profileData.Result.Announcement)
                                                         callData["Announcement"] = profileData.Result.Announcement;
+                                                    else
+                                                        callData["Announcement"] = "";
+
 
                                                     if(profileData.Result.FirstAnnounement)
                                                         callData["FirstAnnounement"] = profileData.Result.FirstAnnounement;
+                                                    else
+                                                        callData["FirstAnnounement"] = "";
 
                                                     if(profileData.Result.AnnouncementTime)
                                                         callData["AnnouncementTime"] = profileData.Result.AnnouncementTime;
+                                                    else
+                                                        callData["AnnouncementTime"] = "";
 
 
 
-                                                    callData['company'] = uuid_data['company'];
+                                                            callData['company'] = uuid_data['company'];
                                                     callData['tenant'] = uuid_data['tenant'];
 
                                                     logger.debug("HTTPProgrammingAPI.Handler Request profile resolution %s %j", queryData["session_id"], profileData);
