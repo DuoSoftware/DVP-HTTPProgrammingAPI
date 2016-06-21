@@ -729,7 +729,7 @@ function HandleSMS(req, res, next){
 
         if(err){
 
-            console.log("error in searching data", err);
+            logger.error("error in searching data", err);
 
             var date = new Date();
             var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'SYSTEM', EventTime:date, EventName:'NOSESSION',EventData:'',EventParams:'',CompanyId:company, TenantId: tenant, SessionId: sessionid  };
@@ -745,7 +745,7 @@ function HandleSMS(req, res, next){
 
                 if (sessiondata) {
 
-                    console.log("session data found", sessiondata);
+                    logger.debug("session data found %j", sessiondata);
 
                     var url = sessiondata["Url"];
                     var destination = sessiondata["DestinationNumber"];
@@ -762,7 +762,9 @@ function HandleSMS(req, res, next){
                         dnis: destination,
                         name: from,
                         result: message,
-                        systemid: systemid
+                        systemid: systemid,
+                        company: company,
+                        tenant: tenant
                     };
                     var options = {
                         url: url,
@@ -785,7 +787,7 @@ function HandleSMS(req, res, next){
 
                             if (!error && response && response.statusCode == 200) {
 
-                                console.log("successfuly called external application", response);
+                                logger.debug("successfuly called external application %j", response);
 
 
                                 var date = new Date();
@@ -796,13 +798,13 @@ function HandleSMS(req, res, next){
 
                             } else {
 
-                                console.log("Error calling external url.....");
+                                logger.debug("Error calling external url.....");
                                 if (error) {
 
-                                    console.log("there is an error calling external", err);
+                                    logger.error("there is an error calling external", err);
                                 } else {
 
-                                    console.log("response is ", response);
+                                    logger.debug("response is %j", response);
                                 }
 
 
@@ -817,18 +819,18 @@ function HandleSMS(req, res, next){
                         });
                     } else {
 
-                        console.log("No url found ..... ");
+                        logger.error("No url found ..... ");
                     }
 
                 } else {
 
 
-                    console.log("No session data found " + sessionid)
+                    logger.error("No session data found %s", sessionid)
 
                 }
             }catch(ex){
 
-                console.log(ex);
+                console.error("Exception in HandleSMS",ex);
 
 
             }
@@ -1473,10 +1475,20 @@ function HandleFunction(queryData, req, res, next) {
                                                 if(profileData && profileData.IsSuccess && profileData.Result) {
 
 
-                                                    callData["MOH"] = profileData.Result.MOH;
-                                                    callData["Announcement"] = profileData.Result.Announcement;
-                                                    callData["FirstAnnounement"] = profileData.Result.FirstAnnounement;
-                                                    callData["AnnouncementTime"] = profileData.Result.AnnouncementTime;
+                                                    if(profileData.Result.MOH)
+                                                        callData["MOH"] = profileData.Result.MOH;
+
+                                                    if(profileData.Result.Announcement)
+                                                        callData["Announcement"] = profileData.Result.Announcement;
+
+                                                    if(profileData.Result.FirstAnnounement)
+                                                        callData["FirstAnnounement"] = profileData.Result.FirstAnnounement;
+
+                                                    if(profileData.Result.AnnouncementTime)
+                                                        callData["AnnouncementTime"] = profileData.Result.AnnouncementTime;
+
+
+
                                                     callData['company'] = uuid_data['company'];
                                                     callData['tenant'] = uuid_data['tenant'];
 
@@ -1564,6 +1576,8 @@ function HandleFunction(queryData, req, res, next) {
                                             }
                                         }
                                         catch (reqex) {
+
+                                            console.error(reqex);
 
                                         }
 
