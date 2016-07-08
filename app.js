@@ -128,11 +128,11 @@ function postData(req, res) {
 
 
 
-                     var urloadurl = format("http://{0}/DVP/API/{1}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadurlVersion);
+                     var urloadurl = format("http://{0}/DVP/API/{1}/InternalFileService/File/Upload", config.Services.uploadurl,config.Services.uploadurlVersion);
 
 
                      if(validator.isIP(config.Services.uploadurl))
-                     urloadurl = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadport,config.Services.uploadurlVersion);
+                     urloadurl = format("http://{0}:{1}/DVP/API/{2}/InternalFileService/File/Upload", config.Services.uploadurl,config.Services.uploadport,config.Services.uploadurlVersion);
 
 
                      var FormData = {
