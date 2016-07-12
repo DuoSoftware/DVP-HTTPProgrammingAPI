@@ -59,8 +59,13 @@ module.exports = {
 
 
     "interactionurl": "127.0.0.1",
-    "interactionport": '3636',
+    "interactionport": '3637',
     "interactionversion":"1.0.0.0",
+
+
+    "ticketurl": "127.0.0.1",
+    "ticketport": '3636',
+    "ticketversion":"1.0.0.0",
 
 
     "uploadurlVersion":"1.0.0.0",

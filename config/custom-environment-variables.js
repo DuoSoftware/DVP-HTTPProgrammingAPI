@@ -51,6 +51,10 @@ module.exports = {
         "interactionport": "SYS_INTERACTION_PORT",
         "interactionversion":"SYS_INTERACTION_VERSION",
 
+        "ticketurl": "SYS_TICKET_HOST",
+        "ticketport": "SYS_TICKET_PORT",
+        "ticketversion":"SYS_TICKET_VERSION",
+
 
 
         "downloadurl": "SYS_DOWNLOAD_FILESERVICE_HOST",

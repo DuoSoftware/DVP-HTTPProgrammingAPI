@@ -123,11 +123,6 @@ function postData(req, res) {
                 if(config.Services && config.Services.uploadurl  && config.Services.uploadport) {
 
 
-
-
-
-
-
                      var urloadurl = format("http://{0}/DVP/API/{1}/InternalFileService/File/Upload", config.Services.uploadurl,config.Services.uploadurlVersion);
 
 
@@ -165,57 +160,7 @@ function postData(req, res) {
             }
 
 
-            /////////////////////////////////////////////upload to client post url//////////////////////////////////////////
 
-
-            /*
-
-            if (uuid_data["posturl"] && uuid_data["posturl"] != "none") {
-
-
-                try {
-                    var FormData = {
-                     sessionid: req.body["session_id"],
-                     file: fs.createReadStream(req.files.result["path"]),
-                     filename: req.body["session_id"],
-                     displayname: req.files.result["name"]}
-
-                      request.post({url:uuid_data["posturl"],formData: FormData, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, requestCallbackDev);
-
-
-                }catch(ex){
-
-                    console.log(ex);
-                }
-                
-                function requestCallback(err, res, body) {
-
-                    if(res.statusCode == 200) {
-
-                        console.log(body);
-
-
-                    }else{
-
-
-                    }
-                }
-
-                function requestCallbackDev(err, res, body) {
-
-                    if(res.statusCode == 200) {
-
-                        console.log(body);
-
-
-
-                    }else{
-
-
-
-                    }
-                }
-            }*/
 
         }
     });
@@ -710,8 +655,7 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
 }
 
 
-
-function CreateEngagement(uuid_data, queryData){
+function CreateEngagement(channel, company, tenant, from, to, direction, session, cb){
 
     if((config.Services && config.Services.interactionurl && config.Services.interactionport && config.Services.interactionversion)) {
 
@@ -721,11 +665,11 @@ function CreateEngagement(uuid_data, queryData){
             engagementURL = format("http://{0}:{1}/DVP/API/{2}/EngagementSessionForProfile", config.Services.interactionurl, config.Services.interactionport, config.Services.interactionversion);
 
         var engagementData =  {
-            "engagement_id": queryData["session_id"],
-            "channel": "call",
-            "direction": queryData["Caller-Direction"],
-            "channel_from":queryData["Caller-Caller-ID-Number"],
-            "channel_to": queryData["Caller-Destination-Number"]
+            "engagement_id": session,
+            "channel": channel,
+            "direction": direction,
+            "channel_from":from,
+            "channel_to": to
         };
 
         logger.debug("Calling Engagement service URL %s", engagementURL);
@@ -734,23 +678,28 @@ function CreateEngagement(uuid_data, queryData){
             url: engagementURL,
             headers: {
                 authorization: token,
-                companyinfo: format("{0}:{1}", uuid_data["tenant"], uuid_data["company"])
+                companyinfo: format("{0}:{1}", tenant, company)
             },
             json: engagementData
         }, function (_error, _response, datax) {
 
             try {
 
-                if (!_error && _response && _response.statusCode == 200) {
+                if (!_error && _response && _response.statusCode == 200, _response.body && _response.body.IsSuccess) {
+
+                    cb(true,_response.body.Result);
 
                 }else{
 
-                    logger.error("There is an error in  create engagements for this session "+ queryData["session_id"]);
+                    logger.error("There is an error in  create engagements for this session "+ session);
+                    cb(false,{});
 
 
                 }
             }
             catch (excep) {
+
+                cb(false,{});
 
             }
         });
@@ -758,15 +707,75 @@ function CreateEngagement(uuid_data, queryData){
 }
 
 
-function AddNoteToEngagement(uuid_data, queryData,body){
+function CreateTicket(channel,session, company, tenant, type, subjecct, description, priority, tags, cb){
+
+    if((config.Services && config.Services.ticketurl && config.Services.ticketport && config.Services.ticketversion)) {
+
+
+        var ticketURL = format("http://{0}/DVP/API/{1}/Ticket", config.Services.ticketurl, config.Services.ticketversion);
+        if (validator.isIP(config.Services.interactionurl))
+            ticketURL = format("http://{0}:{1}/DVP/API/{2}/Ticket", config.Services.ticketurl, config.Services.ticketport, config.Services.ticketversion);
+
+        var ticketData =  {
+
+            "type": type,
+            "subject": subjecct,
+            "reference": session,
+            "description": description,
+            "priority": priority,
+            "status": "new",
+            "engagement_session": session,
+            "channel": channel,
+            "tags": tags,
+        };
+
+
+
+        logger.debug("Calling Ticket service URL %s", ticketURL);
+        request({
+            method: "POST",
+            url: ticketURL,
+            headers: {
+                authorization: token,
+                companyinfo: format("{0}:{1}", tenant, company)
+            },
+            json: ticketData
+        }, function (_error, _response, datax) {
+
+            try {
+
+                if (!_error && _response && _response.statusCode == 200 && _response.body && _response.body.IsSuccess) {
+
+                    cb(true, response.body.reference);
+
+                }else{
+
+                    logger.error("There is an error in  create ticket for this session "+ session);
+
+                    cb(false, "");
+
+
+                }
+            }
+            catch (excep) {
+
+                cb(false, "");
+
+            }
+        });
+    }
+}
+
+
+function AddNoteToEngagement(company, tenant, session,body){
 
     if((config.Services && config.Services.interactionurl && config.Services.interactionport && config.Services.interactionversion)) {
 
         ///DVP/API/:version/EngagementSession/:session/Note
 
-        var engagementURL = format("http://{0}/DVP/API/{1}/EngagementSession/{2}/Note", config.Services.interactionurl, config.Services.interactionversion, queryData["session_id"]);
+        var engagementURL = format("http://{0}/DVP/API/{1}/EngagementSession/{2}/Note", config.Services.interactionurl, config.Services.interactionversion, session);
         if (validator.isIP(config.Services.interactionurl))
-            engagementURL = format("http://{0}:{1}/DVP/API/{2}/EngagementSession/{3}/Note", config.Services.interactionurl, config.Services.interactionport, config.Services.interactionversion, queryData["session_id"]);
+            engagementURL = format("http://{0}:{1}/DVP/API/{2}/EngagementSession/{3}/Note", config.Services.interactionurl, config.Services.interactionport, config.Services.interactionversion, session);
 
         var engagementData =  {
             "body": body,
@@ -779,7 +788,7 @@ function AddNoteToEngagement(uuid_data, queryData,body){
             url: engagementURL,
             headers: {
                 authorization: token,
-                companyinfo: format("{0}:{1}", uuid_data["tenant"], uuid_data["company"])
+                companyinfo: format("{0}:{1}", tenant, company)
             },
             json: engagementData
         }, function (_error, _response, datax) {
@@ -790,11 +799,14 @@ function AddNoteToEngagement(uuid_data, queryData,body){
 
                 }else{
 
-                    logger.error("There is an error in  add note to engagement"+ queryData["session_id"]);
+                    logger.error("There is an error in  add note to engagement "+ session);
 
                 }
             }
             catch (excep) {
+
+                logger.error("There is an error in  add note to engagement "+ excep);
+
 
             }
         });
@@ -823,12 +835,9 @@ function HandleSMS(req, res, next){
         if(err){
 
             logger.error("error in searching data", err);
-
             var date = new Date();
             var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'SYSTEM', EventTime:date, EventName:'NOSESSION',EventData:'',EventParams:'',CompanyId:company, TenantId: tenant, SessionId: sessionid  };
             redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
-
-
 
         }else {
 
@@ -866,6 +875,9 @@ function HandleSMS(req, res, next){
                         headers: {'authorization': token, 'companyinfo': format("{0}:{1}", tenant, company)}
                     };
 
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    CreateEngagement("sms",company,tenant,from,destination,"inbound",sessionid, function(isSuccess,result){});
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
                     var date = new Date();
@@ -888,6 +900,37 @@ function HandleSMS(req, res, next){
                                 redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
 
 
+
+                                //////////////////////////////////////////////////////////////////////sms actions///////////////////////////////
+
+                                var smsData = response.body;
+
+                                switch (smsData["action"]) {
+
+                                    case "reply":
+
+                                        break;
+
+                                    case "ticket":
+
+                                        CreateTicket("sms",sessionid,sessiondata["CompanyId"],sessiondata["TenantId"],smsData["type"], smsData["subject"], smsData["description"],smsData["priority"],smsData["tags"],function(success, result){});
+
+                                        break;
+                                    case "note":
+
+                                        AddNoteToEngagement(sessiondata["CompanyId"],sessiondata["TenantId"],sessionid,smsData["note"]);
+
+                                        break;
+                                    case "agent":
+
+                                        break;
+                                }
+
+                                //AddNoteToEngagement
+                                //rote to agent inbox
+                                //reply
+                                //create ticket
+                                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                             } else {
 
@@ -1063,7 +1106,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
 
-                            CreateEngagement(uuid_data,queryData);
+                            CreateEngagement("call", uuid_data["company"],uuid_data["tenant"],queryData["Caller-Caller-ID-Number"],queryData["Caller-Destination-Number"],queryData["Caller-Direction"],queryData["session_id"],function(isSuccess,result){});
 
 
                            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1182,7 +1225,7 @@ function HandleFunction(queryData, req, res, next) {
                                 if(callData["note"]){
 
 
-                                    AddNoteToEngagement(uuid_data,queryData,callData["note"])
+                                    AddNoteToEngagement(uuid_data["company"], uuid_data["tenant"],queryData["session_id"],callData["note"]);
 
                                 }
 
@@ -1697,6 +1740,63 @@ function HandleFunction(queryData, req, res, next) {
                                         }
 
                                     });
+                                }else if(callData["action"] == "ticket") {
+
+                                    CreateTicket("call",queryData["session_id"],uuid_data["company"],uuid_data["tenant"],callData["type"], callData["subject"],callData["description"],callData["prority"],callData["tags"],function(success, resu){
+
+                                        callData["action"] = "continue";
+
+                                        logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
+
+
+                                        Operation(callData, callData["file"], mainServer, queryData, res,uuid_data["domain"],uuid_data["profile"]);
+
+                                        console.log("----------------------------------------------------> get result");
+
+                                        uuid_dev["result"] = callData["result"];
+
+                                        console.log("----------------------------------------------------> got result");
+
+
+                                        if (uuid_dev["baseurl"] != "none" ) {
+
+                                            console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
+
+                                            uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                            uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["nexturl"]);
+                                        }
+                                        else {
+
+                                            console.log("----------------------------------------------------> no base url");
+
+                                            uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                            uuid_dev["nexturl"] = callData["nexturl"];
+
+                                            console.log(uuid_dev["nexturl"]);
+
+
+                                            console.log("DEV DATA -------------> %j",uuid_dev);
+                                            console.log("CALL DATA -------------> %j",callData);
+
+
+                                        }
+
+
+                                        logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s",queryData["session_id"], uuid_dev["nexturl"]);
+
+
+                                        try {
+                                            var redisData = JSON.stringify(uuid_dev);
+                                            redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                            logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
+                                        }
+                                        catch (e) {
+                                            console.error(e);
+                                        }
+
+
+                                    });
+
                                 }
 
 
@@ -2426,6 +2526,23 @@ server.post('/sms', function CallHandle(req, res, next) {
 
 
     HandleSMS(req, res, next);
+
+});
+
+
+server.post('/testsms', function CallHandle(req, res, next) {
+
+
+    var response = {};
+    response["action"] = "ticket";
+    response["type"] = "complain";
+    response["subject"]= "sms test";
+    response["description"] = "ticket description";
+    response["priority"] = "low";
+    response["tags"] = "complain.product.tv.display";
+    res.write(JSON.stringify(response));
+    res.end();
+    next();
 
 });
 
