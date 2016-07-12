@@ -45,6 +45,14 @@ module.exports = {
         "fileserviceurl": "SYS_FILESERVICE_HOST",
         "fileserviceport":"SYS_FILESERVICE_PORT",
         "fileserviceVersion":"SYS_FILESERVICE_VERSION",
+
+
+        "interactionurl": "SYS_INTERACTION_HOST",
+        "interactionport": "SYS_INTERACTION_PORT",
+        "interactionversion":"SYS_INTERACTION_VERSION",
+
+
+
         "downloadurl": "SYS_DOWNLOAD_FILESERVICE_HOST",
         "downloadport":"SYS_DOWNLOAD_FILESERVICE_PORT",
         "downloaddurlVersion" : "SYS_DOWNLOAD_FILESERVICE_VERSION",

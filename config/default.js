@@ -58,6 +58,11 @@ module.exports = {
     "fileserviceVersion":"6.0",
 
 
+    "interactionurl": "127.0.0.1",
+    "interactionport": '3636',
+    "interactionversion":"1.0.0.0",
+
+
     "uploadurlVersion":"1.0.0.0",
     "downloaddurlVersion" : "1.0.0.0",
     "ruleserviceVersion": "1.0.0.0",

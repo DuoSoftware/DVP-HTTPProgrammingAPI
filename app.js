@@ -711,6 +711,97 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
 
 
 
+function CreateEngagement(uuid_data, queryData){
+
+    if((config.Services && config.Services.interactionurl && config.Services.interactionport && config.Services.interactionversion)) {
+
+
+        var engagementURL = format("http://{0}/DVP/API/{1}/EngagementSessionForProfile", config.Services.interactionurl, config.Services.interactionversion);
+        if (validator.isIP(config.Services.interactionurl))
+            engagementURL = format("http://{0}:{1}/DVP/API/{2}/EngagementSessionForProfile", config.Services.interactionurl, config.Services.interactionport, config.Services.interactionversion);
+
+        var engagementData =  {
+            "engagement_id": queryData["session_id"],
+            "channel": "call",
+            "direction": queryData["Caller-Direction"],
+            "channel_from":queryData["Caller-Caller-ID-Number"],
+            "channel_to": queryData["Caller-Destination-Number"]
+        };
+
+        logger.debug("Calling Engagement service URL %s", engagementURL);
+        request({
+            method: "POST",
+            url: engagementURL,
+            headers: {
+                authorization: token,
+                companyinfo: format("{0}:{1}", uuid_data["tenant"], uuid_data["company"])
+            },
+            json: engagementData
+        }, function (_error, _response, datax) {
+
+            try {
+
+                if (!_error && _response && _response.statusCode == 200) {
+
+                }else{
+
+                    logger.error("There is an error in  create engagements for this session "+ queryData["session_id"]);
+
+
+                }
+            }
+            catch (excep) {
+
+            }
+        });
+    }
+}
+
+
+function AddNoteToEngagement(uuid_data, queryData,body){
+
+    if((config.Services && config.Services.interactionurl && config.Services.interactionport && config.Services.interactionversion)) {
+
+        ///DVP/API/:version/EngagementSession/:session/Note
+
+        var engagementURL = format("http://{0}/DVP/API/{1}/EngagementSession/{2}/Note", config.Services.interactionurl, config.Services.interactionversion, queryData["session_id"]);
+        if (validator.isIP(config.Services.interactionurl))
+            engagementURL = format("http://{0}:{1}/DVP/API/{2}/EngagementSession/{3}/Note", config.Services.interactionurl, config.Services.interactionport, config.Services.interactionversion, queryData["session_id"]);
+
+        var engagementData =  {
+            "body": body,
+            "created_at": Date.now()
+        };
+
+        logger.debug("Calling Engagement service URL %s", engagementURL);
+        request({
+            method: "POST",
+            url: engagementURL,
+            headers: {
+                authorization: token,
+                companyinfo: format("{0}:{1}", uuid_data["tenant"], uuid_data["company"])
+            },
+            json: engagementData
+        }, function (_error, _response, datax) {
+
+            try {
+
+                if (!_error && _response && _response.statusCode == 200) {
+
+                }else{
+
+                    logger.error("There is an error in  add note to engagement"+ queryData["session_id"]);
+
+                }
+            }
+            catch (excep) {
+
+            }
+        });
+    }
+}
+
+
 function HandleSMS(req, res, next){
 
 
@@ -966,6 +1057,17 @@ function HandleFunction(queryData, req, res, next) {
 
                             logger.debug("HTTPProgrammingAPI.Handler Session Create %s", queryData["session_id"], uuid_dev);
 
+
+                            //////////////////////////////////////ceate engagement session/////////////////////////////////////////////////////////
+
+
+
+
+                            CreateEngagement(uuid_data,queryData);
+
+
+                           ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
                         }
                         
                         
@@ -1019,7 +1121,10 @@ function HandleFunction(queryData, req, res, next) {
 
                                 var callData;
                                 try {
+                                    //callData = response.body;
+
                                     callData = response.body;
+
                                     uuid_dev["lastcommand"] = callData["action"];
                                     
                                     if (callData["posturl"]) {
@@ -1072,15 +1177,14 @@ function HandleFunction(queryData, req, res, next) {
                                 ////////////////////////////////////////
 
 
-                                var urlx;
-                                /*
-                                if(process.env.envirnament && process.env.domain){
 
-                                    url = format("{0}{1}/{2}/GetFileIDForName/{3}", process.env.envirnament, process.env.domain, filenamex, uuid_data['appid']);
+
+                                if(callData["note"]){
+
+
+                                    AddNoteToEngagement(uuid_data,queryData,callData["note"])
 
                                 }
-                                else */
-
 
 
 
