@@ -128,11 +128,11 @@ function postData(req, res) {
 
 
 
-                     var urloadurl = format("http://{0}/DVP/API/{1}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadurlVersion);
+                     var urloadurl = format("http://{0}/DVP/API/{1}/InternalFileService/File/Upload", config.Services.uploadurl,config.Services.uploadurlVersion);
 
 
                      if(validator.isIP(config.Services.uploadurl))
-                     urloadurl = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadport,config.Services.uploadurlVersion);
+                     urloadurl = format("http://{0}:{1}/DVP/API/{2}/InternalFileService/File/Upload", config.Services.uploadurl,config.Services.uploadport,config.Services.uploadurlVersion);
 
 
                      var FormData = {
@@ -1244,11 +1244,11 @@ function HandleFunction(queryData, req, res, next) {
 
                                                         ///DVP/API/'+version+'/FileService/File/Download/:id/:displayname
 
-                                                        fileID = format("http://{0}/DVP/API/{1}/FileService/File/DownloadLatest/{2}/{3}/{4}", config.Services.downloadurl, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
+                                                        fileID = format("http://{0}/DVP/API/{1}/InternalFileService/File/DownloadLatest/{2}/{3}/{4}", config.Services.downloadurl, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
 
 
                                                         if (validator.isIP(config.Services.downloadurl))
-                                                            fileID = format("http://{0}:{1}/DVP/API/{2}/FileService/File/DownloadLatest/{3}/{4}/{5}", config.Services.downloadurl, config.Services.downloadport, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
+                                                            fileID = format("http://{0}:{1}/DVP/API/{2}/InternalFileService/File/DownloadLatest/{3}/{4}/{5}", config.Services.downloadurl, config.Services.downloadport, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
 
                                                         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
