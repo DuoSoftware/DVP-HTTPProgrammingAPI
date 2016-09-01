@@ -713,7 +713,7 @@ function CreateTicket(channel,session, company, tenant, type, subjecct, descript
 
 
         var ticketURL = format("http://{0}/DVP/API/{1}/Ticket", config.Services.ticketurl, config.Services.ticketversion);
-        if (validator.isIP(config.Services.interactionurl))
+        if (validator.isIP(config.Services.ticketurl))
             ticketURL = format("http://{0}:{1}/DVP/API/{2}/Ticket", config.Services.ticketurl, config.Services.ticketport, config.Services.ticketversion);
 
         var ticketData =  {
