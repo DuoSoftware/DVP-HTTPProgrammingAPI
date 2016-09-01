@@ -60,6 +60,7 @@ module.exports = {
 
     "interactionurl": "127.0.0.1",
     "interactionport": '3637',
+    "interactionport": '3637',
     "interactionversion":"1.0.0.0",
 
 

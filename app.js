@@ -404,7 +404,7 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
 
 
 
-            res.write(messageGenerator.ARDS(mainServer, mainServer,callData["skill"],callData["company"],callData["tenant"],callData["MOH"],callData["FirstAnnounement"],callData["Announcement"],callData["AnnouncementTime"]));
+            res.write(messageGenerator.ARDS(mainServer, mainServer,callData["skill"],callData["skilldisplay"],callData["company"],callData["tenant"],callData["MOH"],callData["FirstAnnounement"],callData["Announcement"],callData["AnnouncementTime"]));
 
             break;
 
@@ -746,7 +746,7 @@ function CreateTicket(channel,session, company, tenant, type, subjecct, descript
 
                 if (!_error && _response && _response.statusCode == 200 && _response.body && _response.body.IsSuccess) {
 
-                    cb(true, response.body.reference);
+                    cb(true, _response.body.reference);
 
                 }else{
 
@@ -765,6 +765,65 @@ function CreateTicket(channel,session, company, tenant, type, subjecct, descript
         });
     }
 }
+
+
+function CreateComment(channel, channeltype,company, tenant, engid, engagement, cb){
+
+    //http://localhost:3636/DVP/API/1.0.0.0/TicketByEngagement/754236638146859008/Comment
+
+    if (config.Services && config.Services.ticketurl && config.Services.ticketport && config.Services.ticketversion) {
+
+        var url = format("http://{0}/DVP/API/{1}/TicketByEngagement/{2}/Comment", config.Services.ticketurl, config.Services.ticketversion,engagement._id);
+        if (validator.isIP(config.Services.ticketurl))
+            url = format("http://{0}:{1}/DVP/API/{2}/TicketByEngagement/{3}/Comment", config.Services.ticketurl, config.Services.ticketport,config.Services.ticketversion, engid);
+
+
+        var data = {
+
+            body: engagement.body,
+            body_type: "text",
+            type: channeltype,
+            public: true,
+            channel: channel,
+            channel_from: engagement.channel_from,
+            engagement_session: engagement.engagement_id,
+            author_external: engagement.profile_id
+        };
+
+        request({
+            method: "PUT",
+            url: url,
+            headers: {
+                authorization: "Bearer " + config.Services.accessToken,
+                companyinfo: format("{0}:{1}", tenant, company)
+            },
+            json: data
+        }, function (_error, _response, datax) {
+
+            try {
+
+                if (!_error && _response && _response.statusCode == 200) {
+
+                    logger.debug("Successfully registered");
+                    return cb(true);
+                } else {
+
+                    logger.error("Registration Failed "+_error);
+                    return cb(false);
+
+                }
+            }
+            catch (excep) {
+
+                logger.error("Registration Failed "+excep);
+                return cb(false);
+            }
+
+        });
+
+    }
+
+};
 
 
 function AddNoteToEngagement(company, tenant, session,body){
@@ -818,11 +877,7 @@ function HandleSMS(req, res, next){
 
 
 
-    //console.log(req);
     var queryData = req.params;
-
-    //console.log(queryData);
-
     var from = queryData["from"];
     var content = queryData["content"];
     var sessionid = queryData["to"];
@@ -876,87 +931,108 @@ function HandleSMS(req, res, next){
                     };
 
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    CreateEngagement("sms",company,tenant,from,destination,"inbound",sessionid, function(isSuccess,result){});
+                    CreateEngagement("sms",company,tenant,from,destination,"inbound",sessionid, function(isSuccess,result){
+
+                        if(isSuccess){
+
+                            logger.debug("SMS Engagement Created Successfully  "+ sessiondata);
+
+                        }else{
+
+                            logger.debug("SMS Engagement Creation Failed  "+ sessiondata);
+                        }
+
+
+
+                        var date = new Date();
+                        var callreciveEvent = {EventClass:'APP',EventType:'DATA', EventCategory:'SYSTEM', EventTime:date, EventName:'SYSTEMDATA',EventData:body,EventParams:'',CompanyId:company, TenantId: tenant, SessionId: sessionid  };
+                        redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
+                        //console.log("body", body);
+                        //console.log("options", options);
+                        if (url) {
+                            logger.debug("SMS out url found "+ url);
+                            request(options, function (error, response, data) {
+
+                                if (!error && response && response.statusCode == 200) {
+
+                                    logger.debug("successfuly called external application");
+
+
+                                    var date = new Date();
+                                    var callreciveEvent = {EventClass:'APP',EventType:'DATA', EventCategory:'DEVELOPER', EventTime:date, EventName:'REMOTEEXECUTED',EventData:response.body,EventParams:url,CompanyId:company, TenantId: tenant, SessionId: sessionid  };
+                                    redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
+
+
+                                    //////////////////////////////////////////////////////////////////////sms actions///////////////////////////////
+
+                                    var smsData = response.body;
+
+                                    switch (smsData["action"]) {
+
+                                        case "reply":
+
+                                            break;
+
+                                        case "comment":
+
+                                            CreateComment('sms','ITR',sessiondata["CompanyId"],sessiondata["TenantId"],smsData["engagement"],result,function(success, result){});
+
+                                            break;
+
+                                        case "ticket":
+
+                                            CreateTicket("sms",sessionid,sessiondata["CompanyId"],sessiondata["TenantId"],smsData["type"], smsData["subject"], smsData["description"],smsData["priority"],smsData["tags"],function(success, result){});
+
+                                            break;
+                                        case "note":
+
+                                            AddNoteToEngagement(sessiondata["CompanyId"],sessiondata["TenantId"],sessionid,smsData["note"]);
+
+                                            break;
+                                        case "agent":
+
+                                            break;
+                                    }
+
+                                    //AddNoteToEngagement
+                                    //rote to agent inbox
+                                    //reply
+                                    //create ticket
+                                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                                } else {
+
+                                    logger.debug("Error calling external url.....");
+                                    if (error) {
+
+                                        logger.error("there is an error calling external", error);
+                                    } else {
+
+                                        logger.debug("response is");
+                                    }
+
+
+                                    var date = new Date();
+                                    var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'DEVELOPER', EventTime:date, EventName:'REMOTEERROR',EventData:err,EventParams:response,CompanyId:company, TenantId: tenant, SessionId: sessionid  };
+                                    redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
+                                }
+
+                            });
+                        } else {
+
+                            logger.error("No url found ..... ");
+                        }
+
+
+
+
+                    });
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-                    var date = new Date();
-                    var callreciveEvent = {EventClass:'APP',EventType:'DATA', EventCategory:'SYSTEM', EventTime:date, EventName:'SYSTEMDATA',EventData:body,EventParams:'',CompanyId:company, TenantId: tenant, SessionId: sessionid  };
-                    redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
-
-                    //console.log("body", body);
-                    //console.log("options", options);
-                    if (url) {
-                        console.log("url found");
-                        request(options, function (error, response, data) {
-
-                            if (!error && response && response.statusCode == 200) {
-
-                                logger.debug("successfuly called external application %j", response);
-
-
-                                var date = new Date();
-                                var callreciveEvent = {EventClass:'APP',EventType:'DATA', EventCategory:'DEVELOPER', EventTime:date, EventName:'REMOTEEXECUTED',EventData:response.body,EventParams:url,CompanyId:company, TenantId: tenant, SessionId: sessionid  };
-                                redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
-
-
-
-                                //////////////////////////////////////////////////////////////////////sms actions///////////////////////////////
-
-                                var smsData = response.body;
-
-                                switch (smsData["action"]) {
-
-                                    case "reply":
-
-                                        break;
-
-                                    case "ticket":
-
-                                        CreateTicket("sms",sessionid,sessiondata["CompanyId"],sessiondata["TenantId"],smsData["type"], smsData["subject"], smsData["description"],smsData["priority"],smsData["tags"],function(success, result){});
-
-                                        break;
-                                    case "note":
-
-                                        AddNoteToEngagement(sessiondata["CompanyId"],sessiondata["TenantId"],sessionid,smsData["note"]);
-
-                                        break;
-                                    case "agent":
-
-                                        break;
-                                }
-
-                                //AddNoteToEngagement
-                                //rote to agent inbox
-                                //reply
-                                //create ticket
-                                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                            } else {
-
-                                logger.debug("Error calling external url.....");
-                                if (error) {
-
-                                    logger.error("there is an error calling external", err);
-                                } else {
-
-                                    logger.debug("response is %j", response);
-                                }
-
-
-                                var date = new Date();
-                                var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'DEVELOPER', EventTime:date, EventName:'REMOTEERROR',EventData:err,EventParams:response,CompanyId:company, TenantId: tenant, SessionId: sessionid  };
-                                redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
-
-
-
-                            }
-
-                        });
-                    } else {
-
-                        logger.error("No url found ..... ");
-                    }
 
                 } else {
 
@@ -966,8 +1042,7 @@ function HandleSMS(req, res, next){
                 }
             }catch(ex){
 
-                console.error("Exception in HandleSMS",ex);
-
+                console.error("Exception in HandleSMS ",ex);
 
             }
         }
