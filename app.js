@@ -404,6 +404,9 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
 
 
 
+            if(!callData["skilldisplay"]){
+                callData["skilldisplay"] = 'n/a';
+            }
             res.write(messageGenerator.ARDS(mainServer, mainServer,callData["skill"],callData["skilldisplay"],callData["company"],callData["tenant"],callData["MOH"],callData["FirstAnnounement"],callData["Announcement"],callData["AnnouncementTime"]));
 
             break;
