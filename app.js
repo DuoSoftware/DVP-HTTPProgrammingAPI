@@ -402,12 +402,10 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
              callData["AnnouncementTime"] = "";
              */
 
-
-
             if(!callData["skilldisplay"]){
                 callData["skilldisplay"] = 'n/a';
             }
-            res.write(messageGenerator.ARDS(mainServer, mainServer,callData["skill"],callData["skilldisplay"],callData["company"],callData["tenant"],callData["MOH"],callData["FirstAnnounement"],callData["Announcement"],callData["AnnouncementTime"]));
+            res.write(messageGenerator.ARDS(mainServer, mainServer,callData["skill"],callData["skilldisplay"],callData["company"],callData["tenant"],callData["MOH"],callData["FirstAnnounement"],callData["Announcement"],callData["AnnouncementTime"], callData["PositionAnnouncement"], callData["Language"]));
 
             break;
 
@@ -417,7 +415,6 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
             res.write(messageGenerator.Log(mainServer, mainServer, callData["level"], callData["clean"], callData["message"]));
 
             break;
-
 
         case "getvar":
             //var getVar = function(actionURL, tempURL, permenent, name)
@@ -829,6 +826,8 @@ function CreateComment(channel, channeltype,company, tenant, engid, engagement, 
 };
 
 
+///http://ardsliteservice.app.veery.cloud/DVP/API/1.0.0.0/ARDS/request
+
 function AddNoteToEngagement(company, tenant, session,body){
 
     if((config.Services && config.Services.interactionurl && config.Services.interactionport && config.Services.interactionversion)) {
@@ -876,9 +875,118 @@ function AddNoteToEngagement(company, tenant, session,body){
 }
 
 
+function GetAgentForRequest(company, tenant, sessionID, Attributes, cb){
+
+    if((config.Services && config.Services.ardsServiceHost && config.Services.ardsServicePort && config.Services.ardsServiceVersion)) {
+
+        ///http://ardsliteservice.app.veery.cloud/DVP/API/1.0.0.0/ARDS/request
+
+        var ardsURL = format("http://{0}/DVP/API/{1}/ARDS/request", config.Services.ardsServiceHost, config.Services.ardsServiceVersion);
+        if (validator.isIP(config.Services.ardsServiceHost))
+            ardsURL = format("http://{0}:{1}/DVP/API/{2}/ARDS/request", config.Services.ardsServiceHost, config.Services.ardsServicePort, config.Services.ardsServiceVersion);
+
+        var ardsData =  {
+
+            ServerType:"TICKETSERVER",
+            RequestType:"TICKET",
+            SessionId:sessionID,
+            Attributes:Attributes,
+            RequestServerId:"1",
+            Priority:"0",
+            ResourceCount:1,
+            OtherInfo:""
+
+        };
+
+        logger.debug("Calling ARDS service URL %s", ardsURL);
+        request({
+            method: "POST",
+            url: ardsURL,
+            headers: {
+                authorization: token,
+                companyinfo: format("{0}:{1}", tenant, company)
+            },
+            json: ardsData
+        }, function (_error, _response, datax) {
+
+            try {
+
+                if (!_error && _response && _response.statusCode == 200) {
+
+                    if(_response.body && _response.ResourceInfo&&_response.ResourceInfo.ResourceId){
+                        cb(true, _response.ResourceInfo.ResourceId)
+                    }else{
+                        cb(false, undefined)
+                    }
+
+                }else{
+
+                    logger.error("There is an error in  get agent "+ sessionID);
+                    cb(false, undefined)
+                }
+            }
+            catch (excep) {
+
+                logger.error("There is an error in  get agent "+ excep);
+                cb(false, undefined)
+            }
+        });
+    }
+
+
+}
+
+
+function AddToInbox(company, tenant, sessionid, from, type, msg, profile, heading){
+
+    if((config.Services && config.Services.interactionurl && config.Services.interactionport && config.Services.interactionversion)) {
+
+
+        var engagementURL = format("http://{0}/DVP/API/{1}/Inbox/Message", config.Services.interactionurl, config.Services.interactionversion);
+        if (validator.isIP(config.Services.interactionurl))
+            engagementURL = format("http://{0}:{1}/DVP/API/{2}/Inbox/Message", config.Services.interactionurl, config.Services.interactionport, config.Services.interactionversion);
+
+        var engagementData =  {
+            message: msg,
+            msgType: type,
+            profile: profile,
+            heading: heading,
+            from: from,
+            engagementSession: sessionid
+        };
+
+        logger.debug("Calling Engagement service URL %s", engagementURL);
+        request({
+            method: "POST",
+            url: engagementURL,
+            headers: {
+                authorization: token,
+                companyinfo: format("{0}:{1}", tenant, company)
+            },
+            json: engagementData
+        }, function (_error, _response, datax) {
+
+            try {
+
+                if (!_error && _response && _response.statusCode == 200, _response.body && _response.body.IsSuccess) {
+
+                    logger.debug("Add to inbox is success "+ sessionid);
+
+                }else{
+
+                    logger.error("There is an error in  create engagements for this session "+ sessionid);
+                }
+            }
+            catch (excep) {
+
+                logger.error("There is an error in  create engagements for this session "+ sessionid, excep);
+            }
+        });
+    }
+}
+
+
 function HandleSMS(req, res, next){
-
-
 
     var queryData = req.params;
     var from = queryData["from"];
@@ -945,8 +1053,6 @@ function HandleSMS(req, res, next){
                             logger.debug("SMS Engagement Creation Failed  "+ sessiondata);
                         }
 
-
-
                         var date = new Date();
                         var callreciveEvent = {EventClass:'APP',EventType:'DATA', EventCategory:'SYSTEM', EventTime:date, EventName:'SYSTEMDATA',EventData:body,EventParams:'',CompanyId:company, TenantId: tenant, SessionId: sessionid  };
                         redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
@@ -995,6 +1101,16 @@ function HandleSMS(req, res, next){
 
                                             break;
                                         case "agent":
+
+                                            GetAgentForRequest(sessiondata["CompanyId"],sessiondata["TenantId"],sessionid,smsData["attributes"],function(isSuccess, data){
+
+                                                if(isSuccess){
+
+                                                    AddToInbox(sessiondata["CompanyId"],sessiondata["TenantId"],sessionid,from,"SMS",message,data,smsData["subject"]);
+
+                                                }
+
+                                            });
 
                                             break;
                                     }
@@ -1290,7 +1406,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                 var date = new Date();
-                                var callreciveEvent = {EventClass:'APP',EventType:'COMMAND', EventCategory:'DEVELOPER', EventTime:date, EventName:callData["action"], EventData:uuid_data["appid"],EventParams:callData["display"],CompanyId:uuid_data["company"], TenantId: uuid_data["tenant"], SessionId: queryData["session_id"]  };
+                                var callreciveEvent = {EventClass:'APP',EventType:'COMMAND', EventCategory:'DEVELOPER', EventTime:date, EventName:callData["action"], EventData:uuid_data["appid"],EventParams:callData["display"],CompanyId:uuid_data["company"], TenantId: uuid_data["tenant"], SessionId: queryData["session_id"]};
                                 redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
 
                                 logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j",queryData["session_id"], callreciveEvent);
@@ -1723,12 +1839,24 @@ function HandleFunction(queryData, req, res, next) {
                                                     else
                                                         callData["AnnouncementTime"] = "";
 
+                                                    if(profileData.Result.PositionAnnouncement)
+                                                        callData["PositionAnnouncement"] = "true";
+                                                    else
+                                                        callData["PositionAnnouncement"] = "false";
+
+                                                    if(profileData.Result.Language)
+                                                        callData["Language"] = profileData.Result.Language;
+                                                    else
+                                                        callData["Language"] = "en";
 
 
-                                                            callData['company'] = uuid_data['company'];
+
+
+                                                    callData['company'] = uuid_data['company'];
                                                     callData['tenant'] = uuid_data['tenant'];
 
                                                     logger.debug("HTTPProgrammingAPI.Handler Request profile resolution %s %j", queryData["session_id"], profileData);
+
                                                 }else{
 
                                                     console.log("Get ARDS rule failed --------> ");
@@ -1739,15 +1867,9 @@ function HandleFunction(queryData, req, res, next) {
                                                     callData['company'] = "";
                                                     callData['tenant'] = "";
 
-
                                                     logger.error("HTTPProgrammingAPI.Handler Request Profile resolution %s", queryData["session_id"]);
 
-
-
-
                                                 }
-
-
                                             }
                                             else {
 
