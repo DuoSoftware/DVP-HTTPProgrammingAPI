@@ -1367,13 +1367,14 @@ function HandleFunction(queryData, req, res, next) {
 
                                     if(callData.params){
 
+                                         if(!uuid_dev["dev_params"]) {
+                                                    uuid_dev["dev_params"] = {};
+                                                }
                                         
                                          Object.keys(callData.params).forEach(function(key) {
                                             var val = callData.params[key];
                                              
-                                              if(!uuid_dev["dev_params"]) {
-                                                    uuid_dev["dev_params"] = {};
-                                                }
+                                             
                                             
                                              uuid_dev["dev_params"][key] = val;
                                         });
