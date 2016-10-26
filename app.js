@@ -184,7 +184,7 @@ function postData(req, res) {
 
                                                  };
 
-                                                 CreateTicket("sms",sessionid,uuid_data["company"],uuid_data["tenant"],voicemailData["type"], voicemailData["subject"], voicemailData["description"],voicemailData["priority"],voicemailData["tags"],function(success, result){
+                                                 CreateTicket("voicemail",req.body["session_id"],uuid_data["company"],uuid_data["tenant"],voicemailData["type"], voicemailData["subject"], voicemailData["description"],voicemailData["priority"],voicemailData["tags"],function(success, result){
 
                                                      if(success){
 
