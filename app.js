@@ -173,37 +173,44 @@ function postData(req, res) {
 
                                          //FormData["display"] = req.body["Caller-Caller-ID-Number"] + " - " +req.body["Caller-Destination-Number"];
 
-                                         CreateEngagement("voicemail", uuid_data["company"], uuid_data["tenant"], req.body["Caller-Caller-ID-Number"], req.body["Caller-Destination-Number"], req.body["Caller-Direction"], req.body["session_id"], function (isSuccess, result) {
-                                             if(isSuccess && result){
+                                         try {
+                                             CreateEngagement("voicemail", uuid_data["company"], uuid_data["tenant"], req.body["Caller-Caller-ID-Number"], req.body["Caller-Destination-Number"], req.body["Caller-Direction"], req.body["session_id"], function (isSuccess, result) {
+                                                 if (isSuccess && result) {
 
 
-                                                 var voicemailData = {
-                                                     type: "question",
-                                                     subject: "Voice mail from " + req.body["Caller-Caller-ID-Number"],
-                                                     description: "",
-                                                     priority: "high"
+                                                     var voicemailData = {
+                                                         type: "question",
+                                                         subject: "Voice mail from " + req.body["Caller-Caller-ID-Number"],
+                                                         description: "",
+                                                         priority: "high"
 
-                                                 };
+                                                     };
 
-                                                 CreateTicket("voicemail",req.body["session_id"],uuid_data["company"],uuid_data["tenant"],voicemailData["type"], voicemailData["subject"], voicemailData["description"],voicemailData["priority"],voicemailData["tags"],function(success, result){
+                                                     CreateTicket("voicemail", req.body["session_id"], uuid_data["company"], uuid_data["tenant"], voicemailData["type"], voicemailData["subject"], voicemailData["description"], voicemailData["priority"], voicemailData["tags"], function (success, result) {
 
-                                                     if(success){
+                                                         if (success) {
 
-                                                         logger.debud("Create ticket success");
-                                                     }else{
-                                                          logger.debug("Create ticket failed");
-                                                     }
-                                                 });
+                                                             logger.debud("Create ticket success");
+                                                         } else {
+                                                             logger.debug("Create ticket failed");
+                                                         }
+                                                     });
 
-                                             }else{
+                                                 } else {
 
-                                                 logger.error("Create engagement failed .......");
-                                             }
-                                         });
+                                                     logger.error("Create engagement failed .......");
+                                                 }
+                                             });
+                                         }catch(ex){
+                                             logger.error(ex);
+                                         }
                                      }else{
 
                                          logger.error("Create engagement no necessory data found ....");
                                      }
+                                 }else{
+
+                                     logger.error("Upload failed .....");
                                  }
                              }
                          }
