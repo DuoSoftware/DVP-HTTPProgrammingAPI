@@ -161,6 +161,7 @@ function postData(req, res) {
                             logger.error("File upload error", err);
                          }else{
 
+                             logger.debug(response);
                              if(response ){
 
                                  logger.debug("Response recived", response.body);
