@@ -180,7 +180,7 @@ function postData(req, res) {
                                              var voicemailData = {
                                                  type: "question",
                                                  subject: "Voice mail from " + req.body["Caller-Caller-ID-Number"],
-                                                 description: "",
+                                                 description: "Voice mail from " + req.body["Caller-Caller-ID-Number"],
                                                  priority: "high"
 
                                              };
