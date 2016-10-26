@@ -159,57 +159,51 @@ function postData(req, res) {
                      var r = request.post({url:urloadurl,formData: FormData, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function(error, response, body){
                          if(err){
                             logger.error("File upload error", err);
-                         }else{
+                         }else {
 
                              //logger.debug(response);
-                             if(response ){
+                             if (response) {
 
                                  logger.debug("Response recived", response.body);
                                  response.body = JSON.parse(response.body);
                                  logger.debug("Response recived", response.body["IsSuccess"]);
-                                 if(response.body["IsSuccess"]){
+                                 if (response.body["IsSuccess"]) {
 
 
-                                     if(req.body && req.body["Caller-Caller-ID-Number"] && req.body["Caller-Destination-Number"] && req.body["Caller-Direction"]&& req.body["session_id"]) {
+                                     if (req.body && req.body["Caller-Caller-ID-Number"] && req.body["Caller-Destination-Number"] && req.body["Caller-Direction"] && req.body["session_id"]) {
 
                                          //FormData["display"] = req.body["Caller-Caller-ID-Number"] + " - " +req.body["Caller-Destination-Number"];
 
                                          try {
-                                             CreateEngagement("voicemail", uuid_data["company"], uuid_data["tenant"], req.body["Caller-Caller-ID-Number"], req.body["Caller-Destination-Number"], req.body["Caller-Direction"], req.body["session_id"], function (isSuccess, result) {
-                                                 if (isSuccess && result) {
 
 
-                                                     var voicemailData = {
-                                                         type: "question",
-                                                         subject: "Voice mail from " + req.body["Caller-Caller-ID-Number"],
-                                                         description: "",
-                                                         priority: "high"
+                                             var voicemailData = {
+                                                 type: "question",
+                                                 subject: "Voice mail from " + req.body["Caller-Caller-ID-Number"],
+                                                 description: "",
+                                                 priority: "high"
 
-                                                     };
+                                             };
 
-                                                     CreateTicket("voicemail", req.body["session_id"], uuid_data["company"], uuid_data["tenant"], voicemailData["type"], voicemailData["subject"], voicemailData["description"], voicemailData["priority"], voicemailData["tags"], function (success, result) {
+                                             CreateTicket("voicemail", req.body["session_id"], uuid_data["company"], uuid_data["tenant"], voicemailData["type"], voicemailData["subject"], voicemailData["description"], voicemailData["priority"], voicemailData["tags"], function (success, result) {
 
-                                                         if (success) {
+                                                 if (success && result) {
 
-                                                             logger.debud("Create ticket success");
-                                                         } else {
-                                                             logger.debug("Create ticket failed");
-                                                         }
-                                                     });
-
+                                                     logger.debug("Create ticket success", result);
                                                  } else {
-
-                                                     logger.error("Create engagement failed .......");
+                                                     logger.debug("Create ticket failed");
                                                  }
                                              });
-                                         }catch(ex){
+
+
+                                         } catch (ex) {
                                              logger.error(ex);
                                          }
-                                     }else{
+                                     } else {
 
                                          logger.error("Create engagement no necessory data found ....");
                                      }
-                                 }else{
+                                 } else {
 
                                      logger.error("Upload failed .....");
                                  }
