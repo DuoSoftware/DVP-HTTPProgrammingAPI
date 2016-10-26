@@ -145,6 +145,8 @@ function postData(req, res) {
                      mediatype:"audio",
                      filetype:"wav"}
 
+                    var fileID = format("http://{0}/DVP/API/{1}/InternalFileService/File/DownloadLatest/{2}/{3}/{4}", config.Services.downloadurl, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], FormData.filename);
+
 
 
                     if(req.body){
@@ -180,14 +182,14 @@ function postData(req, res) {
                                              var voicemailData = {
                                                  type: "question",
                                                  subject: "Voice mail from " + req.body["Caller-Caller-ID-Number"],
-                                                 description: "Voice mail from " + req.body["Caller-Caller-ID-Number"],
+                                                 description: "Voicemail" + fileID,
                                                  priority: "high"
 
                                              };
 
                                              CreateTicket("voicemail", req.body["session_id"], uuid_data["company"], uuid_data["tenant"], voicemailData["type"], voicemailData["subject"], voicemailData["description"], voicemailData["priority"], voicemailData["tags"], function (success, result) {
 
-                                                 if (success && result) {
+                                                 if (success) {
 
                                                      logger.debug("Create ticket success", result);
                                                  } else {
