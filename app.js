@@ -145,37 +145,80 @@ function postData(req, res) {
                      mediatype:"audio",
                      filetype:"wav"}
 
+
+
+                    if(req.body){
+                        logger.debug(req.body);
+                    }
+
+                    if(req.body && req.body["Caller-Caller-ID-Number"] && req.body["Caller-Destination-Number"]){
+
+                        FormData["display"] = req.body["Caller-Caller-ID-Number"] + " - " +req.body["Caller-Destination-Number"];
+                    }
+
                      var r = request.post({url:urloadurl,formData: FormData, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function(error, response, body){
                          if(err){
                             logger.error("File upload error", err);
                          }else{
 
-                             if(response){
+                             if(response ){
 
                                  logger.debug("Response recived", response.body);
+
+                                 if(response.IsSuccess){
+
+
+                                     if(req.body && req.body["Caller-Caller-ID-Number"] && req.body["Caller-Destination-Number"] && req.body["Caller-Direction"]&& req.body["session_id"]) {
+
+                                         //FormData["display"] = req.body["Caller-Caller-ID-Number"] + " - " +req.body["Caller-Destination-Number"];
+
+                                         CreateEngagement("voicemail", uuid_data["company"], uuid_data["tenant"], req.body["Caller-Caller-ID-Number"], req.body["Caller-Destination-Number"], req.body["Caller-Direction"], req.body["session_id"], function (isSuccess, result) {
+                                             if(isSuccess && result){
+
+
+                                                 var voicemailData = {
+                                                     type: "question",
+                                                     subject: "Voice mail from " + req.body["Caller-Caller-ID-Number"],
+                                                     description: "",
+                                                     priority: "high"
+
+                                                 };
+
+                                                 CreateTicket("sms",sessionid,uuid_data["company"],uuid_data["tenant"],voicemailData["type"], voicemailData["subject"], voicemailData["description"],voicemailData["priority"],voicemailData["tags"],function(success, result){
+
+                                                     if(success){
+
+                                                         logger.debud("Create ticket success");
+                                                     }else{
+                                                          logger.debug("Create ticket failed");
+                                                     }
+                                                 });
+
+                                             }else{
+
+                                                 logger.error("Create engagement failed .......");
+                                             }
+                                         });
+                                     }else{
+
+                                         logger.error("Create engagement no necessory data found ....");
+                                     }
+                                 }
                              }
                          }
 
                      });
                      redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify({Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  }), redis.print);
 
-
                 }else{
 
-
                     logger.debug("Upload url is not configured");
-
-
                 }
 
             }catch(ex){
 
                 logger.error("Error occured ",err);
             }
-
-
-
-
         }
     });
 
