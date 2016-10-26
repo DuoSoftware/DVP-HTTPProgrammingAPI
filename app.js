@@ -124,11 +124,11 @@ function postData(req, res) {
                 if(config.Services && config.Services.uploadurl  && config.Services.uploadport) {
 
 
-                     var urloadurl = format("http://{0}/DVP/API/{1}/InternalFileService/File/Upload", config.Services.uploadurl,config.Services.uploadurlVersion);
+                     var urloadurl = format("http://{0}/DVP/API/{1}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadurlVersion);
 
 
                      if(validator.isIP(config.Services.uploadurl))
-                     urloadurl = format("http://{0}:{1}/DVP/API/{2}/InternalFileService/File/Upload", config.Services.uploadurl,config.Services.uploadport,config.Services.uploadurlVersion);
+                     urloadurl = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadport,config.Services.uploadurlVersion);
 
 
                     logger.debug("File Upload to " + urloadurl);
@@ -152,7 +152,7 @@ function postData(req, res) {
 
                              if(response){
 
-                                 logger.debug(response);
+                                 logger.debug("Response recived", response.body);
                              }
                          }
 
