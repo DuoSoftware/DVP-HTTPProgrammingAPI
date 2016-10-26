@@ -161,12 +161,12 @@ function postData(req, res) {
                             logger.error("File upload error", err);
                          }else{
 
-                             logger.debug(response);
+                             //logger.debug(response);
                              if(response ){
 
                                  logger.debug("Response recived", response.body);
 
-                                 if(response.IsSuccess){
+                                 if(response.body.IsSuccess){
 
 
                                      if(req.body && req.body["Caller-Caller-ID-Number"] && req.body["Caller-Destination-Number"] && req.body["Caller-Direction"]&& req.body["session_id"]) {
