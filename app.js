@@ -163,7 +163,7 @@ function postData(req, res) {
                 }else{
 
 
-                    logger.debug(("Upload url is not configured");
+                    logger.debug("Upload url is not configured");
 
 
                 }
