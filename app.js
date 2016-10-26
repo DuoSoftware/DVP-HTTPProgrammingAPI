@@ -99,6 +99,7 @@ function postData(req, res) {
     //fs.createReadStream('file.json').pipe(request.put('http://mysite.com/obj.json'))
 
 
+    logger.debug("Post voicemail recived");
 
     
     redisClient.get(req.body["session_id"] + "_dev", function (err, sessiondata) {
@@ -106,7 +107,7 @@ function postData(req, res) {
         var uuid_data;
         if (err) {
 
-            console.log(err);
+            logger.Error("Error on get session ",err);
 
         }
         else {
@@ -130,6 +131,8 @@ function postData(req, res) {
                      urloadurl = format("http://{0}:{1}/DVP/API/{2}/InternalFileService/File/Upload", config.Services.uploadurl,config.Services.uploadport,config.Services.uploadurlVersion);
 
 
+                    logger.debug("File Upload to " + urloadurl);
+
                      var FormData = {
                      sessionid: req.body["session_id"],
                      file: fs.createReadStream(req.files.result["path"]),
@@ -142,21 +145,32 @@ function postData(req, res) {
                      mediatype:"audio",
                      filetype:"wav"}
 
-                     var r = request.post({url:urloadurl,formData: FormData, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, requestCallback);
+                     var r = request.post({url:urloadurl,formData: FormData, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function(error, response, body){
+                         if(err){
+                            logger.error("File upload error", err);
+                         }else{
+
+                             if(response){
+
+                                 logger.debug(response);
+                             }
+                         }
+
+                     });
                      redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify({Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  }), redis.print);
 
 
                 }else{
 
 
-                    console.log("Upload url is not configured");
+                    logger.debug(("Upload url is not configured");
 
 
                 }
 
             }catch(ex){
 
-                console.log(err);
+                logger.error("Error occured ",err);
             }
 
 
