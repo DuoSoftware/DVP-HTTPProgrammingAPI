@@ -164,9 +164,9 @@ function postData(req, res) {
                              //logger.debug(response);
                              if(response ){
 
-                                 logger.debug("Response recived", body);
-                                 logger.debug("Response recived", body["IsSuccess"]);
-
+                                 logger.debug("Response recived", response.body);
+                                 response.body = JSON.parse(response.body);
+                                 logger.debug("Response recived", response.body["IsSuccess"]);
                                  if(response.body["IsSuccess"]){
 
 
