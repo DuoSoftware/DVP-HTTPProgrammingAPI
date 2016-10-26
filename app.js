@@ -145,7 +145,7 @@ function postData(req, res) {
                      mediatype:"audio",
                      filetype:"wav"}
 
-                     var r = request.post({url:urloadurl,formData: FormData, headers: {'authorization': "Bearer "+token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function(error, response, body){
+                     var r = request.post({url:urloadurl,formData: FormData, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function(error, response, body){
                          if(err){
                             logger.error("File upload error", err);
                          }else{
