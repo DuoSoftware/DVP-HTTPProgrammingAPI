@@ -1379,23 +1379,20 @@ function HandleFunction(queryData, req, res, next) {
                                         uuid_dev["baseurl"] = callData["baseurl"];
                                     }
 
-                                    if(callData.params && util.isArray(callData.params) && callData.params.length > 0){
+                                    if(callData.params){
 
-                                        if(!uuid_dev["dev_params"]) {
-
-                                            uuid_dev["dev_params"] = {};
-                                        }
-
-
-                                        callData.params.forEach(function(item){
-
-                                            if(item.key && item.value){
-
-                                                uuid_dev["dev_params"][item.key] = item.value;
-                                            }
-
+                                         if(!uuid_dev["dev_params"]) {
+                                                    uuid_dev["dev_params"] = {};
+                                                }
+                                        
+                                         Object.keys(callData.params).forEach(function(key) {
+                                            var val = callData.params[key];
+                                             
+                                             
+                                            
+                                             uuid_dev["dev_params"][key] = val;
                                         });
-
+  
                                     }
 
                                 }
