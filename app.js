@@ -165,8 +165,9 @@ function postData(req, res) {
                              if(response ){
 
                                  logger.debug("Response recived", response.body);
+                                 logger.debug("Response recived", response.body["IsSuccess"]);
 
-                                 if(response.body.IsSuccess){
+                                 if(response.body["IsSuccess"]){
 
 
                                      if(req.body && req.body["Caller-Caller-ID-Number"] && req.body["Caller-Destination-Number"] && req.body["Caller-Direction"]&& req.body["session_id"]) {
