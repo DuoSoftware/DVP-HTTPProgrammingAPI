@@ -136,14 +136,14 @@ function postData(req, res) {
                      var FormData = {
                      sessionid: req.body["session_id"],
                      file: fs.createReadStream(req.files.result["path"]),
-                     filename: req.body["session_id"]+".wav",
+                     filename: req.body["session_id"]+".mp3",
                      display: req.files.result["name"],
                      class: "CALLSERVER",
                      type:"CALL",
                      category:"VOICEMAIL",
                      referenceid:req.body["session_id"],
                      mediatype:"audio",
-                     filetype:"wav"}
+                     filetype:"mp3"}
 
                     var fileID = format("http://{0}/DVP/API/{1}/InternalFileService/File/DownloadLatest/{2}/{3}/{4}", config.Services.downloadurl, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], FormData.filename);
 
