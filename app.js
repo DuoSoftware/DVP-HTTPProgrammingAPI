@@ -887,7 +887,6 @@ function CreateComment(channel, channeltype,company, tenant, engid, engagement, 
 
 };
 
-
 ///http://ardsliteservice.app.veery.cloud/DVP/API/1.0.0.0/ARDS/request
 
 function AddNoteToEngagement(company, tenant, session,body){
@@ -1893,10 +1892,20 @@ function HandleFunction(queryData, req, res, next) {
                                                         callData["Language"] = "en";
 
 
+                                                    if(callData['company'] && callData['tenant'] ){
+
+                                                        uuid_data['company'] = callData['company'];
+                                                        uuid_data['tenant'] = callData['tenant'];
+
+                                                    }else{
+
+                                                        callData['company'] = uuid_data['company'];
+                                                        callData['tenant'] = uuid_data['tenant'];
+
+                                                    }
 
 
-                                                    callData['company'] = uuid_data['company'];
-                                                    callData['tenant'] = uuid_data['tenant'];
+
 
                                                     logger.debug("HTTPProgrammingAPI.Handler Request profile resolution %s %j", queryData["session_id"], profileData);
 
