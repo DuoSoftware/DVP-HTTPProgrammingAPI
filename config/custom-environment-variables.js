@@ -6,10 +6,22 @@ module.exports = {
     },
 
 
+
     "Redis":
     {
         "ip": "SYS_REDIS_HOST",
-        "port": "SYS_REDIS_PORT"
+        "port": "SYS_REDIS_PORT",
+        "user": "SYS_REDIS_USER",
+        "password": "SYS_REDIS_PASSWORD"
+
+    },
+
+    "Security":
+    {
+        "ip": "SYS_REDIS_HOST",
+        "port": "SYS_REDIS_PORT",
+        "user": "SYS_REDIS_USER",
+        "password": "SYS_REDIS_PASSWORD"
 
     },
 
@@ -30,9 +42,24 @@ module.exports = {
         "uploadurl": "SYS_FILESERVICE_HOST",
         "uploadport":"SYS_FILESERVICE_PORT",
         "uploadurlVersion":"SYS_FILESERVICE_VERSION",
-        "downloadurl": "SYS_FILESERVICE_HOST",
-        "downloadport":"SYS_FILESERVICE_PORT",
-        "downloaddurlVersion" : "SYS_FILESERVICE_VERSION",
+        "fileserviceurl": "SYS_FILESERVICE_HOST",
+        "fileserviceport":"SYS_FILESERVICE_PORT",
+        "fileserviceVersion":"SYS_FILESERVICE_VERSION",
+
+
+        "interactionurl": "SYS_INTERACTION_HOST",
+        "interactionport": "SYS_INTERACTION_PORT",
+        "interactionversion":"SYS_INTERACTION_VERSION",
+
+        "ticketurl": "SYS_TICKET_HOST",
+        "ticketport": "SYS_TICKET_PORT",
+        "ticketversion":"SYS_TICKET_VERSION",
+
+
+
+        "downloadurl": "SYS_DOWNLOAD_FILESERVICE_HOST",
+        "downloadport":"SYS_DOWNLOAD_FILESERVICE_PORT",
+        "downloaddurlVersion" : "SYS_DOWNLOAD_FILESERVICE_VERSION",
         "ruleservice": "SYS_RULESERVICE_HOST",
         "ruleserviceport": "SYS_RULESERVICE_PORT",
         "ruleserviceVersion": "SYS_RULESERVICE_VERSION",
@@ -52,7 +79,8 @@ module.exports = {
         "vdomain": "LB_FRONTEND",
         "domain": "HOST_NAME",
         "port": "HOST_HTTPPROGRAMMINGAPI_PORT",
-        "version": "HOST_VERSION"
+        "version": "HOST_VERSION",
+        "token": "HOST_TOKEN"
     }
 
 

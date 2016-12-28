@@ -1,13 +1,13 @@
 {
     "action": "record",
     "file": "testrecord.wav",
-    "nexturl": "http://localhost/IVR/end.json",
-    "posturl": "http://localhost/IVR/end.json",
+    "nexturl": "end.json",
+    "posturl": "end.json",
     "result": "result",
     "errorfile": "",
     "digittimeout" : 5,
     "inputtimeout" : 10,
-    "limit" : 30,
+    "limit" : 30000,
     "terminator" : "*",
     "strip" : "*",
     "digits" : 1

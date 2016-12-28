@@ -1,5 +1,5 @@
 {
     "action": "hangup",
     "cause": "NORMAL_CLEAN",
-    "nexturl": "http://localhost/IVR/hangup.json"
+    "nexturl": "hangup.json"
 }
