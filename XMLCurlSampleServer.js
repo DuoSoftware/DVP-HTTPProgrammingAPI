@@ -34,7 +34,21 @@ var server = restify.createServer({
 });
 
 
-var redisClient = redis.createClient(config.Redis.port, config.Redis.ip);
+
+
+var redisip = config.Redis.ip;
+var redisport = config.Redis.port;
+var redisuser = config.Redis.user;
+var redispass = config.Redis.password;
+
+
+//[redis:]//[user][:password@][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]
+//redis://user:secret@localhost:6379
+var url = "redis://"+redisuser+":"+redispass+"@"+redisip+":"+redisport;
+var redisClient = redis.createClient({url:url});
+
+
+//var redisClient = redis.createClient(config.Redis.port, config.Redis.ip);
 redisClient.on('error', function (err) {
     console.log('Error '.red, err);
 });
@@ -71,8 +85,10 @@ server.post('/CallApp', function(req,res,next) {
 
     //app: 'call'
     // "http://45.55.179.9/DVP-Demo/done/start.php
-    // "http://localhost/ivr/index.json"
-    var uuid_data = { path: "http://localhost/ivr/index.json", company: 1, tenent: 3, pbx: 'none', appid: '6', domain:'192.168.8.100', profile: 'default' };
+    // http://localhost/IVR/index.json
+    //http://162.243.81.39/IVR/LassanaFloraIVR/start.php
+    //http://162.243.81.39/IVR/demoIVR_2/index.php
+    var uuid_data = { path: "http://162.243.81.39/IVR/demoIVR_2", app:'index.php',company: 3, tenant: 1, pbx: 'none', appid: '3', domain:'192.168.0.97', profile: 'default' };
     var redisData = JSON.stringify(uuid_data);
     redisClient.set(varUuid + "_data", redisData, function(err, value) {
 
@@ -81,7 +97,7 @@ server.post('/CallApp', function(req,res,next) {
             var doc = builder.create("document")
                 .att("type", "freeswitch/xml")
                 .ele("section").att("name", "dialplan").att("description", "RE Dial Plan For FreeSwitch")
-                .ele("context").att("name", "public")
+                .ele("context").att("name", "default")
                 .ele("extension").att("name", "test9")
                 .ele("condition").att("field", "destination_number").att("expression", "[^\\s]*")
                 .ele("action").att("application", "answer").up()
@@ -92,7 +108,7 @@ server.post('/CallApp', function(req,res,next) {
                // .ele("action").att("application", "log").att("data", "CRIT ${read_terminator_used}").up()
                 //.ele("action").att("application", "lua").att("data", "lua/AutoAttendant.lua 1 3 1111 Internal Internal").up()
 
-                .ele("action").att("application", "lua").att("data", "lua/VoicePortal.lua 1111 1 2 AVAILABLE 4 5 6 7").up()
+                //.ele("action").att("application", "lua").att("data", "lua/VoicePortal.lua 1111 1 2 AVAILABLE 4 5 6 7").up()
 
 
 /*
@@ -100,10 +116,11 @@ server.post('/CallApp', function(req,res,next) {
             <action application="playback" data="foo.wav" />
             </condition>*/
 
+                //.ele("action").att("application", "playback").att("data", "http://www.wavsource.com/snds_2016-03-13_7646817315637486/animals/bird_chirping2.wav").up()
 
 
 
-             //.ele("action").att("application", "httapi").att("data", "{url=http://127.0.0.1:8086}").up()
+             .ele("action").att("application", "httapi").att("data", "{url=http://127.0.0.1:8086}").up()
                 //.ele("action").att("application", "socket").att("data", "127.0.0.1:8084 async full")
                 //<action application="socket" data="127.0.0.1:8084 async full"/>
               .end({pretty: true});
@@ -112,7 +129,7 @@ server.post('/CallApp', function(req,res,next) {
         //<action application="multiset" data="effective_caller_id_name=FreeSwitch effective_caller_id_number=12345678"/>
 
 
-            res.end(doc);
+            res.end(doc.toString());
 
             console.log(doc)
         }

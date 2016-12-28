@@ -369,7 +369,7 @@ var Queue = function (actionURL, tempURL, skill, server, port) {
 };
 
 
-var Ards = function (actionURL, tempURL, skill, company, tenant, ardsholdmusic, ardsfirstannouncement, ardsannouncement, announcementtime) {
+var Ards = function (actionURL, tempURL, skill,skilldisplay, company, tenant, ardsholdmusic, ardsfirstannouncement, ardsannouncement, announcementtime, positionannouncement, language) {
 
 
 
@@ -378,6 +378,9 @@ var Ards = function (actionURL, tempURL, skill, company, tenant, ardsholdmusic, 
         .ele("variables")
         .ele("ards_skill")
         .text(skill)
+        .up()
+        .ele("ards_skill_display")
+        .text(skilldisplay)
         .up()
         .ele("companyid")
         .text(company)
@@ -397,6 +400,12 @@ var Ards = function (actionURL, tempURL, skill, company, tenant, ardsholdmusic, 
         .ele("ards_announcement_time")
         .text(announcementtime)
         .up()
+        .ele("ards_position_announcement")
+        .text(positionannouncement)
+        .up()
+        .ele("ards_position_language")
+        .text(language)
+        .up()
         .up()
         .ele("params")
         .up()
@@ -405,6 +414,7 @@ var Ards = function (actionURL, tempURL, skill, company, tenant, ardsholdmusic, 
         .att("action", actionURL)
         .att("temp-action", tempURL)
         .att("application", "ards")
+        .att("data", skill+","+tenant+","+company+",")
         .end({ pretty: true });
 
 

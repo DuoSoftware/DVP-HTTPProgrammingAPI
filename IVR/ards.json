@@ -3,6 +3,8 @@
   "nexturl": "http://localhost/IVR/end.json",
   "posturl": "http://localhost/IVR/end.json",
   "result": "result",
-  "skill" : "123456",
-  "profile": "TEST"
+  "skill" : "3",
+  "profile": "TEST",
+  "company": "3",
+  "tenant": "1"
 }
