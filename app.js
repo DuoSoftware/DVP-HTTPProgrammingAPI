@@ -829,6 +829,65 @@ function CreateTicket(channel,session, company, tenant, type, subjecct, descript
 }
 
 
+function CreateSubmission(session, requester, submitter, satisfaction, cb){
+
+    if((config.Services && config.Services.csaturl && config.Services.csatport && config.Services.csatversion)) {
+
+
+        var ticketURL = format("http://{0}/DVP/API/{1}/CustomerSatisfaction/Submission/ByEngagement", config.Services.csaturl, config.Services.csatversion);
+        if (validator.isIP(config.Services.csaturl))
+            ticketURL = format("http://{0}:{1}/DVP/API/{2}/CustomerSatisfaction/Submission/ByEngagement", config.Services.csaturl, config.Services.csatport, config.Services.csatversion);
+
+        var csatData =  {
+
+            requester: requester,
+            submitter: submitter,
+            engagement: session,
+            method:'ivr',
+            satisfaction: satisfaction
+
+
+        };
+
+
+
+        logger.debug("Calling CSAT service URL %s", ticketURL);
+        request({
+            method: "POST",
+            url: ticketURL,
+            headers: {
+                authorization: token,
+                companyinfo: format("{0}:{1}", tenant, company)
+            },
+            json: csatData
+        }, function (_error, _response, datax) {
+
+            try {
+
+                if (!_error && _response && _response.statusCode == 200 && _response.body && _response.body.IsSuccess) {
+
+                    cb(true, _response.body.Result);
+
+                }else{
+
+                    logger.error("There is an error in  create csat for this session "+ session);
+
+                    cb(false, undefined);
+
+
+                }
+            }
+            catch (excep) {
+
+                logger.error("There is an error in  create csat for this session "+ session, excep);
+                cb(false, undefined);
+
+            }
+        });
+    }
+}
+
+
 function CreateComment(channel, channeltype,company, tenant, engid, engagement, cb){
 
     //http://localhost:3636/DVP/API/1.0.0.0/TicketByEngagement/754236638146859008/Comment
@@ -1105,13 +1164,19 @@ function HandleSMS(req, res, next){
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     CreateEngagement("sms",company,tenant,from,destination,"inbound",sessionid, function(isSuccess,result){
 
-                        if(isSuccess){
+                        if(isSuccess && result){
 
-                            logger.debug("SMS Engagement Created Successfully  "+ sessiondata);
+                            logger.debug("SMS Engagement Created Successfully  "+ result);
+
+                            if(result && result.profile_id){
+
+
+                            }
+
 
                         }else{
 
-                            logger.debug("SMS Engagement Creation Failed  "+ sessiondata);
+                            logger.debug("SMS Engagement Creation Failed  "+ result);
                         }
 
                         var date = new Date();
@@ -1239,69 +1304,89 @@ function HandleSMS(req, res, next){
 
 
 function HandleFunction(queryData, req, res, next) {
-    
-    
+
+
     //console.log(req.url);
     //var queryData = url.parse(req.url, true).query;
 
-    var isdebug= false;
+    var isdebug = false;
     var debugdata = {};
     var fileID = "";
     var company = '';
     var tenant = '';
 
     logger.debug("HTTPProgrammingAPI.Handler FS Request Recived");
-    
-    
+
+
     if (queryData["exiting"] == "true") {
 
         logger.debug("HTTPProgrammingAPI.Handler Session Leave %s", queryData["session_id"]);
-        
+
         redisClient.del(queryData["session_id"] + "_dev", redis.print);
         redisClient.del(queryData["session_id"] + "_command", redis.print);
-       //redisClient.del(queryData["session_id"] + "_result", redis.print);
+        //redisClient.del(queryData["session_id"] + "_result", redis.print);
         redisClient.del(queryData["session_id"] + "_data", redis.print);
-       // redisClient.lrem(queryData["Caller-Destination-Number"] + "_live" , 0 , queryData["session_id"], redis.print);
+        // redisClient.lrem(queryData["Caller-Destination-Number"] + "_live" , 0 , queryData["session_id"], redis.print);
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         var date = new Date();
-        var callreciveEvent = {EventClass:'APP',EventType:'EVENT', EventCategory:'SYSTEM', EventTime:date, EventName:'APPLICATIONEND',EventData:'',EventParams:'',CompanyId:company, TenantId: tenant, SessionId: queryData["session_id"]  };
+        var callreciveEvent = {
+            EventClass: 'APP',
+            EventType: 'EVENT',
+            EventCategory: 'SYSTEM',
+            EventTime: date,
+            EventName: 'APPLICATIONEND',
+            EventData: '',
+            EventParams: '',
+            CompanyId: company,
+            TenantId: tenant,
+            SessionId: queryData["session_id"]
+        };
         redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
 
 
-        logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s",queryData["session_id"], callreciveEvent);
+        logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s", queryData["session_id"], callreciveEvent);
         //////////////////////////////////////////////////////////////////////////////// %s///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        res.writeHead(200, { "Content-Type": "text/xml" });
+        res.writeHead(200, {"Content-Type": "text/xml"});
         res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
         res.end();
-        
+
         return next();
 
     }
-    
-    
+
+
     redisClient.get(queryData["session_id"] + "_data", function (err, sessiondata) {
-        
+
         var uuid_dev;
         if (err) {
 
-            logger.error("HTTPProgrammingAPI.Handler REDIS Error in sessiondata retrieve %s",queryData["session_id"], err);
+            logger.error("HTTPProgrammingAPI.Handler REDIS Error in sessiondata retrieve %s", queryData["session_id"], err);
             console.error("error");
-            res.writeHead(200, { "Content-Type": "text/xml" });
+            res.writeHead(200, {"Content-Type": "text/xml"});
             res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
             res.end();
         }
         else {
             //console.log("Worked: " + sessiondata);
             var uuid_data = JSON.parse(sessiondata);
-            
+
             if (!sessiondata) {
-                
-                uuid_data = { path: "http://localhost:8081", company: 1, tenant: 3, pbx: 'none', appid:'none', domain:'none', profile:'default', env:'production'};
+
+                uuid_data = {
+                    path: "http://localhost:8081",
+                    company: 1,
+                    tenant: 3,
+                    pbx: 'none',
+                    appid: 'none',
+                    domain: 'none',
+                    profile: 'default',
+                    env: 'production'
+                };
 
                 logger.debug("HTTPProgrammingAPI.Handler no sessiondata found create new");
 
@@ -1310,28 +1395,28 @@ function HandleFunction(queryData, req, res, next) {
 
             //logger.debug("Session Data included ----------------------> %j", sessiondata);
 
-            if(uuid_data["env"] == "debug"){
+            if (uuid_data["env"] == "debug") {
 
                 isdebug = true;
             }
 
             company = uuid_data['company'];
             tenant = uuid_data['tenant'];
-            
-            
+
+
             if (!uuid_data) {
-                res.writeHead(200, { "Content-Type": "text/xml" });
+                res.writeHead(200, {"Content-Type": "text/xml"});
                 res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
                 res.end();
 
             }
             else {
                 redisClient.get(queryData["session_id"] + "_dev", function (err, value) {
-                    
+
                     var uuid_dev;
                     if (err) {
-                        logger.error("HTTPProgrammingAPI.Handler REDIS Error in sessiondev retrieve %s",queryData["session_id"], err);
-                        res.writeHead(200, { "Content-Type": "text/xml" });
+                        logger.error("HTTPProgrammingAPI.Handler REDIS Error in sessiondev retrieve %s", queryData["session_id"], err);
+                        res.writeHead(200, {"Content-Type": "text/xml"});
                         res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
                         res.end();
                     }
@@ -1339,7 +1424,7 @@ function HandleFunction(queryData, req, res, next) {
                         //console.log("Worked: " + value);
                         uuid_dev = JSON.parse(value);
                         if (!value) {
-                            
+
                             var basurl = "none";
                             var nxurl = uuid_data["path"];
                             if (uuid_data["app"]) {
@@ -1347,21 +1432,53 @@ function HandleFunction(queryData, req, res, next) {
                                 basurl = uuid_data["path"];
                             }
 
-                            uuid_dev = { serverdata: queryData, nexturl: nxurl, currenturl: "none", result: "result", lastcommand: "none", lastresult: "none", company: uuid_data["company"], tenant: uuid_data["tenant"], posturl: "none", baseurl: basurl, appid:  uuid_data["appid"]}
+                            uuid_dev = {
+                                serverdata: queryData,
+                                nexturl: nxurl,
+                                currenturl: "none",
+                                result: "result",
+                                lastcommand: "none",
+                                lastresult: "none",
+                                company: uuid_data["company"],
+                                tenant: uuid_data["tenant"],
+                                posturl: "none",
+                                baseurl: basurl,
+                                appid: uuid_data["appid"]
+                            }
                             //redisClient.lpush(queryData["Caller-Destination-Number"] + "_live", queryData["session_id"], redis.print);
                             //redisClient.lpush("APPID_" + uuid_data["appid"], queryData["session_id"], redis.print);
                             logger.debug("HTTPProgrammingAPI.Handler Session Create %s", queryData["session_id"], uuid_dev);
                             //////////////////////////////////////ceate engagement session/////////////////////////////////////////////////////////
-                            CreateEngagement("call", uuid_data["company"],uuid_data["tenant"],queryData["Caller-Caller-ID-Number"],queryData["Caller-Destination-Number"],queryData["Caller-Direction"],queryData["session_id"],function(isSuccess,result){});
+                            CreateEngagement("call", uuid_data["company"], uuid_data["tenant"], queryData["Caller-Caller-ID-Number"], queryData["Caller-Destination-Number"], queryData["Caller-Direction"], queryData["session_id"], function (isSuccess, result) {
+
+
+
+                                    if(isSuccess && result){
+
+                                        logger.debug("SMS Engagement Created Successfully  "+ result);
+
+                                        if(result && result.profile_id){
+
+                                            if (!uuid_dev["dev_params"]) {
+                                                uuid_dev["dev_params"] = {};
+                                            }
+                                            uuid_dev["dev_params"]["profile"]=result.profile_id;
+                                        }
+
+                                    }else{
+
+                                        logger.debug("SMS Engagement Creation Failed  "+ result);
+                                    }
+                            });
                             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                         }
-                        
-                        
+
+
                         var resultValue = "none";
                         if (queryData[uuid_dev["result"]]) {
                             resultValue = queryData[uuid_dev["result"]];
                             uuid_dev["lastresult"] = resultValue;
-                            if(!uuid_dev["dev_params"]) {
+                            if (!uuid_dev["dev_params"]) {
 
                                 uuid_dev["dev_params"] = {};
                             }
@@ -1369,45 +1486,71 @@ function HandleFunction(queryData, req, res, next) {
 
                         }
                         //redisClient.lpush(queryData["session_id"] + "_result", resultValue, redis.print);
-                        
-                        var body = { session: queryData["session_id"], direction: queryData["Caller-Direction"], ani: queryData["Caller-Caller-ID-Number"], dnis: queryData["Caller-Destination-Number"], name: queryData["Caller-Caller-ID-Name"], result: resultValue };
 
-                        if(uuid_dev["dev_params"]){
+                        var body = {
+                            session: queryData["session_id"],
+                            direction: queryData["Caller-Direction"],
+                            ani: queryData["Caller-Caller-ID-Number"],
+                            dnis: queryData["Caller-Destination-Number"],
+                            name: queryData["Caller-Caller-ID-Name"],
+                            result: resultValue
+                        };
+
+                        if (uuid_dev["dev_params"]) {
 
                             body["dev_params"] = uuid_dev["dev_params"];
                         }
 
-                        logger.debug("HTTPProgrammingAPI.Handler RequestOut DeveloperAPP Data %s %j",queryData["session_id"], body);
+                        logger.debug("HTTPProgrammingAPI.Handler RequestOut DeveloperAPP Data %s %j", queryData["session_id"], body);
 
                         // var data = JSON.stringify(body);
-                        
-                        var options = { url: uuid_dev["nexturl"], method: "POST", json: body, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])} };
+
+                        var options = {
+                            url: uuid_dev["nexturl"],
+                            method: "POST",
+                            json: body,
+                            headers: {
+                                'authorization': token,
+                                'companyinfo': format("{0}:{1}", uuid_data["tenant"], uuid_data["company"])
+                            }
+                        };
 
                         ////////////////////////////////////////
 
                         var date = new Date();
-                        var callreciveEvent = {EventClass:'APP',EventType:'EVENT', EventCategory:'SYSTEM', EventTime:date, EventName:'APPLICATIONFOUND',EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenant"], SessionId: queryData["session_id"]  };
+                        var callreciveEvent = {
+                            EventClass: 'APP',
+                            EventType: 'EVENT',
+                            EventCategory: 'SYSTEM',
+                            EventTime: date,
+                            EventName: 'APPLICATIONFOUND',
+                            EventData: uuid_data["appid"],
+                            EventParams: '',
+                            CompanyId: uuid_data["company"],
+                            TenantId: uuid_data["tenant"],
+                            SessionId: queryData["session_id"]
+                        };
                         redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
 
-                        logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j",queryData["session_id"], callreciveEvent);
+                        logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j", queryData["session_id"], callreciveEvent);
 
 
                         ////////////////////////////////////////
                         logger.debug("HTTPProgrammingAPI.Handler RequestOut DeveloperAPP URL %s", uuid_dev["nexturl"]);
-                        
-                        
+
+
                         request(options, function (error, response, data) {
-                            
+
                             if (!error && response.statusCode == 200) {
 
 
                                 logger.debug("HTTPProgrammingAPI.Handler RequestOut DeveloperAPP Success %s %j", queryData["session_id"], response.body);
-                                
+
                                 //console.log(response.body)
                                 //console.log(data);
                                 redisClient.lpush(queryData["session_id"] + "_command", JSON.stringify(response.body), redis.print);
 
-                                logger.debug("HTTPProgrammingAPI.Handler REDIS lpush data for command %s",queryData["session_id"]);
+                                logger.debug("HTTPProgrammingAPI.Handler REDIS lpush data for command %s", queryData["session_id"]);
 
 
                                 var callData;
@@ -1417,48 +1560,65 @@ function HandleFunction(queryData, req, res, next) {
                                     callData = response.body;
 
                                     uuid_dev["lastcommand"] = callData["action"];
-                                    
+
                                     if (callData["posturl"]) {
                                         uuid_dev["posturl"] = callData["posturl"];
                                     }
-                                    
+
                                     if (callData["baseurl"]) {
                                         uuid_dev["baseurl"] = callData["baseurl"];
                                     }
 
-                                    if(callData.params){
+                                    if (callData.params) {
 
-                                         if(!uuid_dev["dev_params"]) {
-                                                    uuid_dev["dev_params"] = {};
-                                                }
-                                        
-                                         Object.keys(callData.params).forEach(function(key) {
+                                        if (!uuid_dev["dev_params"]) {
+                                            uuid_dev["dev_params"] = {};
+                                        }
+
+                                        Object.keys(callData.params).forEach(function (key) {
                                             var val = callData.params[key];
-                                             
-                                             
-                                            
-                                             uuid_dev["dev_params"][key] = val;
+
+
+                                            uuid_dev["dev_params"][key] = val;
                                         });
-  
+
                                     }
 
                                 }
                                 catch (e) {
 
 
-                                    var eventFlowData = JSON.stringify({Type: 'DATA', Code: '', URL: '', APPID: uuid_dev["appid"], Description: JSON.stringify(response.body), SessionID: queryData["session_id"] });
+                                    var eventFlowData = JSON.stringify({
+                                        Type: 'DATA',
+                                        Code: '',
+                                        URL: '',
+                                        APPID: uuid_dev["appid"],
+                                        Description: JSON.stringify(response.body),
+                                        SessionID: queryData["session_id"]
+                                    });
 
                                     redisClient.publish("SYS:HTTPPROGRAMMING:DATAERROR", eventFlowData, redis.print);
-                                    logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data for monitoring api %s %j",queryData["session_id"], eventFlowData);
+                                    logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data for monitoring api %s %j", queryData["session_id"], eventFlowData);
                                     var date = new Date();
-                                    var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'DEVELOPER', EventTime:date, EventName:'DEVELOPERDATAERROR',EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenant"], SessionId: queryData["session_id"]  };
+                                    var callreciveEvent = {
+                                        EventClass: 'APP',
+                                        EventType: 'ERROR',
+                                        EventCategory: 'DEVELOPER',
+                                        EventTime: date,
+                                        EventName: 'DEVELOPERDATAERROR',
+                                        EventData: uuid_data["appid"],
+                                        EventParams: '',
+                                        CompanyId: uuid_data["company"],
+                                        TenantId: uuid_data["tenant"],
+                                        SessionId: queryData["session_id"]
+                                    };
                                     redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
-                                    logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j",queryData["session_id"], callreciveEvent);
-                                    res.writeHead(200, { "Content-Type": "text/xml" });
+                                    logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j", queryData["session_id"], callreciveEvent);
+                                    res.writeHead(200, {"Content-Type": "text/xml"});
                                     res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
                                     res.end();
                                     logger.error("HTTPProgrammingAPI.Handler RequestOut DeveloperAPP DataError %s %j", queryData["session_id"], callData);
-                                    
+
                                     return next();
                                 }
 
@@ -1467,177 +1627,198 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                 var date = new Date();
-                                var callreciveEvent = {EventClass:'APP',EventType:'COMMAND', EventCategory:'DEVELOPER', EventTime:date, EventName:callData["action"], EventData:uuid_data["appid"],EventParams:callData["display"],CompanyId:uuid_data["company"], TenantId: uuid_data["tenant"], SessionId: queryData["session_id"]};
-                                redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                                var callreciveEvent = {
+                                    EventClass: 'APP',
+                                    EventType: 'COMMAND',
+                                    EventCategory: 'DEVELOPER',
+                                    EventTime: date,
+                                    EventName: callData["action"],
+                                    EventData: uuid_data["appid"],
+                                    EventParams: callData["display"],
+                                    CompanyId: uuid_data["company"],
+                                    TenantId: uuid_data["tenant"],
+                                    SessionId: queryData["session_id"]
+                                };
+                                if (callData['eventlog'] == true) {
+                                    redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                                }
 
-                                logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j",queryData["session_id"], callreciveEvent);
+                                logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j", queryData["session_id"], callreciveEvent);
+
 
                                 ////////////////////////////////////////
 
-                                if(callData["note"]){
-                                    AddNoteToEngagement(uuid_data["company"], uuid_data["tenant"],queryData["session_id"],callData["note"]);
+                                if (callData["note"]) {
+                                    AddNoteToEngagement(uuid_data["company"], uuid_data["tenant"], queryData["session_id"], callData["note"]);
                                 }
 
 
-
-                                if((callData["action"] == "play" || callData["action"] == "playandgetdigits" ) ) {
+                                if ((callData["action"] == "play" || callData["action"] == "playandgetdigits" )) {
 
 
                                     var filenamex = callData["file"];
                                     var urlx;
 
-                                    if((config.Services && config.Services.fileserviceurl && config.Services.fileserviceport && uuid_data['appid'])) {
+                                    if ((config.Services && config.Services.fileserviceurl && config.Services.fileserviceport && uuid_data['appid'])) {
 
                                         ///DVP/API/'+version+'/FIleService/FileHandler/:filename/FileInfoForApplicationId/:appId
 
-                                        urlx = format("http://{0}/DVP/API/{1}/FileService/File/{2}/ofApplication/{3}", config.Services.fileserviceurl,config.Services.fileserviceVersion, filenamex, uuid_data['appid']);
-                                        if(validator.isIP(config.Services.fileserviceurl))
-                                            urlx = format("http://{0}:{1}/DVP/API/{2}/FileService/File/{3}/ofApplication/{4}", config.Services.fileserviceurl,config.Services.fileserviceport,config.Services.fileserviceVersion, filenamex, uuid_data['appid']);
+                                        urlx = format("http://{0}/DVP/API/{1}/FileService/File/{2}/ofApplication/{3}", config.Services.fileserviceurl, config.Services.fileserviceVersion, filenamex, uuid_data['appid']);
+                                        if (validator.isIP(config.Services.fileserviceurl))
+                                            urlx = format("http://{0}:{1}/DVP/API/{2}/FileService/File/{3}/ofApplication/{4}", config.Services.fileserviceurl, config.Services.fileserviceport, config.Services.fileserviceVersion, filenamex, uuid_data['appid']);
 
 
-                                        logger.debug("Calling FILE service URL %s",urlx);
-                                        request.get({url:urlx, headers: {authorization: token, companyinfo: format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}},function (_error, _response, datax) {
+                                        logger.debug("Calling FILE service URL %s", urlx);
+                                        request.get({
+                                            url: urlx,
+                                            headers: {
+                                                authorization: token,
+                                                companyinfo: format("{0}:{1}", uuid_data["tenant"], uuid_data["company"])
+                                            }
+                                        }, function (_error, _response, datax) {
 
-                                                var fileID = filenamex;
+                                            var fileID = filenamex;
 
+                                            try {
+
+                                                var filedata
+                                                if (_response)
+                                                    filedata = JSON.parse(_response.body);
+
+                                                if (!_error && _response && _response.statusCode == 200 && filedata && filedata.Result && filedata.Result["UniqueId"]) {
+
+
+                                                    logger.debug("HTTPProgrammingAPI.Handler Request File resolution Responsedata %d %j %j ", _response.statusCode, filedata, filedata.Result);
+
+
+                                                    var ext = filedata.Result.FileStructure.split(/[/]+/).pop();
+                                                    fileID = format("{0}.{1}", filedata.Result.UniqueId, ext);
+
+                                                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                                                    ///DVP/API/'+version+'/FileService/File/Download/:id/:displayname
+
+                                                    fileID = format("http://{0}/DVP/API/{1}/InternalFileService/File/DownloadLatest/{2}/{3}/{4}", config.Services.downloadurl, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
+
+
+                                                    if (validator.isIP(config.Services.downloadurl))
+                                                        fileID = format("http://{0}:{1}/DVP/API/{2}/InternalFileService/File/DownloadLatest/{3}/{4}/{5}", config.Services.downloadurl, config.Services.downloadport, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
+
+                                                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                                                    //fileID = "http://localhost/IVR/Duo_IVR_Menu.wav";
+
+                                                    logger.debug("HTTPProgrammingAPI.Handler Request File resolution %s %s", queryData["session_id"], fileID);
+
+
+                                                }
+                                                else {
+
+
+                                                    //uuid_data["tenant"],uuid_data["company"]
+                                                    //var companyLocation = format("{0}_{1}",uuid_data["tenant"], uuid_data["company"]);
+                                                    //fileID = format("{0}/{1}",companyLocation, filenamex);
+
+                                                    logger.error("HTTPProgrammingAPI.Handler Request File resolution %s", queryData["session_id"]);
+                                                    logger.error("Errors -----> " + _error + " " + _response);
+
+
+                                                }
+
+                                                ///////////////////////////////////////////////////////////////////////////
                                                 try {
 
-                                                    var filedata
-                                                    if(_response )
-                                                        filedata = JSON.parse(_response.body);
+                                                    logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"], callData, uuid_data["domain"], uuid_data["profile"], queryData);
 
-                                                    if (!_error && _response && _response.statusCode == 200 && filedata && filedata.Result && filedata.Result["UniqueId"]) {
+                                                    Operation(callData, fileID, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '', '');
+                                                }
+                                                catch (exxx) {
 
+                                                    console.log(exxx);
 
+                                                }
+                                                console.log("----------------------------------------------------> get result");
 
+                                                uuid_dev["result"] = callData["result"];
 
-
-                                                        logger.debug("HTTPProgrammingAPI.Handler Request File resolution Responsedata %d %j %j ", _response.statusCode, filedata, filedata.Result);
-
-
-
-                                                        var ext = filedata.Result.FileStructure.split(/[/]+/).pop();
-                                                        fileID = format("{0}.{1}", filedata.Result.UniqueId, ext);
-
-                                                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                                                        ///DVP/API/'+version+'/FileService/File/Download/:id/:displayname
-
-                                                        fileID = format("http://{0}/DVP/API/{1}/InternalFileService/File/DownloadLatest/{2}/{3}/{4}", config.Services.downloadurl, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
+                                                console.log("----------------------------------------------------> got result");
 
 
-                                                        if (validator.isIP(config.Services.downloadurl))
-                                                            fileID = format("http://{0}:{1}/DVP/API/{2}/InternalFileService/File/DownloadLatest/{3}/{4}/{5}", config.Services.downloadurl, config.Services.downloadport, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
+                                                if (uuid_dev["baseurl"] != "none") {
 
-                                                        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                                    console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
-                                                        //fileID = "http://localhost/IVR/Duo_IVR_Menu.wav";
+                                                    uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                    uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["nexturl"]);
+                                                }
+                                                else {
 
-                                                        logger.debug("HTTPProgrammingAPI.Handler Request File resolution %s %s", queryData["session_id"], fileID);
+                                                    console.log("----------------------------------------------------> no base url");
 
+                                                    uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                    uuid_dev["nexturl"] = callData["nexturl"];
 
-                                                    }
-                                                    else {
+                                                    console.log("DEV DATA -------------> %j", uuid_dev);
+                                                    console.log("CALL DATA -------------> %j", callData);
 
-
-                                                        //uuid_data["tenant"],uuid_data["company"]
-                                                        //var companyLocation = format("{0}_{1}",uuid_data["tenant"], uuid_data["company"]);
-                                                        //fileID = format("{0}/{1}",companyLocation, filenamex);
-
-                                                        logger.error("HTTPProgrammingAPI.Handler Request File resolution %s", queryData["session_id"]);
-                                                        logger.error("Errors -----> "+_error+ " "+_response);
-
-
-                                                    }
-
-                                                    ///////////////////////////////////////////////////////////////////////////
-                                                    try {
-
-                                                        logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"], callData, uuid_data["domain"], uuid_data["profile"], queryData);
-
-                                                        Operation(callData, fileID, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '', '');
-                                                    }
-                                                    catch (exxx) {
-
-                                                        console.log(exxx);
-
-                                                    }
-                                                    console.log("----------------------------------------------------> get result");
-
-                                                    uuid_dev["result"] = callData["result"];
-
-                                                    console.log("----------------------------------------------------> got result");
-
-
-                                                    if (uuid_dev["baseurl"] != "none" ) {
-
-                                                        console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
-
-                                                        uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                        uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["nexturl"]);
-                                                    }
-                                                    else {
-
-                                                        console.log("----------------------------------------------------> no base url");
-
-                                                        uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                        uuid_dev["nexturl"] = callData["nexturl"];
-
-                                                        console.log("DEV DATA -------------> %j", uuid_dev);
-                                                        console.log("CALL DATA -------------> %j", callData);
-
-
-                                                    }
-
-
-                                                    logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s", queryData["session_id"], uuid_dev["nexturl"]);
-
-
-                                                    try {
-                                                        var redisData = JSON.stringify(uuid_dev);
-                                                        redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
-                                                        logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j", redisData);
-                                                    }
-                                                    catch (e) {
-                                                        console.error(e);
-                                                    }
-
-
-                                                } catch (exx) {
-
-                                                    console.error(exx);
 
                                                 }
 
 
+                                                logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s", queryData["session_id"], uuid_dev["nexturl"]);
 
-                                        });}else{
+
+                                                try {
+                                                    var redisData = JSON.stringify(uuid_dev);
+                                                    redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                                    logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j", redisData);
+                                                }
+                                                catch (e) {
+                                                    console.error(e);
+                                                }
+
+
+                                            } catch (exx) {
+
+                                                console.error(exx);
+
+                                            }
+
+
+                                        });
+                                    } else {
 
                                         var fileID = filenamex;
                                         Operation(callData, fileID, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '', '');
 
                                     }
 
-                                } else if(callData["action"] == "dialgateway"){
+                                } else if (callData["action"] == "dialgateway") {
 
 
                                     var outbountruleurl;
 
 
-                                    if((config.Services && config.Services.ruleservice && config.Services.ruleserviceport)) {
+                                    if ((config.Services && config.Services.ruleservice && config.Services.ruleserviceport)) {
                                         //, uuid_data["tenant"],uuid_data["company"]
 
                                         outbountruleurl = format("http://{0}/DVP/API/{1}/CallRule/Outbound/ANI/{2}/DNIS/{3}", config.Services.ruleservice, config.Services.ruleserviceVersion, callData["callernumber"], callData["number"]);
 
 
-                                        if(validator.isIP(config.Services.ruleservice))
-                                            outbountruleurl = format("http://{0}:{1}/DVP/API/{2}/CallRule/Outbound/ANI/{3}/DNIS/{4}", config.Services.ruleservice,config.Services.ruleserviceport, config.Services.ruleserviceVersion, callData["callernumber"], callData["number"]);
+                                        if (validator.isIP(config.Services.ruleservice))
+                                            outbountruleurl = format("http://{0}:{1}/DVP/API/{2}/CallRule/Outbound/ANI/{3}/DNIS/{4}", config.Services.ruleservice, config.Services.ruleserviceport, config.Services.ruleserviceVersion, callData["callernumber"], callData["number"]);
                                     }
 
 
-                                    request.get({url:outbountruleurl,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function (_error, _response, datax) {
+                                    request.get({
+                                        url: outbountruleurl,
+                                        headers: {
+                                            'authorization': token,
+                                            'companyinfo': format("{0}:{1}", uuid_data["tenant"], uuid_data["company"])
+                                        }
+                                    }, function (_error, _response, datax) {
 
-                                       // var fileID = filenamex;
+                                        // var fileID = filenamex;
 
                                         var ani;
                                         var gateway;
@@ -1651,11 +1832,11 @@ function HandleFunction(queryData, req, res, next) {
                                                 var ruledata = _response.body.Result;
 
                                                 callData["callernumber"] = ruledata["ANI"];
-                                                callData["number"] =  ruledata["DNIS"];
+                                                callData["number"] = ruledata["DNIS"];
                                                 callData["gateway"] = ruledata["GatewayCode"];
 
 
-                                                logger.debug("HTTPProgrammingAPI.Handler Request Gateway resolution %s %j", queryData["session_id"],ruledata);
+                                                logger.debug("HTTPProgrammingAPI.Handler Request Gateway resolution %s %j", queryData["session_id"], ruledata);
 
 
                                             }
@@ -1664,16 +1845,16 @@ function HandleFunction(queryData, req, res, next) {
                                                 logger.error("HTTPProgrammingAPI.Handler Request Gateway resolution %s", queryData["session_id"]);
 
                                                 callData["action"] = "hangup";
-                                                callData["cause"] =  "SERVICE_UNAVAILABLE";
+                                                callData["cause"] = "SERVICE_UNAVAILABLE";
 
 
                                             }
 
 
-                                            logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
+                                            logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"], callData, uuid_data["domain"], uuid_data["profile"], queryData);
 
 
-                                            Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '',  '');
+                                            Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '', '');
 
                                             console.log("----------------------------------------------------> get result");
 
@@ -1682,7 +1863,7 @@ function HandleFunction(queryData, req, res, next) {
                                             console.log("----------------------------------------------------> got result");
 
 
-                                            if (uuid_dev["baseurl"] != "none" ) {
+                                            if (uuid_dev["baseurl"] != "none") {
 
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
@@ -1698,20 +1879,20 @@ function HandleFunction(queryData, req, res, next) {
 
                                                 console.log(uuid_dev["nexturl"]);
 
-                                                console.log("DEV DATA -------------> %j",uuid_dev);
-                                                console.log("CALL DATA -------------> %j",callData);
+                                                console.log("DEV DATA -------------> %j", uuid_dev);
+                                                console.log("CALL DATA -------------> %j", callData);
 
 
                                             }
 
 
-                                            logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s",queryData["session_id"], uuid_dev["nexturl"]);
+                                            logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s", queryData["session_id"], uuid_dev["nexturl"]);
 
 
                                             try {
                                                 var redisData = JSON.stringify(uuid_dev);
                                                 redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
-                                                logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
+                                                logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j", redisData);
                                             }
                                             catch (e) {
                                                 console.error(e);
@@ -1724,36 +1905,42 @@ function HandleFunction(queryData, req, res, next) {
                                     });
                                 }
 
-                                else if(callData["action"] == "queue"){
+                                else if (callData["action"] == "queue") {
 
 
                                     var queueURL;
 
 
-                                    if((config.Services && config.Services.ards )) {
+                                    if ((config.Services && config.Services.ards )) {
 
 
-                                        queueURL = format("http://{0}/ardsurl/{1}/{2}", config.Services.ards,  uuid_data["tenant"],uuid_data["company"]);
+                                        queueURL = format("http://{0}/ardsurl/{1}/{2}", config.Services.ards, uuid_data["tenant"], uuid_data["company"]);
 
 
-                                        if(validator.isIP(config.Services.ards))
-                                            queueURL = format("http://{0}:{1}/ardsurl/{2}/{3}", config.Services.ards,config.Services.ardsport,  uuid_data["tenant"],uuid_data["company"]);
+                                        if (validator.isIP(config.Services.ards))
+                                            queueURL = format("http://{0}:{1}/ardsurl/{2}/{3}", config.Services.ards, config.Services.ardsport, uuid_data["tenant"], uuid_data["company"]);
 
 
                                     }
 
 
-                                    request.get({url:queueURL,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function (_error, _response, datax) {
+                                    request.get({
+                                        url: queueURL,
+                                        headers: {
+                                            'authorization': token,
+                                            'companyinfo': format("{0}:{1}", uuid_data["tenant"], uuid_data["company"])
+                                        }
+                                    }, function (_error, _response, datax) {
 
 
                                         try {
 
-                                            if (!_error && _response.statusCode == 200 && _response.body &&_response.body.IsSuccess) {
+                                            if (!_error && _response.statusCode == 200 && _response.body && _response.body.IsSuccess) {
 
 
                                                 var urldata = _response.body.Result;
 
-                                                callData["ip"] =  urldata["ip"];
+                                                callData["ip"] = urldata["ip"];
                                                 callData["port"] = urldata["port"];
 
                                                 logger.debug("HTTPProgrammingAPI.Handler Request Queue resolution %s %j", queryData["session_id"], urldata);
@@ -1763,7 +1950,7 @@ function HandleFunction(queryData, req, res, next) {
                                             else {
 
                                                 console.log("Get ARDS rule failed --------> ");
-                                                callData["ip"] =  "127.0.0.1";
+                                                callData["ip"] = "127.0.0.1";
                                                 callData["port"] = 8084;
 
                                                 logger.error("HTTPProgrammingAPI.Handler Request Queue resolution %s", queryData["session_id"]);
@@ -1772,10 +1959,10 @@ function HandleFunction(queryData, req, res, next) {
                                             }
 
 
-                                            logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
+                                            logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"], callData, uuid_data["domain"], uuid_data["profile"], queryData);
 
 
-                                            Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], callData["ip"],  callData["port"]);
+                                            Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], callData["ip"], callData["port"]);
 
                                             console.log("----------------------------------------------------> get result");
 
@@ -1784,7 +1971,7 @@ function HandleFunction(queryData, req, res, next) {
                                             console.log("----------------------------------------------------> got result");
 
 
-                                            if (uuid_dev["baseurl"] != "none" ) {
+                                            if (uuid_dev["baseurl"] != "none") {
 
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
@@ -1800,18 +1987,18 @@ function HandleFunction(queryData, req, res, next) {
 
                                                 console.log(uuid_dev["nexturl"]);
 
-                                                console.log("DEV DATA -------------> %j",uuid_dev);
-                                                console.log("CALL DATA -------------> %j",callData);
+                                                console.log("DEV DATA -------------> %j", uuid_dev);
+                                                console.log("CALL DATA -------------> %j", callData);
                                             }
 
 
-                                            logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s",queryData["session_id"], uuid_dev["nexturl"]);
+                                            logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s", queryData["session_id"], uuid_dev["nexturl"]);
 
 
                                             try {
                                                 var redisData = JSON.stringify(uuid_dev);
                                                 redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
-                                                logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
+                                                logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j", redisData);
                                             }
                                             catch (e) {
                                                 console.error(e);
@@ -1825,79 +2012,82 @@ function HandleFunction(queryData, req, res, next) {
                                 }
 
                                 /////////////////////////////////////////ards command////////////////////////////////////////////////////////////////////////////
-                                else if(callData["action"] == "ards"){
+                                else if (callData["action"] == "ards") {
 
 
                                     var profileURL;
 
 
-                                    if((config.Services && config.Services.qmusicurl )) {
+                                    if ((config.Services && config.Services.qmusicurl )) {
 
 
+                                        profileURL = format("http://{0}/DVP/API/{1}/QueueMusic/Profile/{2}", config.Services.qmusicurl, config.Services.qmusicVersion, callData["profile"]);
 
 
-                                        profileURL = format("http://{0}/DVP/API/{1}/QueueMusic/Profile/{2}", config.Services.qmusicurl,  config.Services.qmusicVersion,callData["profile"]);
-
-
-                                        if(validator.isIP(config.Services.qmusicurl))
-                                            profileURL = format("http://{0}:{1}/DVP/API/{2}/QueueMusic/Profile/{3}", config.Services.qmusicurl,config.Services.qmusicport,   config.Services.qmusicVersion,callData["profile"]);
+                                        if (validator.isIP(config.Services.qmusicurl))
+                                            profileURL = format("http://{0}:{1}/DVP/API/{2}/QueueMusic/Profile/{3}", config.Services.qmusicurl, config.Services.qmusicport, config.Services.qmusicVersion, callData["profile"]);
 
 
                                     }
 
 
-                                    request.get({url:profileURL,headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function (_error, _response, datax) {
+                                    request.get({
+                                        url: profileURL,
+                                        headers: {
+                                            'authorization': token,
+                                            'companyinfo': format("{0}:{1}", uuid_data["tenant"], uuid_data["company"])
+                                        }
+                                    }, function (_error, _response, datax) {
 
 
                                         try {
 
 
-
-                                            if (!_error &&_response && _response.statusCode == 200 ) {
+                                            if (!_error && _response && _response.statusCode == 200) {
 
                                                 var profileData = JSON.parse(_response.body);
 
-                                                if(profileData && profileData.IsSuccess && profileData.Result) {
+                                                if (profileData && profileData.IsSuccess && profileData.Result) {
 
 
-                                                    if(profileData.Result.MOH)
+                                                    if (profileData.Result.MOH)
                                                         callData["MOH"] = profileData.Result.MOH;
                                                     else
-                                                        callData["MOH"] ="";
+                                                        callData["MOH"] = "";
 
-                                                    if(profileData.Result.Announcement)
+                                                    if (profileData.Result.Announcement)
                                                         callData["Announcement"] = profileData.Result.Announcement;
                                                     else
                                                         callData["Announcement"] = "";
 
 
-                                                    if(profileData.Result.FirstAnnounement)
+                                                    if (profileData.Result.FirstAnnounement)
                                                         callData["FirstAnnounement"] = profileData.Result.FirstAnnounement;
                                                     else
                                                         callData["FirstAnnounement"] = "";
 
-                                                    if(profileData.Result.AnnouncementTime)
+                                                    if (profileData.Result.AnnouncementTime)
                                                         callData["AnnouncementTime"] = profileData.Result.AnnouncementTime;
                                                     else
                                                         callData["AnnouncementTime"] = "";
 
-                                                    if(profileData.Result.PositionAnnouncement)
+                                                    if (profileData.Result.PositionAnnouncement)
                                                         callData["PositionAnnouncement"] = "true";
                                                     else
                                                         callData["PositionAnnouncement"] = "false";
 
-                                                    if(profileData.Result.Language)
+                                                    if (profileData.Result.Language)
                                                         callData["Language"] = profileData.Result.Language;
                                                     else
                                                         callData["Language"] = "en";
 
 
-                                                    if(callData['company'] && callData['tenant'] ){
+                                                    if (callData['company'] && callData['tenant']) {
 
                                                         uuid_data['company'] = callData['company'];
                                                         uuid_data['tenant'] = callData['tenant'];
 
-                                                    }else{
+                                                    } else {
 
                                                         callData['company'] = uuid_data['company'];
                                                         callData['tenant'] = uuid_data['tenant'];
@@ -1905,14 +2095,12 @@ function HandleFunction(queryData, req, res, next) {
                                                     }
 
 
-
-
                                                     logger.debug("HTTPProgrammingAPI.Handler Request profile resolution %s %j", queryData["session_id"], profileData);
 
-                                                }else{
+                                                } else {
 
                                                     console.log("Get ARDS rule failed --------> ");
-                                                    callData["MOH"] =  "";
+                                                    callData["MOH"] = "";
                                                     callData["Announcement"] = "";
                                                     callData["FirstAnnounement"] = "";
                                                     callData["AnnouncementTime"] = "";
@@ -1926,7 +2114,7 @@ function HandleFunction(queryData, req, res, next) {
                                             else {
 
                                                 console.log("Get ARDS rule failed --------> ");
-                                                callData["MOH"] =  "";
+                                                callData["MOH"] = "";
                                                 callData["Announcement"] = "";
                                                 callData["FirstAnnounement"] = "";
                                                 callData["AnnouncementTime"] = "";
@@ -1940,10 +2128,10 @@ function HandleFunction(queryData, req, res, next) {
                                             }
 
 
-                                            logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
+                                            logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"], callData, uuid_data["domain"], uuid_data["profile"], queryData);
 
 
-                                            Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], callData["ip"],  callData["port"]);
+                                            Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], callData["ip"], callData["port"]);
 
                                             console.log("----------------------------------------------------> get result");
 
@@ -1952,7 +2140,7 @@ function HandleFunction(queryData, req, res, next) {
                                             console.log("----------------------------------------------------> got result");
 
 
-                                            if (uuid_dev["baseurl"] != "none" ) {
+                                            if (uuid_dev["baseurl"] != "none") {
 
                                                 console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
@@ -1968,18 +2156,18 @@ function HandleFunction(queryData, req, res, next) {
 
                                                 console.log(uuid_dev["nexturl"]);
 
-                                                console.log("DEV DATA -------------> %j",uuid_dev);
-                                                console.log("CALL DATA -------------> %j",callData);
+                                                console.log("DEV DATA -------------> %j", uuid_dev);
+                                                console.log("CALL DATA -------------> %j", callData);
                                             }
 
 
-                                            logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s",queryData["session_id"], uuid_dev["nexturl"]);
+                                            logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s", queryData["session_id"], uuid_dev["nexturl"]);
 
 
                                             try {
                                                 var redisData = JSON.stringify(uuid_dev);
                                                 redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
-                                                logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
+                                                logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j", redisData);
                                             }
                                             catch (e) {
                                                 console.error(e);
@@ -1992,16 +2180,18 @@ function HandleFunction(queryData, req, res, next) {
                                         }
 
                                     });
-                                }else if(callData["action"] == "ticket") {
+                                }
 
-                                    CreateTicket("call",queryData["session_id"],uuid_data["company"],uuid_data["tenant"],callData["type"], callData["subject"],callData["description"],callData["prority"],callData["tags"],function(success, resu){
+                                else if (callData["action"] == "ticket") {
+
+                                    CreateTicket("call", queryData["session_id"], uuid_data["company"], uuid_data["tenant"], callData["type"], callData["subject"], callData["description"], callData["prority"], callData["tags"], function (success, resu) {
 
                                         callData["action"] = "continue";
 
-                                        logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
+                                        logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"], callData, uuid_data["domain"], uuid_data["profile"], queryData);
 
 
-                                        Operation(callData, callData["file"], mainServer, queryData, res,uuid_data["domain"],uuid_data["profile"]);
+                                        Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"]);
 
                                         console.log("----------------------------------------------------> get result");
 
@@ -2010,7 +2200,7 @@ function HandleFunction(queryData, req, res, next) {
                                         console.log("----------------------------------------------------> got result");
 
 
-                                        if (uuid_dev["baseurl"] != "none" ) {
+                                        if (uuid_dev["baseurl"] != "none") {
 
                                             console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
@@ -2027,20 +2217,85 @@ function HandleFunction(queryData, req, res, next) {
                                             console.log(uuid_dev["nexturl"]);
 
 
-                                            console.log("DEV DATA -------------> %j",uuid_dev);
-                                            console.log("CALL DATA -------------> %j",callData);
+                                            console.log("DEV DATA -------------> %j", uuid_dev);
+                                            console.log("CALL DATA -------------> %j", callData);
 
 
                                         }
 
 
-                                        logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s",queryData["session_id"], uuid_dev["nexturl"]);
+                                        logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s", queryData["session_id"], uuid_dev["nexturl"]);
 
 
                                         try {
                                             var redisData = JSON.stringify(uuid_dev);
                                             redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
-                                            logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
+                                            logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j", redisData);
+                                        }
+                                        catch (e) {
+                                            console.error(e);
+                                        }
+
+
+                                    });
+
+                                }
+
+                                else if (callData["action"] == "csat") {
+
+                                    var profile;
+                                    if(uuid_dev["dev_params"] && uuid_dev["dev_params"]["profile"]){
+
+                                        profile = uuid_dev["dev_params"]["profile"];
+                                    }
+
+                                    CreateSubmission(queryData["session_id"],queryData["ARDS-Resource-Profile-Name"],uuid_dev["dev_params"]["profile"], function (success, resu) {
+
+                                        callData["action"] = "continue";
+
+                                        logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"], callData, uuid_data["domain"], uuid_data["profile"], queryData);
+
+
+                                        Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"]);
+
+                                        console.log("----------------------------------------------------> get result");
+
+                                        uuid_dev["result"] = callData["result"];
+
+                                        console.log("----------------------------------------------------> got result");
+
+
+                                        if (uuid_dev["baseurl"] != "none") {
+
+                                            console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
+
+                                            uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                            uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["nexturl"]);
+                                        }
+                                        else {
+
+                                            console.log("----------------------------------------------------> no base url");
+
+                                            uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                            uuid_dev["nexturl"] = callData["nexturl"];
+
+                                            console.log(uuid_dev["nexturl"]);
+
+
+                                            console.log("DEV DATA -------------> %j", uuid_dev);
+                                            console.log("CALL DATA -------------> %j", callData);
+
+
+                                        }
+
+
+                                        logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s", queryData["session_id"], uuid_dev["nexturl"]);
+
+
+                                        try {
+                                            var redisData = JSON.stringify(uuid_dev);
+                                            redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                            logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j", redisData);
                                         }
                                         catch (e) {
                                             console.error(e);
@@ -2052,6 +2307,9 @@ function HandleFunction(queryData, req, res, next) {
                                 }
 
 
+
+
+
                                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2059,10 +2317,10 @@ function HandleFunction(queryData, req, res, next) {
 
                                     ///////////////////////////////////////////////////////////////////////////
 
-                                    logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"],callData,uuid_data["domain"], uuid_data["profile"], queryData);
+                                    logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"], callData, uuid_data["domain"], uuid_data["profile"], queryData);
 
 
-                                    Operation(callData, callData["file"], mainServer, queryData, res,uuid_data["domain"],uuid_data["profile"]);
+                                    Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"]);
 
                                     console.log("----------------------------------------------------> get result");
 
@@ -2071,7 +2329,7 @@ function HandleFunction(queryData, req, res, next) {
                                     console.log("----------------------------------------------------> got result");
 
 
-                                    if (uuid_dev["baseurl"] != "none" ) {
+                                    if (uuid_dev["baseurl"] != "none") {
 
                                         console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
 
@@ -2088,20 +2346,20 @@ function HandleFunction(queryData, req, res, next) {
                                         console.log(uuid_dev["nexturl"]);
 
 
-                                        console.log("DEV DATA -------------> %j",uuid_dev);
-                                        console.log("CALL DATA -------------> %j",callData);
+                                        console.log("DEV DATA -------------> %j", uuid_dev);
+                                        console.log("CALL DATA -------------> %j", callData);
 
 
                                     }
 
 
-                                    logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s",queryData["session_id"], uuid_dev["nexturl"]);
+                                    logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s", queryData["session_id"], uuid_dev["nexturl"]);
 
 
                                     try {
                                         var redisData = JSON.stringify(uuid_dev);
                                         redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
-                                        logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",redisData);
+                                        logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j", redisData);
                                     }
                                     catch (e) {
                                         console.error(e);
@@ -2114,10 +2372,10 @@ function HandleFunction(queryData, req, res, next) {
 
                             }
                             else {
-                                
+
                                 //redisClient.lpush(queryData["Caller-Destination-Number"] + "_error", response.statusCode + "\n" + uuid_dev["nexturl"], redis.print);
 
-                                if(response) {
+                                if (response) {
 
                                     var callreciveEvent = JSON.stringify({
                                         Type: 'HTTP',
@@ -2131,13 +2389,13 @@ function HandleFunction(queryData, req, res, next) {
                                     redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
 
 
-                                    logger.debug("HTTPProgrammingAPI.Handler REDIS Publish error for monitoring api %s %j",queryData["session_id"], callreciveEvent);
+                                    logger.debug("HTTPProgrammingAPI.Handler REDIS Publish error for monitoring api %s %j", queryData["session_id"], callreciveEvent);
 
-                                }else{
+                                } else {
 
                                     var callreciveEvent = JSON.stringify({
                                         Type: 'HTTP',
-                                        Code:0000,
+                                        Code: 0000,
                                         URL: uuid_dev["nexturl"],
                                         APPID: uuid_dev["appid"],
                                         SessionID: queryData["session_id"],
@@ -2146,25 +2404,33 @@ function HandleFunction(queryData, req, res, next) {
                                     redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
 
 
-                                    logger.debug("HTTPProgrammingAPI.Handler REDIS Publish error for monitoring api %s %j",queryData["session_id"], callreciveEvent);
+                                    logger.debug("HTTPProgrammingAPI.Handler REDIS Publish error for monitoring api %s %j", queryData["session_id"], callreciveEvent);
 
                                 }
-
 
 
                                 logger.error("HTTPProgrammingAPI.Handler RequestOut %s with response", queryData["session_id"]);
 
 
                                 var date = new Date();
-                                var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'DEVELOPER', EventTime:date, EventName:'DEVELOPERHTTPERROR',EventData:uuid_data["appid"],EventParams:'',CompanyId:uuid_data["company"], TenantId: uuid_data["tenant"], SessionId: queryData["session_id"]  };
+                                var callreciveEvent = {
+                                    EventClass: 'APP',
+                                    EventType: 'ERROR',
+                                    EventCategory: 'DEVELOPER',
+                                    EventTime: date,
+                                    EventName: 'DEVELOPERHTTPERROR',
+                                    EventData: uuid_data["appid"],
+                                    EventParams: '',
+                                    CompanyId: uuid_data["company"],
+                                    TenantId: uuid_data["tenant"],
+                                    SessionId: queryData["session_id"]
+                                };
                                 redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
 
-                                logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j",queryData["session_id"], callreciveEvent);
+                                logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j", queryData["session_id"], callreciveEvent);
 
 
-
-
-                                res.writeHead(200, { "Content-Type": "text/xml" });
+                                res.writeHead(200, {"Content-Type": "text/xml"});
                                 res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
                                 res.end();
 
@@ -2175,8 +2441,8 @@ function HandleFunction(queryData, req, res, next) {
             }
         }
     });
-    
-    
+
+
     return next();
 };
 
