@@ -865,6 +865,9 @@ function CreateSubmission(session, requester, submitter, satisfaction, cb){
             json: csatData
         }, function (_error, _response, datax) {
 
+
+            console.log(_response);
+
             try {
 
                 if (!_error && _response && _response.statusCode == 200 && _response.body && _response.body.IsSuccess) {
