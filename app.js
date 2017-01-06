@@ -831,9 +831,12 @@ function CreateTicket(channel,session, company, tenant, type, subjecct, descript
 
 function CreateSubmission(session, requester, submitter, satisfaction, cb){
 
+
+    console.log("CreateSubmission calling");
     if((config.Services && config.Services.csaturl && config.Services.csatport && config.Services.csatversion)) {
 
 
+        console.log("CreateSubmission start");
         var ticketURL = format("http://{0}/DVP/API/{1}/CustomerSatisfaction/Submission/ByEngagement", config.Services.csaturl, config.Services.csatversion);
         if (validator.isIP(config.Services.csaturl))
             ticketURL = format("http://{0}:{1}/DVP/API/{2}/CustomerSatisfaction/Submission/ByEngagement", config.Services.csaturl, config.Services.csatport, config.Services.csatversion);
@@ -2243,13 +2246,15 @@ function HandleFunction(queryData, req, res, next) {
 
                                 else if (callData["action"] == "csat") {
 
+
+                                    console.log("CSAT Running");
                                     var profile;
                                     if(uuid_dev["dev_params"] && uuid_dev["dev_params"]["profile"]){
 
                                         profile = uuid_dev["dev_params"]["profile"];
                                     }
 
-                                    CreateSubmission(queryData["session_id"],queryData["ARDS-Resource-Profile-Name"],uuid_dev["dev_params"]["profile"], function (success, resu) {
+                                    CreateSubmission(queryData["session_id"],queryData["ARDS-Resource-Profile-Name"],uuid_dev["dev_params"]["profile"],callData["satisfaction"], function (success, resu) {
 
                                         callData["action"] = "continue";
 
