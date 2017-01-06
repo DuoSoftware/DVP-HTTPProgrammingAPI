@@ -829,7 +829,7 @@ function CreateTicket(channel,session, company, tenant, type, subjecct, descript
 }
 
 
-function CreateSubmission(session, requester, submitter, satisfaction, cb){
+function CreateSubmission(company, tenant, session, requester, submitter, satisfaction, cb){
 
 
     console.log("CreateSubmission calling");
@@ -2257,7 +2257,7 @@ function HandleFunction(queryData, req, res, next) {
                                         profile = uuid_dev["dev_params"]["profile"];
                                     }
 
-                                    CreateSubmission(queryData["session_id"],queryData["ARDS-Resource-Profile-Name"],uuid_dev["dev_params"]["profile"],callData["satisfaction"], function (success, resu) {
+                                    CreateSubmission(uuid_data["company"], uuid_data["tenant"], queryData["session_id"],queryData["ARDS-Resource-Profile-Name"],uuid_dev["dev_params"]["profile"],callData["satisfaction"], function (success, resu) {
 
                                         callData["action"] = "continue";
 
