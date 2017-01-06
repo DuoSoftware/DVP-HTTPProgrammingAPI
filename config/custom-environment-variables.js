@@ -55,6 +55,10 @@ module.exports = {
         "ticketport": "SYS_TICKET_PORT",
         "ticketversion":"SYS_TICKET_VERSION",
 
+        "csaturl": "SYS_CSAT_HOST",
+        "csatport": 'SYS_CSAT_PORT',
+        "csatversion": "SYS_CSAT_VERSION",
+
 
 
         "downloadurl": "SYS_DOWNLOAD_FILESERVICE_HOST",
