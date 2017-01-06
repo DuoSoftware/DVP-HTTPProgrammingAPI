@@ -832,11 +832,11 @@ function CreateTicket(channel,session, company, tenant, type, subjecct, descript
 function CreateSubmission(company, tenant, session, requester, submitter, satisfaction, cb){
 
 
-    console.log("CreateSubmission calling");
+    //console.log("CreateSubmission calling");
     if((config.Services && config.Services.csaturl && config.Services.csatport && config.Services.csatversion)) {
 
 
-        console.log("CreateSubmission start");
+        //console.log("CreateSubmission start");
         var ticketURL = format("http://{0}/DVP/API/{1}/CustomerSatisfaction/Submission/ByEngagement", config.Services.csaturl, config.Services.csatversion);
         if (validator.isIP(config.Services.csaturl))
             ticketURL = format("http://{0}:{1}/DVP/API/{2}/CustomerSatisfaction/Submission/ByEngagement", config.Services.csaturl, config.Services.csatport, config.Services.csatversion);
@@ -866,7 +866,7 @@ function CreateSubmission(company, tenant, session, requester, submitter, satisf
         }, function (_error, _response, datax) {
 
 
-            console.log(_response);
+            //console.log(_response);
 
             try {
 
