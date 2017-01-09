@@ -1521,7 +1521,8 @@ function HandleFunction(queryData, req, res, next) {
                             }
                         };
 
-                        ////////////////////////////////////////
+
+
 
                         var date = new Date();
                         var callreciveEvent = {
@@ -1618,8 +1619,16 @@ function HandleFunction(queryData, req, res, next) {
                                         TenantId: uuid_data["tenant"],
                                         SessionId: queryData["session_id"]
                                     };
-                                    redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
-                                    logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j", queryData["session_id"], callreciveEvent);
+                                    redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), function (err, reply) {
+                                        if (err) {
+                                            console.log("Error: " + err);
+                                        } else {
+                                            console.log("Reply: " + reply);
+                                        }
+                                        logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j", queryData["session_id"], callreciveEvent);
+                                    });
+
+
                                     res.writeHead(200, {"Content-Type": "text/xml"});
                                     res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
                                     res.end();
