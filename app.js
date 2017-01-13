@@ -1494,6 +1494,7 @@ function HandleFunction(queryData, req, res, next) {
                             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                         }else{
 
+                            logger.info("Session is going to reset -----------------------------------------------------------------------------------> inside");
                             if(reset == true){
 
 
@@ -1503,6 +1504,8 @@ function HandleFunction(queryData, req, res, next) {
 
                                 logger.info("DEV data reset due to session reset____________________ ", uid_dev.nexturl,uuid_dev.baseurl, uuid_dev.appid);
                             }
+                            logger.info("Session is going to reset -----------------------------------------------------------------------------------> outside");
+
 
                         }
 
