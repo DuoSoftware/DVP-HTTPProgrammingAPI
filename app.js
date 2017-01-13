@@ -2258,6 +2258,8 @@ function HandleFunction(queryData, req, res, next) {
                                         profile = uuid_dev["dev_params"]["profile"];
                                     }
 
+                                    console.log("variable_ARDS-Resource-Profile-Name - " + queryData["variable_ARDS-Resource-Profile-Name"]);
+
                                     CreateSubmission(uuid_data["company"], uuid_data["tenant"], queryData["session_id"],queryData["variable_ARDS-Resource-Profile-Name"],uuid_dev["dev_params"]["profile"],callData["satisfaction"], function (success, resu) {
 
                                         callData["action"] = "continue";
