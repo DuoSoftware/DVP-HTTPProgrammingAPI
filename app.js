@@ -1400,6 +1400,15 @@ function HandleFunction(queryData, req, res, next) {
 
             }
 
+            var reset = false;
+            if(uuid_data && !uuid_data.taken){
+
+                logger.info("Session is going to reset ----------------------------------------------------------------------------------->");
+                reset = true;
+                uuid_data.taken = true;
+                redisClient.set(queryData["session_id"] + "_data", JSON.stringify(uuid_data) , redis.print)
+            }
+
 
             //logger.debug("Session Data included ----------------------> %j", sessiondata);
 
@@ -1407,6 +1416,8 @@ function HandleFunction(queryData, req, res, next) {
 
                 isdebug = true;
             }
+
+
 
             company = uuid_data['company'];
             tenant = uuid_data['tenant'];
@@ -1436,7 +1447,7 @@ function HandleFunction(queryData, req, res, next) {
                             var basurl = "none";
                             var nxurl = uuid_data["path"];
                             if (uuid_data["app"]) {
-                                nxurl = format("{0}/{1}", uuid_data["path"], uuid_data["app"])
+                                nxurl = format("{0}/{1}", uuid_data["path"], uuid_data["app"]);
                                 basurl = uuid_data["path"];
                             }
 
@@ -1479,7 +1490,21 @@ function HandleFunction(queryData, req, res, next) {
                                     }
                             });
                             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        }else{
+
+                            if(reset == true){
+
+
+                                uuid_dev.nexturl = format("{0}/{1}", uuid_data["path"], uuid_data["app"]);
+                                uuid_dev.baseurl = uuid_data["path"];
+                                uuid_dev.appid = uuid_data["appid"]
+
+                                logger.info("DEV data reset due to session reset____________________ ", uid_dev.nexturl,uuid_dev.baseurl, uuid_dev.appid);
+                            }
+
                         }
+
+
 
 
                         var resultValue = "none";
