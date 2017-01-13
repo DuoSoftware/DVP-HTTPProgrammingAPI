@@ -1378,7 +1378,7 @@ function HandleFunction(queryData, req, res, next) {
             res.end();
         }
         else {
-            //console.log("Worked: " + sessiondata);
+            console.log("Worked: " + sessiondata);
             var uuid_data = JSON.parse(sessiondata);
 
             if (!sessiondata) {
