@@ -855,6 +855,8 @@ function CreateSubmission(company, tenant, session, requester, submitter, satisf
 
 
         logger.debug("Calling CSAT service URL %s", ticketURL);
+        logger.debug(csatData);
+
         request({
             method: "POST",
             url: ticketURL,
@@ -1461,7 +1463,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                     if(isSuccess && result){
 
-                                        logger.debug("SMS Engagement Created Successfully  "+ result);
+                                        logger.debug("Call Engagement Created Successfully  "+ result);
 
                                         if(result && result.profile_id){
 
@@ -1473,7 +1475,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                     }else{
 
-                                        logger.debug("SMS Engagement Creation Failed  "+ result);
+                                        logger.debug("Call Engagement Creation Failed  "+ result);
                                     }
                             });
                             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1493,8 +1495,8 @@ function HandleFunction(queryData, req, res, next) {
                         }
 
                         if (queryData['variable_ARDS-Resource-Profile-Name']) {
-                            resultValue = queryData['variable_ARDS-Resource-Profile-Name'];
-                            uuid_dev["resource"] = resultValue;
+
+                            uuid_dev["resource"] = queryData['variable_ARDS-Resource-Profile-Name'];
                         }
 
 
@@ -2269,7 +2271,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                     console.log("variable_ARDS-Resource-Profile-Name -------------------------------------------------------------> " + uuid_dev["resource"]);
 
-                                    CreateSubmission(uuid_data["company"], uuid_data["tenant"], queryData["session_id"],uuid_dev["resource"],uuid_dev["dev_params"]["profile"],callData["satisfaction"], function (success, resu) {
+                                    CreateSubmission(uuid_data["company"], uuid_data["tenant"], queryData["session_id"],uuid_dev["resource"],profile,callData["satisfaction"], function (success, resu) {
 
                                         callData["action"] = "continue";
 
