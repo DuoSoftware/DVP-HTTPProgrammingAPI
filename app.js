@@ -1406,7 +1406,9 @@ function HandleFunction(queryData, req, res, next) {
                 logger.info("Session is going to reset ----------------------------------------------------------------------------------->");
                 reset = true;
                 uuid_data.taken = true;
-                redisClient.set(queryData["session_id"] + "_data", JSON.stringify(uuid_data) , redis.print)
+                redisClient.set(queryData["session_id"] + "_data", JSON.stringify(uuid_data) , redis.print);
+                logger.info("Session is going to reset -----------------------------------------------------------------------------------> done");
+
             }
 
 
