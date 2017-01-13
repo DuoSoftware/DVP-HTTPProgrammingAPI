@@ -1491,6 +1491,15 @@ function HandleFunction(queryData, req, res, next) {
                             uuid_dev["dev_params"][uuid_dev["result"]] = resultValue;
 
                         }
+
+                        if (queryData['variable_ARDS-Resource-Profile-Name']) {
+                            resultValue = queryData['variable_ARDS-Resource-Profile-Name'];
+                            uuid_dev["resource"] = resultValue;
+                        }
+
+
+
+                        //queryData["variable_ARDS-Resource-Profile-Name"]
                         //redisClient.lpush(queryData["session_id"] + "_result", resultValue, redis.print);
 
                         var body = {
@@ -2258,9 +2267,9 @@ function HandleFunction(queryData, req, res, next) {
                                         profile = uuid_dev["dev_params"]["profile"];
                                     }
 
-                                    console.log("variable_ARDS-Resource-Profile-Name - " + queryData["variable_ARDS-Resource-Profile-Name"]);
+                                    console.log("variable_ARDS-Resource-Profile-Name -------------------------------------------------------------> " + uuid_dev["resource"]);
 
-                                    CreateSubmission(uuid_data["company"], uuid_data["tenant"], queryData["session_id"],queryData["variable_ARDS-Resource-Profile-Name"],uuid_dev["dev_params"]["profile"],callData["satisfaction"], function (success, resu) {
+                                    CreateSubmission(uuid_data["company"], uuid_data["tenant"], queryData["session_id"],uuid_dev["resource"],uuid_dev["dev_params"]["profile"],callData["satisfaction"], function (success, resu) {
 
                                         callData["action"] = "continue";
 
