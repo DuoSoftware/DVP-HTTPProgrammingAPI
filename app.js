@@ -1466,11 +1466,17 @@ function HandleFunction(queryData, req, res, next) {
                                 baseurl: basurl,
                                 appid: uuid_data["appid"]
                             }
+
+                            var callerID = queryData["Caller-Caller-ID-Number"]
+                            if(queryData["variable_effective_caller_id_number"]){
+                                callerID = queryData["variable_effective_caller_id_number"];
+                            }
+
                             //redisClient.lpush(queryData["Caller-Destination-Number"] + "_live", queryData["session_id"], redis.print);
                             //redisClient.lpush("APPID_" + uuid_data["appid"], queryData["session_id"], redis.print);
                             logger.debug("HTTPProgrammingAPI.Handler Session Create %s", queryData["session_id"]);
                             //////////////////////////////////////ceate engagement session/////////////////////////////////////////////////////////
-                            CreateEngagement("call", uuid_data["company"], uuid_data["tenant"], queryData["Caller-Caller-ID-Number"], queryData["Caller-Destination-Number"], queryData["Caller-Direction"], queryData["session_id"], function (isSuccess, result) {
+                            CreateEngagement("call", uuid_data["company"], uuid_data["tenant"], callerID, queryData["Caller-Destination-Number"], queryData["Caller-Direction"], queryData["session_id"], function (isSuccess, result) {
 
                                     if(isSuccess && result){
 
