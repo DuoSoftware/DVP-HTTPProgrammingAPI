@@ -1472,6 +1472,8 @@ function HandleFunction(queryData, req, res, next) {
                                 callerID = queryData["variable_effective_caller_id_number"];
                             }
 
+                            logger.info("User number ------------------------------------------------------------->"+callerID);
+
                             //redisClient.lpush(queryData["Caller-Destination-Number"] + "_live", queryData["session_id"], redis.print);
                             //redisClient.lpush("APPID_" + uuid_data["appid"], queryData["session_id"], redis.print);
                             logger.debug("HTTPProgrammingAPI.Handler Session Create %s", queryData["session_id"]);
