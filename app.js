@@ -1468,11 +1468,9 @@ function HandleFunction(queryData, req, res, next) {
                             }
                             //redisClient.lpush(queryData["Caller-Destination-Number"] + "_live", queryData["session_id"], redis.print);
                             //redisClient.lpush("APPID_" + uuid_data["appid"], queryData["session_id"], redis.print);
-                            logger.debug("HTTPProgrammingAPI.Handler Session Create %s", queryData["session_id"], uuid_dev);
+                            logger.debug("HTTPProgrammingAPI.Handler Session Create %s", queryData["session_id"]);
                             //////////////////////////////////////ceate engagement session/////////////////////////////////////////////////////////
                             CreateEngagement("call", uuid_data["company"], uuid_data["tenant"], queryData["Caller-Caller-ID-Number"], queryData["Caller-Destination-Number"], queryData["Caller-Direction"], queryData["session_id"], function (isSuccess, result) {
-
-
 
                                     if(isSuccess && result){
 
@@ -1488,7 +1486,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                     }else{
 
-                                        logger.debug("Call Engagement Creation Failed  "+ result);
+                                        logger.error("Call Engagement Creation Failed  "+ result);
                                     }
                             });
                             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3082,7 +3080,7 @@ server.post('/', function DataHandle(req, res, next) {
 server.get('/', function CallHandle(req, res, next) {
     
     
-    console.log(req.url);
+    //console.log(req.url);
     var queryData = url.parse(req.url, true).query;
     
     HandleFunction(queryData, req, res, next);
