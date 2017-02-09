@@ -2344,7 +2344,13 @@ function HandleFunction(queryData, req, res, next) {
 
                                 else if (callData["action"] == "profile") {
 
-                                    GetUserAttributes(uuid_data["company"], uuid_data["tenant"],callData["id"],callData["attribute"], function (success, resu) {
+                                    var profile;
+                                    if(uuid_dev["dev_params"] && uuid_dev["dev_params"]["profile"]){
+
+                                        profile = uuid_dev["dev_params"]["profile"];
+                                    }
+
+                                    GetUserAttributes(uuid_data["company"], uuid_data["tenant"],profile,callData["attribute"], function (success, resu) {
 
                                         callData["action"] = "continue";
 
