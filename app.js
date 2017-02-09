@@ -1531,7 +1531,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                     if(isSuccess && result){
 
-                                        logger.debug("Call Engagement Created Successfully  "+ result);
+                                        logger.debug(result);
 
                                         if(result && result.profile_id){
 
