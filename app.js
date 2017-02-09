@@ -203,7 +203,7 @@ function postData(req, res) {
                                          }
                                      } else {
 
-                                         logger.error("Create engagement no necessory data found ....");
+                                         logger.error("Create engagement no necessary data found ....");
                                      }
                                  } else {
 
@@ -497,7 +497,7 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
             break;
 
         case "continue":
-            res.write(messageGenerator.Continue(mainServer));
+            res.write(messageGenerator.Continue(mainServer,callData["key"],callData["attribute"]));
 
             break;
 
@@ -717,6 +717,54 @@ function OperationDebug(debugdata, callData, fileID, mainServer, queryData, res,
 }
 
 
+///DVP/API/:version/ExternalUser/:id/attribute/:attribute
+
+function GetUserAttributes(company, tenant, id, attribute, cb){
+
+    if((config.Services && config.Services.userserviceurl && config.Services.userserviceport && config.Services.userserviceversion)) {
+
+
+        var userserviceURL = format("http://{0}/DVP/API/{1}/ExternalUser/"+id+"/attribute/"+attribute, config.Services.userserviceurl, config.Services.userserviceversion);
+        if (validator.isIP(config.Services.userserviceurl))
+            userserviceURL = format("http://{0}:{1}/DVP/API/{2}/ExternalUser/"+id+"/attribute/"+attribute, config.Services.userserviceurl, config.Services.userserviceport, config.Services.userserviceversion);
+
+        //var engagementData =  {};
+
+        logger.debug("Calling Engagement service URL %s", userserviceURL);
+        request({
+            method: "GET",
+            url: userserviceURL,
+            headers: {
+                authorization: token,
+                companyinfo: format("{0}:{1}", tenant, company)
+            },
+            json: {}
+        }, function (_error, _response, datax) {
+
+            try {
+
+                if (!_error && _response && _response.statusCode == 200, _response.body && _response.body.IsSuccess) {
+
+                    cb(true,_response.body.Result);
+
+                }else{
+
+                    logger.error("There is an error in  getting user attributes for this id "+ id);
+                    cb(false,{});
+
+                }
+            }
+            catch (excep) {
+
+                cb(false,{});
+
+            }
+        });
+    }
+}
+
+
+
 function CreateEngagement(channel, company, tenant, from, to, direction, session, cb){
 
     if((config.Services && config.Services.interactionurl && config.Services.interactionport && config.Services.interactionversion)) {
@@ -767,6 +815,7 @@ function CreateEngagement(channel, company, tenant, from, to, direction, session
         });
     }
 }
+
 
 
 function CreateTicket(channel,session, company, tenant, type, subjecct, description, priority, tags, cb){
@@ -2293,6 +2342,68 @@ function HandleFunction(queryData, req, res, next) {
 
                                 }
 
+                                else if (callData["action"] == "profile") {
+
+                                    GetUserAttributes(uuid_data["company"], uuid_data["tenant"],callData["id"],callData["attribute"], function (success, resu) {
+
+                                        callData["action"] = "continue";
+
+                                        logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"], callData, uuid_data["domain"], uuid_data["profile"], queryData);
+
+                                        if(resu && callData["key"]) {
+                                            callData["attribute"] = resu;
+                                        }
+
+                                        Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"]);
+
+                                        console.log("----------------------------------------------------> get result");
+
+                                        uuid_dev["result"] = callData["result"];
+
+                                        console.log("----------------------------------------------------> got result");
+
+
+                                        if (uuid_dev["baseurl"] != "none") {
+
+                                            console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
+
+                                            uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                            uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["nexturl"]);
+                                        }
+                                        else {
+
+                                            console.log("----------------------------------------------------> no base url");
+
+                                            uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                            uuid_dev["nexturl"] = callData["nexturl"];
+
+                                            console.log(uuid_dev["nexturl"]);
+
+
+                                            console.log("DEV DATA -------------> %j", uuid_dev);
+                                            console.log("CALL DATA -------------> %j", callData);
+
+
+                                        }
+
+
+                                        logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s", queryData["session_id"], uuid_dev["nexturl"]);
+
+
+                                        try {
+                                            var redisData = JSON.stringify(uuid_dev);
+                                            redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                            logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j", redisData);
+                                        }
+                                        catch (e) {
+                                            console.error(e);
+                                        }
+
+
+                                    });
+
+                                }
+
                                 else if (callData["action"] == "csat") {
 
 
@@ -2347,7 +2458,6 @@ function HandleFunction(queryData, req, res, next) {
 
                                         logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s", queryData["session_id"], uuid_dev["nexturl"]);
 
-
                                         try {
                                             var redisData = JSON.stringify(uuid_dev);
                                             redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
@@ -2356,16 +2466,8 @@ function HandleFunction(queryData, req, res, next) {
                                         catch (e) {
                                             console.error(e);
                                         }
-
-
                                     });
-
                                 }
-
-
-
-
-
                                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 

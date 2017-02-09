@@ -581,21 +581,42 @@ var breakx = function (actionURL, tempURL, cause) {
     };
 
 
-var continuex = function (actionURL) {
+var continuex = function (actionURL, key, attribute) {
 
 
-        var doc = builder.create("document")
+    var doc = builder.create("document")
         .att("type", "text/freeswitch-httapi")
+
         .ele("work")
+        .ele("continue")
+        .att("action", actionURL)
+        .end({pretty: true});
+
+
+    if(key && attribute) {
+
+        doc = builder.create("document")
+            .att("type", "text/freeswitch-httapi")
+
+            .ele("variables")
+            .ele("ards_skill")
+            .text(skill)
+            .up()
+            .up()
+
+            .ele("work")
             .ele("continue")
             .att("action", actionURL)
-            .end({ pretty: true });
+            .end({pretty: true});
 
 
-        return doc;
+    }
 
 
-    };
+    return doc;
+
+
+};
 
 
 var log = function (actionURL, tempURL, level, clean, message) {
