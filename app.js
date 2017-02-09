@@ -2358,6 +2358,14 @@ function HandleFunction(queryData, req, res, next) {
 
                                         if(resu && callData["key"]) {
                                             callData["attribute"] = resu;
+
+                                            if (!uuid_dev["dev_params"]) {
+                                                uuid_dev["dev_params"] = {};
+                                            }
+
+
+                                            uuid_dev["dev_params"][callData["key"]] = resu;
+
                                         }
 
                                         Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"]);
