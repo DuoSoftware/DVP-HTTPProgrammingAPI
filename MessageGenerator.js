@@ -599,8 +599,8 @@ var continuex = function (actionURL, key, attribute) {
             .att("type", "text/freeswitch-httapi")
 
             .ele("variables")
-            .ele("ards_skill")
-            .text(skill)
+            .ele(key)
+            .text(attribute)
             .up()
             .up()
 
