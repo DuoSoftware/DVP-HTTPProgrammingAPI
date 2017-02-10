@@ -497,9 +497,15 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
             break;
 
         case "continue":
-            var doc = messageGenerator.Continue(mainServer,callData["key"],callData["attribute"]);
-            console.log(doc);
-            res.write(doc);
+            try {
+                console.log("calling continue --->" +callData["key"] +callData["attribute"]);
+                var doc = messageGenerator.Continue(mainServer, callData["key"], callData["attribute"]);
+                console.log(doc);
+                res.write(doc);
+            }catch(ex){
+
+                console.log(ex);
+            }
 
             break;
 
