@@ -2331,6 +2331,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     profile = uuid_dev["dev_params"]["profile"];
                                                 }
 
+                                                console.info("Calling user attribute --------------------> ----------------> "+ profile);
                                                 GetUserAttributes(uuid_data["company"], uuid_data["tenant"], profile, callData["attribute"], function (success, resu) {
 
                                                     callData["action"] = "continue";
@@ -3392,6 +3393,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 profile = uuid_dev["dev_params"]["profile"];
                                             }
 
+                                            console.info("Calling user attribute -------------------->> ----------------> "+ profile);
                                             GetUserAttributes(uuid_data["company"], uuid_data["tenant"], profile, callData["attribute"], function (success, resu) {
 
                                                 callData["action"] = "continue";
