@@ -1477,8 +1477,6 @@ function HandleFunction(queryData, req, res, next) {
                 isdebug = true;
             }
 
-
-
             company = uuid_data['company'];
             tenant = uuid_data['tenant'];
 
@@ -1501,6 +1499,13 @@ function HandleFunction(queryData, req, res, next) {
                         return;
                     }
                     else {
+
+
+                        var callerID = queryData["Caller-Caller-ID-Number"]
+                        if(queryData["variable_effective_caller_id_number"]){
+                            callerID = queryData["variable_effective_caller_id_number"];
+                        }
+
                         //console.log("Worked: " + value);
                         var dummyEngagement = true;
                         uuid_dev = {};
@@ -1527,10 +1532,7 @@ function HandleFunction(queryData, req, res, next) {
                                 appid: uuid_data["appid"]
                             }
 
-                            var callerID = queryData["Caller-Caller-ID-Number"]
-                            if(queryData["variable_effective_caller_id_number"]){
-                                callerID = queryData["variable_effective_caller_id_number"];
-                            }
+
 
                             logger.info("User number ------------------------------------------------------------->"+callerID);
 
