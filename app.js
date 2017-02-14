@@ -480,7 +480,15 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
 
         case "getvar":
             //var getVar = function(actionURL, tempURL, permenent, name)
-            res.write(messageGenerator.GetVar(mainServer, mainServer, callData["permenent"], callData["name"]));
+            var doc = {};
+            try{
+                doc = messageGenerator.GetVar(mainServer, mainServer, callData["permenent"], callData["name"])
+            }
+            catch(ex){
+                console.log(ex);
+            }
+            console.log(doc);
+            res.write(doc);
 
             break;
 

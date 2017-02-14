@@ -650,25 +650,25 @@ var log = function (actionURL, tempURL, level, clean, message) {
 var getVar = function (actionURL, tempURL, permenent, name) {
 
 
-        var doc = builder.create("document")
+    var doc = builder.create("document")
         .att("type", "text/freeswitch-httapi")
         .ele("variables")
         .up()
         .ele("params")
         .up()
         .ele("work")
-            .ele("getVar")
-            .att("action", actionURL)
-            .att("temp-action", tempURL)
-            .att("name", name)
-            .att("permanent", permenent)
-            .end({ pretty: true });
+        .ele("getVar")
+        .att("action", actionURL)
+        .att("temp-action", tempURL)
+        .att("name", name)
+        .att("permanent", permenent)
+        .end({pretty: true});
 
 
-        return doc;
+    return doc;
 
 
-    };
+};
 
 
 var voicemail = function (actionURL, tempURL, check, authonly, profile, domain, id) {
