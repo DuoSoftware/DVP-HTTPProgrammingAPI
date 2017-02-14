@@ -917,11 +917,7 @@ function CreateSubmission(company, tenant, session, requester, submitter, satisf
             method:'ivr',
             satisfaction: satisfaction,
             contact: contact
-
-
         };
-
-
 
         logger.debug("Calling CSAT service URL %s", ticketURL);
         logger.debug(csatData);
@@ -1611,9 +1607,9 @@ function HandleFunction(queryData, req, res, next) {
 
                                 }
 
-                                if (queryData['variable_ARDS-Resource-Profile-Name']) {
+                                if (queryData['ARDS-Resource-Profile-Name']) {
 
-                                    uuid_dev["resource"] = queryData['variable_ARDS-Resource-Profile-Name'];
+                                    uuid_dev["resource"] = queryData['ARDS-Resource-Profile-Name'];
                                 }
 
 
@@ -2463,7 +2459,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                             console.log("variable_ARDS-Resource-Profile-Name -------------------------------------------------------------> " + uuid_dev["resource"]);
 
-                                            CreateSubmission(uuid_data["company"], uuid_data["tenant"], queryData["session_id"], uuid_dev["resource"], profile, callData["satisfaction"],callerID, function (success, resu) {
+                                            CreateSubmission(uuid_data["company"], uuid_data["tenant"], queryData["session_id"], uuid_dev["resource"], queryData['ARDS-Resource-Profile-Name'], callData["satisfaction"],callerID, function (success, resu) {
 
                                                 callData["action"] = "continue";
 
