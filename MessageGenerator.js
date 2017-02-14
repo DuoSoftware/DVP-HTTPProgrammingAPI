@@ -657,11 +657,11 @@ var getVar = function (actionURL, tempURL, permenent, name) {
         .ele("params")
         .up()
         .ele("work")
-        .ele("getVar")
-        .att("action", actionURL)
-        .att("temp-action", tempURL)
-        .att("name", name)
-        .att("permanent", permenent)
+            .ele("getVariable")
+            .att("action", actionURL)
+            .att("temp-action", tempURL)
+            .att("name", name)
+            .att("permanent", permenent)
         .end({pretty: true});
 
 
