@@ -1395,6 +1395,7 @@ function HandleFunction(queryData, req, res, next) {
     logger.debug("HTTPProgrammingAPI.Handler FS Request Recived");
 
 
+    console.log(queryData);
     if (queryData["exiting"] == "true") {
 
         logger.debug("HTTPProgrammingAPI.Handler Session Leave %s", queryData["session_id"]);
