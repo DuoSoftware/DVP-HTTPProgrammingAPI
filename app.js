@@ -3233,7 +3233,13 @@ server.get('/', function CallHandle(req, res, next) {
     
     
     //console.log(req.url);
-    var queryData = url.parse(req.url, true).query;
+    var queryData = {};
+
+    try {
+        queryData = url.parse(req.url, true).query;
+    }catch(ex){
+        console.log(ex);
+    }
     
     HandleFunction(queryData, req, res, next);
 
