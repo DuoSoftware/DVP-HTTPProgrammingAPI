@@ -482,7 +482,10 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
             //var getVar = function(actionURL, tempURL, permenent, name)
             var doc = {};
             try{
-                doc = messageGenerator.GetVar(mainServer, mainServer, callData["permenent"], callData["name"])
+                var permenant = "true";
+                if(callData["permanent"])
+                    permenant = callData["permanent"];
+                doc = messageGenerator.GetVar(mainServer, mainServer, permenant, callData["name"])
             }
             catch(ex){
                 console.log(ex);
