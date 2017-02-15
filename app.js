@@ -1391,7 +1391,7 @@ function HandleFunction(queryData, req, res, next) {
     logger.debug("HTTPProgrammingAPI.Handler FS Request Recived");
 
 
-    console.log(queryData);
+    //console.log(queryData);
     if (queryData["exiting"] == "true") {
 
         logger.debug("HTTPProgrammingAPI.Handler Session Leave %s", queryData["session_id"]);
@@ -2459,7 +2459,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                             console.log("variable_ARDS-Resource-Profile-Name -------------------------------------------------------------> " + uuid_dev["resource"]);
 
-                                            CreateSubmission(uuid_data["company"], uuid_data["tenant"], queryData["session_id"], uuid_dev["resource"], queryData['ARDS-Resource-Profile-Name'], callData["satisfaction"],callerID, function (success, resu) {
+                                            CreateSubmission(uuid_data["company"], uuid_data["tenant"], queryData["session_id"], uuid_dev["resource"], profile, callData["satisfaction"],callerID, function (success, resu) {
 
                                                 callData["action"] = "continue";
 
