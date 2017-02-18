@@ -369,7 +369,7 @@ var Queue = function (actionURL, tempURL, skill, server, port) {
 };
 
 
-var Ards = function (actionURL, tempURL, skill,skilldisplay, company, tenant, ardsholdmusic, ardsfirstannouncement, ardsannouncement, announcementtime, positionannouncement, language, priority) {
+var Ards = function (actionURL, tempURL, skill,skilldisplay, company, tenant, ardsholdmusic, ardsfirstannouncement, ardsannouncement, announcementtime, positionannouncement, language, priority, maxqtime) {
 
 
 
@@ -384,6 +384,9 @@ var Ards = function (actionURL, tempURL, skill,skilldisplay, company, tenant, ar
         .up()
         .ele("ards_skill_display")
         .text(skilldisplay)
+        .up()
+        .ele("ards_max_queue_time")
+        .text(maxqtime)
         .up()
         .ele("companyid")
         .text(company)
