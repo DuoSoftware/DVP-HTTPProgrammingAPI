@@ -1788,6 +1788,10 @@ function HandleFunction(queryData, req, res, next) {
                                             var filenamex = callData["file"];
                                             var urlx;
 
+
+                                            console.log(config.Services);
+                                            console.log(uuid_data);
+
                                             if ((config.Services && config.Services.fileserviceurl && config.Services.fileserviceport && uuid_data['appid'])) {
 
                                                 ///DVP/API/'+version+'/FIleService/FileHandler/:filename/FileInfoForApplicationId/:appId
