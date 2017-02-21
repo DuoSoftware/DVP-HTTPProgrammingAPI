@@ -1777,30 +1777,30 @@ function HandleFunction(queryData, req, res, next) {
 
                                         ////////////////////////////////////////
 
-                                        console.log(callData);
-                                        console.log("before note ............");
+                                        //console.log(callData);
+                                        //console.log("before note ............");
 
 
                                         if (callData["note"]) {
                                             AddNoteToEngagement(uuid_data["company"], uuid_data["tenant"], queryData["session_id"], callData["note"]);
                                         }
 
-                                        console.log(callData["action"]);
+                                        //console.log(callData["action"]);
 
 
                                         if ((callData["action"] == "play" || callData["action"] == "playandgetdigits" )) {
 
 
-                                            console.log("inplay.....");
+                                            //console.log("inplay.....");
 
 
                                             var filenamex = callData["file"];
                                             var urlx;
 
-                                            console.log(filenamex);
+                                            //console.log(filenamex);
 
-                                            console.log(config.Services);
-                                            console.log(uuid_data);
+                                            //console.log(config.Services);
+                                            //console.log(uuid_data);
 
                                             if ((config.Services && config.Services.fileserviceurl && config.Services.fileserviceport && uuid_data['appid'])) {
 
