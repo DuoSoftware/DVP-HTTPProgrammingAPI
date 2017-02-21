@@ -1777,6 +1777,8 @@ function HandleFunction(queryData, req, res, next) {
 
                                         ////////////////////////////////////////
 
+                                        console.log(callData);
+
                                         if (callData["note"]) {
                                             AddNoteToEngagement(uuid_data["company"], uuid_data["tenant"], queryData["session_id"], callData["note"]);
                                         }
