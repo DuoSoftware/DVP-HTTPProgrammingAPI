@@ -61,12 +61,20 @@ module.exports = {
 
 
 
+        "userserviceurl": "SYS_USERSERVICE_HOST",
+        "userserviceport": 'SYS_USERSERVICE_PORT',
+        "userserviceversion": "SYS_USERSERVICE_VERSION",
+
         "downloadurl": "SYS_DOWNLOAD_FILESERVICE_HOST",
         "downloadport":"SYS_DOWNLOAD_FILESERVICE_PORT",
         "downloaddurlVersion" : "SYS_DOWNLOAD_FILESERVICE_VERSION",
+
+
         "ruleservice": "SYS_RULESERVICE_HOST",
         "ruleserviceport": "SYS_RULESERVICE_PORT",
         "ruleserviceVersion": "SYS_RULESERVICE_VERSION",
+
+
         "ards": "SYS_ARDSLITESERVICE_HOST",
         "ardsport": "SYS_ARDSLITESERVICE_PORT",
         "ardsVersion": "SYS_ARDSLITESERVICE_VERSION",

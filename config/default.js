@@ -66,6 +66,11 @@ module.exports = {
         "interactionport": '3637',
         "interactionversion": "1.0.0.0",
 
+        "userserviceurl": "127.0.0.1",
+        "userserviceport": '3637',
+        "userserviceversion": "1.0.0.0",
+
+
 
         "ticketurl": "127.0.0.1",
         "ticketport": '3636',
