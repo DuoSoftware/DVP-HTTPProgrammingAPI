@@ -876,7 +876,7 @@ function CreateTicket(channel,session, company, tenant, type, subjecct, descript
 
                 if (!_error && _response && _response.statusCode == 200 && _response.body && _response.body.IsSuccess) {
 
-                    cb(true, _response.body.reference);
+                    cb(true, _response.body.tid);
 
                 }else{
 
@@ -2341,6 +2341,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                                 logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"], callData, uuid_data["domain"], uuid_data["profile"], queryData);
 
+                                                uuid_dev["dev_params"]["ticket_reference"] = resu;
 
                                                 Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"]);
 
