@@ -1509,9 +1509,21 @@ function HandleFunction(queryData, req, res, next) {
                     else {
 
 
+                        var engagementType = 'call';
+
                         var callerID = queryData["Caller-Caller-ID-Number"]
                         if(queryData["variable_effective_caller_id_number"]){
                             callerID = queryData["variable_effective_caller_id_number"];
+                        }
+
+                        if(queryData["Caller-Channel-Name"] && queryData["Caller-Channel-Name"].indexOf("@sip.skype.com") !== -1){
+                            engagementType = 'skype';
+                            logger.debug("channel type set to skype .........");
+                            if(queryData["Caller-Caller-ID-Name"]){
+                                callerID = queryData["Caller-Caller-ID-Name"];
+                                logger.debug("caller-id set to " + callerID);
+                            }
+
                         }
 
                         //console.log("Worked: " + value);
@@ -1574,7 +1586,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
 
-                        CreateEngagement(dummyEngagement, "call", uuid_data["company"], uuid_data["tenant"], callerID, queryData["Caller-Destination-Number"], queryData["Caller-Direction"], queryData["session_id"], function (isSuccess, result) {
+                        CreateEngagement(dummyEngagement, engagementType, uuid_data["company"], uuid_data["tenant"], callerID, queryData["Caller-Destination-Number"], queryData["Caller-Direction"], queryData["session_id"], function (isSuccess, result) {
 
                             if (isSuccess && result) {
 
