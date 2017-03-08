@@ -369,7 +369,7 @@ var Queue = function (actionURL, tempURL, skill, server, port) {
 };
 
 
-var Ards = function (actionURL, tempURL, skill,skilldisplay, company, tenant, ardsholdmusic, ardsfirstannouncement, ardsannouncement, announcementtime, positionannouncement, language) {
+var Ards = function (actionURL, tempURL, skill,skilldisplay, company, tenant, ardsholdmusic, ardsfirstannouncement, ardsannouncement, announcementtime, positionannouncement, language, priority, maxqtime) {
 
 
 
@@ -379,8 +379,14 @@ var Ards = function (actionURL, tempURL, skill,skilldisplay, company, tenant, ar
         .ele("ards_skill")
         .text(skill)
         .up()
+        .ele("ards_priority")
+        .text(priority)
+        .up()
         .ele("ards_skill_display")
         .text(skilldisplay)
+        .up()
+        .ele("ards_max_queue_time")
+        .text(maxqtime)
         .up()
         .ele("companyid")
         .text(company)
@@ -581,21 +587,42 @@ var breakx = function (actionURL, tempURL, cause) {
     };
 
 
-var continuex = function (actionURL) {
+var continuex = function (actionURL, key, attribute) {
 
 
-        var doc = builder.create("document")
+    var doc = builder.create("document")
         .att("type", "text/freeswitch-httapi")
+
         .ele("work")
+        .ele("continue")
+        .att("action", actionURL)
+        .end({pretty: true});
+
+
+    if(key && attribute) {
+
+        doc = builder.create("document")
+            .att("type", "text/freeswitch-httapi")
+
+            .ele("variables")
+            .ele(key)
+            .text(attribute)
+            .up()
+            .up()
+
+            .ele("work")
             .ele("continue")
             .att("action", actionURL)
-            .end({ pretty: true });
+            .end({pretty: true});
 
 
-        return doc;
+    }
 
 
-    };
+    return doc;
+
+
+};
 
 
 var log = function (actionURL, tempURL, level, clean, message) {
@@ -626,25 +653,25 @@ var log = function (actionURL, tempURL, level, clean, message) {
 var getVar = function (actionURL, tempURL, permenent, name) {
 
 
-        var doc = builder.create("document")
+    var doc = builder.create("document")
         .att("type", "text/freeswitch-httapi")
         .ele("variables")
         .up()
         .ele("params")
         .up()
         .ele("work")
-            .ele("getVar")
+            .ele("getVariable")
             .att("action", actionURL)
             .att("temp-action", tempURL)
             .att("name", name)
             .att("permanent", permenent)
-            .end({ pretty: true });
+        .end({pretty: true});
 
 
-        return doc;
+    return doc;
 
 
-    };
+};
 
 
 var voicemail = function (actionURL, tempURL, check, authonly, profile, domain, id) {
