@@ -1235,7 +1235,7 @@ function HandleSMS(req, res, next){
                     };
 
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    CreateEngagement("sms",company,tenant,from,destination,"inbound",sessionid, function(isSuccess,result){
+                    CreateEngagement(undefined,"sms",company,tenant,from,destination,"inbound",sessionid, function(isSuccess,result){
 
                         if(isSuccess && result){
 
@@ -1291,7 +1291,11 @@ function HandleSMS(req, res, next){
 
                                         case "ticket":
 
-                                            CreateTicket("sms",sessionid,sessiondata["CompanyId"],sessiondata["TenantId"],smsData["type"], smsData["subject"], smsData["description"],smsData["priority"],smsData["tags"],function(success, result){});
+                                            var description = message;
+                                            if( smsData["description"]){
+                                                description =smsData["description"];
+                                            }
+                                            CreateTicket("sms",sessionid,sessiondata["CompanyId"],sessiondata["TenantId"],smsData["type"], smsData["subject"], description,smsData["priority"],smsData["tags"],function(success, result){});
 
                                             break;
                                         case "note":
