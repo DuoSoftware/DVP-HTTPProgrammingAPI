@@ -33,7 +33,7 @@ var redisip = config.Redis.ip;
 var redisport = config.Redis.port;
 var redispass = config.Redis.password;
 var redismode = config.Redis.mode;
-//var redisdb = config.Redis.db;
+var redisdb = config.Redis.db;
 
 
 //[redis:]//[user][:password@][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]
@@ -42,7 +42,7 @@ var redisSetting =  {
     port:redisport,
     host:redisip,
     family: 4,
-    //db: redisdb,
+    db: redisdb,
     password: redispass,
     retryStrategy: function (times) {
         var delay = Math.min(times * 50, 2000);
