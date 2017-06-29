@@ -29,10 +29,11 @@ if(validator.isIP(config.LBServer.ip))
 var token = format("Bearer {0}",config.Host.token);
 
 ////////////////////////////////redis////////////////////////////////////////
-var redisip = config.Security.ip;
-var redisport = config.Security.port;
-var redispass = config.Security.password;
-var redismode = config.Security.mode;
+var redisip = config.Redis.ip;
+var redisport = config.Redis.port;
+var redispass = config.Redis.password;
+var redismode = config.Redis.mode;
+//var redisdb = config.Redis.db;
 
 
 //[redis:]//[user][:password@][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]
@@ -41,6 +42,7 @@ var redisSetting =  {
     port:redisport,
     host:redisip,
     family: 4,
+    //db: redisdb,
     password: redispass,
     retryStrategy: function (times) {
         var delay = Math.min(times * 50, 2000);
@@ -54,20 +56,20 @@ var redisSetting =  {
 
 if(redismode == 'sentinel'){
 
-    if(config.Security.sentinels && config.Security.sentinels.hosts && config.Security.sentinels.port, config.Security.sentinels.name){
-        var sentinelHosts = config.Security.sentinels.hosts.split(',');
+    if(config.Redis.sentinels && config.Redis.sentinels.hosts && config.Redis.sentinels.port, config.Redis.sentinels.name){
+        var sentinelHosts = config.Redis.sentinels.hosts.split(',');
         if(Array.isArray(sentinelHosts) && sentinelHosts.length > 2){
             var sentinelConnections = [];
 
             sentinelHosts.forEach(function(item){
 
-                sentinelConnections.push({host: item, port:config.Security.sentinels.port})
+                sentinelConnections.push({host: item, port:config.Redis.sentinels.port})
 
             })
 
             redisSetting = {
                 sentinels:sentinelConnections,
-                name: config.Security.sentinels.name
+                name: config.Redis.sentinels.name
             }
 
         }else{
