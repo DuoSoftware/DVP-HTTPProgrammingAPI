@@ -1799,7 +1799,7 @@ function HandleFunction(queryData, req, res, next) {
                                     TenantId: uuid_data["tenant"],
                                     SessionId: queryData["session_id"]
                                 };
-                                redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                                //redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
 
                                 logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j", queryData["session_id"], callreciveEvent);
 
