@@ -1999,8 +1999,8 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                                             //uuid_data["tenant"],uuid_data["company"]
-                                                            //var companyLocation = format("{0}_{1}",uuid_data["tenant"], uuid_data["company"]);
-                                                            //fileID = format("{0}/{1}",companyLocation, filenamex);
+                                                            var companyLocation = format("{0}/{1}",uuid_data["tenant"], uuid_data["company"]);
+                                                            fileID = format("{0}/{1}",companyLocation, filenamex);
 
                                                             logger.error("HTTPProgrammingAPI.Handler Request File resolution %s", queryData["session_id"]);
                                                             logger.error("Errors -----> " + _error + " " + _response);
@@ -2300,12 +2300,9 @@ function HandleFunction(queryData, req, res, next) {
 
                                             var profileURL;
 
-
                                             if ((config.Services && config.Services.qmusicurl )) {
 
-
                                                 profileURL = format("http://{0}/DVP/API/{1}/QueueMusic/Profile/{2}", config.Services.qmusicurl, config.Services.qmusicVersion, callData["profile"]);
-
 
                                                 if (validator.isIP(config.Services.qmusicurl))
                                                     profileURL = format("http://{0}:{1}/DVP/API/{2}/QueueMusic/Profile/{3}", config.Services.qmusicurl, config.Services.qmusicport, config.Services.qmusicVersion, callData["profile"]);
@@ -2368,9 +2365,6 @@ function HandleFunction(queryData, req, res, next) {
                                                                 callData["MaxQueueTime"] = profileData.Result.MaxQueueTime;
                                                             else
                                                                 callData["MaxQueueTime"] = "0";
-
-
-
 
 
                                                             if (callData['company'] && callData['tenant']) {
@@ -2879,11 +2873,6 @@ function HandleFunction(queryData, req, res, next) {
                                 });
                             }
                         });
-
-
-
-
-
                     }
                 });
             }
