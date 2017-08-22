@@ -103,14 +103,25 @@ var playandgetdigits = function (file, actionURL, tempURL, paramName, errorFile,
 
 var playback = function (file, actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops, terminators, strip, digitcount, digitcountmax) {
 
+    ////"~\\d{1}"
+    //var format = util.format("~\\d{%d}", digitcount);
+    //
+    //if (digitcountmax > digitcount)
+    //    format = util.format("~\\d{%d,%d}", digitcount,digitcountmax);
+    ////(^\d{3,5}$);
+    //if (digitcount == -1)
+    //    format = util.format("~\\d+%s",terminators);
+
+
+    // <min> <max> <tries> <timeout> <terminators> <file> <invalid_file> <var_name> <regexp> <digit_timeout> <transfer_on_failure>
+
+
     //"~\\d{1}"
-    var format = util.format("~\\d{%d}", digitcount);
+    var format = util.format("\\S{%d}", digitcount);
 
     if (digitcountmax > digitcount)
-        format = util.format("~\\d{%d,%d}", digitcount,digitcountmax);
+        format = util.format("\\S{%d,%d}", digitcount,digitcountmax);
     //(^\d{3,5}$);
-    if (digitcount == -1)
-        format = util.format("~\\d+%s",terminators);
 
     var doc = builder.create("document")
         .att("type", "text/freeswitch-httapi")
@@ -144,14 +155,24 @@ var playback = function (file, actionURL, tempURL, paramName, errorFile, digitTi
 var record = function (file, actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, limit, terminators, strip, digitcount, digitcountmax) {
 
 
+    ////"~\\d{1}"
+    //var format = util.format("~\\d{%d}", digitcount);
+    //
+    //if (digitcountmax > digitcount)
+    //    format = util.format("~\\d{%d,%d}", digitcount,digitcountmax);
+    ////(^\d{3,5}$);
+    //if (digitcount == -1)
+    //    format = util.format("~\\d+%s",terminators);
+
+    // <min> <max> <tries> <timeout> <terminators> <file> <invalid_file> <var_name> <regexp> <digit_timeout> <transfer_on_failure>
+
+
     //"~\\d{1}"
-    var format = util.format("~\\d{%d}", digitcount);
+    var format = util.format("\\S{%d}", digitcount);
 
     if (digitcountmax > digitcount)
-        format = util.format("~\\d{%d,%d}", digitcount,digitcountmax);
+        format = util.format("\\S{%d,%d}", digitcount,digitcountmax);
     //(^\d{3,5}$);
-    if (digitcount == -1)
-        format = util.format("~\\d+%s",terminators);
 
     var doc = builder.create("document")
         .att("type", "text/freeswitch-httapi")
