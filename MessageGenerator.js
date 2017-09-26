@@ -410,7 +410,7 @@ var Ards = function (actionURL, tempURL, skill,skilldisplay, company, tenant, ar
         .text(maxqtime)
         .up()
         .ele("ards_dial_time")
-        .text(maxqtime)
+        .text(dialtime)
         .up()
         .ele("companyid")
         .text(company)
