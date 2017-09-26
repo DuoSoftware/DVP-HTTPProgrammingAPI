@@ -549,7 +549,7 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
             if(!callData["skilldisplay"]){
                 callData["skilldisplay"] = 'n/a';
             }
-            res.write(messageGenerator.ARDS(mainServer, mainServer,callData["skill"],callData["skilldisplay"],callData["company"],callData["tenant"],callData["MOH"],callData["FirstAnnounement"],callData["Announcement"],callData["AnnouncementTime"], callData["PositionAnnouncement"], callData["Language"], callData["priority"], callData["MaxQueueTime"]));
+            res.write(messageGenerator.ARDS(mainServer, mainServer,callData["skill"],callData["skilldisplay"],callData["company"],callData["tenant"],callData["MOH"],callData["FirstAnnounement"],callData["Announcement"],callData["AnnouncementTime"], callData["PositionAnnouncement"], callData["Language"], callData["priority"], callData["MaxQueueTime"], callData["DialTime"]));
 
             break;
 
@@ -2365,6 +2365,11 @@ function HandleFunction(queryData, req, res, next) {
                                                                 callData["MaxQueueTime"] = profileData.Result.MaxQueueTime;
                                                             else
                                                                 callData["MaxQueueTime"] = "0";
+
+                                                            if (profileData.Result.DialTime)
+                                                                callData["DialTime"] = profileData.Result.DialTime;
+                                                            else
+                                                                callData["DialTime"] = "30";
 
 
                                                             if (callData['company'] && callData['tenant']) {
