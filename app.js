@@ -1777,6 +1777,11 @@ function HandleFunction(queryData, req, res, next) {
                                     }
                                 };
 
+                                if (queryData["exiting"] == "true") {
+
+                                    body.exit = true;
+                                }
+
                                 ////////////////////////////////////////
 
                                 var date = new Date();
