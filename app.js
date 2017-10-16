@@ -304,7 +304,7 @@ function postData(req, res) {
 
             }catch(ex){
 
-                logger.error("Error occured ",err);
+                logger.error("Error occured ",ex);
             }
         }
     });
