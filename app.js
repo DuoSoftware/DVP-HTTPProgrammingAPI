@@ -215,11 +215,11 @@ function postData(req, res) {
 
                     logger.debug("File Upload to " + urloadurl);
 
-                    console.log(req);
+                    console.log(req.files);
 
                      var FormData = {
                      sessionid: req.body["session_id"],
-                     file: req.files.result.File,
+                     file: fs.createReadStream(req.files.file["path"]),
                      filename: req.body["session_id"]+".mp3",
                      display: req.files.result["name"],
                      class: "CALLSERVER",
