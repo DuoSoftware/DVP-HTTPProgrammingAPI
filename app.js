@@ -215,7 +215,7 @@ function postData(req, res) {
 
                     logger.debug("File Upload to " + urloadurl);
 
-                    console.log(req.files);
+                    console.log(req.files.result.File);
 
                      var FormData = {
                      sessionid: req.body["session_id"],
