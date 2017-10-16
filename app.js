@@ -219,7 +219,7 @@ function postData(req, res) {
 
                      var FormData = {
                      sessionid: req.body["session_id"],
-                     file: fs.createReadStream(req.files.result.File["path"]),
+                     file: req.files.result.File,
                      filename: req.body["session_id"]+".mp3",
                      display: req.files.result["name"],
                      class: "CALLSERVER",
