@@ -215,6 +215,8 @@ function postData(req, res) {
 
                     logger.debug("File Upload to " + urloadurl);
 
+                    logger.debug(req);
+
                      var FormData = {
                      sessionid: req.body["session_id"],
                      file: fs.createReadStream(req.files.result["path"]),
