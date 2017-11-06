@@ -1,5 +1,5 @@
 var builder = require('xmlbuilder');
-var redis = require('redis');
+var redis = require('ioredis');
 var config = require('config');
 
 /*
@@ -36,16 +36,89 @@ var server = restify.createServer({
 
 
 
+////////////////////////////////redis////////////////////////////////////////
 var redisip = config.Redis.ip;
 var redisport = config.Redis.port;
-var redisuser = config.Redis.user;
 var redispass = config.Redis.password;
+var redismode = config.Redis.mode;
+var redisdb = config.Redis.db;
+
+var redisClient = undefined;
 
 
 //[redis:]//[user][:password@][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]
 //redis://user:secret@localhost:6379
-var url = "redis://"+redisuser+":"+redispass+"@"+redisip+":"+redisport;
-var redisClient = redis.createClient({url:url});
+var redisSetting =  {
+    port:redisport,
+    host:redisip,
+    family: 4,
+    db: redisdb,
+    password: redispass,
+    retryStrategy: function (times) {
+        var delay = Math.min(times * 50, 2000);
+        return delay;
+    },
+    reconnectOnError: function (err) {
+
+        return true;
+    }
+};
+
+if(redismode == 'sentinel'){
+
+    if(config.Redis.sentinels && config.Redis.sentinels.hosts && config.Redis.sentinels.port, config.Redis.sentinels.name){
+        var sentinelHosts = config.Redis.sentinels.hosts.split(',');
+        if(Array.isArray(sentinelHosts) && sentinelHosts.length > 2){
+            var sentinelConnections = [];
+
+            sentinelHosts.forEach(function(item){
+
+                sentinelConnections.push({host: item, port:config.Redis.sentinels.port})
+
+            })
+
+            redisSetting = {
+                sentinels:sentinelConnections,
+                name: config.Redis.sentinels.name,
+                password: redispass
+
+
+            }
+
+        }else{
+
+            console.log("No enough sentinel servers found .........");
+        }
+
+    }
+}
+
+var redisClient = undefined;
+
+if(redismode != "cluster") {
+    redisClient = new redis(redisSetting);
+}else{
+
+    var redisHosts = redisip.split(",");
+    if(Array.isArray(redisHosts)){
+
+
+        redisSetting = [];
+        redisHosts.forEach(function(item){
+            redisSetting.push({
+                host: item,
+                port: redisport,
+                family: 4,
+                password: redispass});
+        });
+
+        var redisClient = new redis.Cluster([redisSetting]);
+
+    }else{
+
+        redisClient = new redis(redisSetting);
+    }
+}
 
 
 //var redisClient = redis.createClient(config.Redis.port, config.Redis.ip);
@@ -53,7 +126,9 @@ redisClient.on('error', function (err) {
     console.log('Error '.red, err);
 });
 
-
+redisClient.on('connect', function () {
+    console.log("Redis client connected ...");
+});
 
 
 server.use(restify.acceptParser(server.acceptable));
@@ -66,7 +141,12 @@ server.use(restify.bodyParser());
 
 server.post('/CallApp', function(req,res,next) {
 
-    var data = convertUrlEncoded(req.body);
+    var data = undefined;
+    try {
+        data = convertUrlEncoded(req.body);
+    }catch(ex){
+
+    }
 
     var hostname = data["hostname"];
     var cdnum = data["Caller-Destination-Number"];
@@ -88,7 +168,7 @@ server.post('/CallApp', function(req,res,next) {
     // http://localhost/IVR/index.json
     //http://162.243.81.39/IVR/LassanaFloraIVR/start.php
     //http://162.243.81.39/IVR/demoIVR_2/index.php
-    var uuid_data = { path: "http://162.243.81.39/IVR/demoIVR_2", app:'index.php',company: 3, tenant: 1, pbx: 'none', appid: '3', domain:'192.168.0.97', profile: 'default' };
+    var uuid_data = { path: "http://localhost/DVP-HTTPProgrammingAPI/IVR/", app:'record.json',company: 3, tenant: 1, pbx: 'none', appid: '3', domain:'192.168.0.97', profile: 'default' };
     var redisData = JSON.stringify(uuid_data);
     redisClient.set(varUuid + "_data", redisData, function(err, value) {
 
@@ -154,6 +234,6 @@ var convertUrlEncoded = function(payload){
 
 
 
-server.listen(9093, '127.0.0.1', function () {
+server.listen(9093, '192.168.0.15', function () {
     console.log('%s listening at %s', server.name, server.url);
 });
