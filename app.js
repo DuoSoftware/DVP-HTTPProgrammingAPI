@@ -303,7 +303,8 @@ function postData(req, res) {
 
                     var publishObj= {Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  };
 
-                    if(EventPublishType=="AMQP")
+                    redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify(publishObj), redis.print);
+                    /*if(EventPublishType=="AMQP")
                     {
                         eventPublisher.PublishToQueue(publishObj);
                     }
@@ -311,7 +312,7 @@ function postData(req, res) {
                     {
                         //redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify({Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  }), redis.print);
                         redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify(publishObj), redis.print);
-                    }
+                    }*/
 
 
                 }else{
@@ -1968,7 +1969,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     SessionID: queryData["session_id"]
                                                 });
 
-                                                if(EventPublishType=="AMQP")
+                                                /*if(EventPublishType=="AMQP")
                                                 {
                                                     eventPublisher.PublishToQueue({
                                                         Type: 'DATA',
@@ -1982,7 +1983,8 @@ function HandleFunction(queryData, req, res, next) {
                                                 else
                                                 {
                                                     redisClient.publish("SYS:HTTPPROGRAMMING:DATAERROR", eventFlowData, redis.print);
-                                                }
+                                                }*/
+                                                redisClient.publish("SYS:HTTPPROGRAMMING:DATAERROR", eventFlowData, redis.print);
 
 
 
@@ -2962,7 +2964,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     Description: response.body
                                                 });
 
-                                                if(EventPublishType=="AMQP")
+                                                /*if(EventPublishType=="AMQP")
                                                 {
                                                     eventPublisher.PublishToQueue({
                                                         Type: 'HTTP',
@@ -2976,7 +2978,8 @@ function HandleFunction(queryData, req, res, next) {
                                                 else
                                                 {
                                                     redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
-                                                }
+                                                }*/
+                                                redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
 
 
 
@@ -2993,7 +2996,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     SessionID: queryData["session_id"],
                                                     Description: "no response"
                                                 });
-                                                if(EventPublishType=="AMQP") {
+                                               /* if(EventPublishType=="AMQP") {
                                                     eventPublisher.PublishToQueue({
                                                         Type: 'HTTP',
                                                         Code: 0000,
@@ -3006,7 +3009,8 @@ function HandleFunction(queryData, req, res, next) {
                                                 else
                                                 {
                                                     redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
-                                                }
+                                                }*/
+                                                redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
 
 
 
