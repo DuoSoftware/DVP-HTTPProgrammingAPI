@@ -300,7 +300,19 @@ function postData(req, res) {
                         }
 
                     });
-                    redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify({Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  }), redis.print);
+
+                    var publishObj= {Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  };
+
+                    if(EventConsumeType=="AMQP")
+                    {
+                        eventPublisher.PublishToQueue(publishObj);
+                    }
+                    else
+                    {
+                        //redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify({Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  }), redis.print);
+                        redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify(publishObj), redis.print);
+                    }
+
 
                 }else{
 
@@ -1956,7 +1968,25 @@ function HandleFunction(queryData, req, res, next) {
                                                     SessionID: queryData["session_id"]
                                                 });
 
-                                                redisClient.publish("SYS:HTTPPROGRAMMING:DATAERROR", eventFlowData, redis.print);
+                                                if(EventConsumeType=="AMQP")
+                                                {
+                                                    eventPublisher.PublishToQueue({
+                                                        Type: 'DATA',
+                                                        Code: '',
+                                                        URL: '',
+                                                        APPID: uuid_dev["appid"],
+                                                        Description: JSON.stringify(response.body),
+                                                        SessionID: queryData["session_id"]
+                                                    });
+                                                }
+                                                else
+                                                {
+                                                    redisClient.publish("SYS:HTTPPROGRAMMING:DATAERROR", eventFlowData, redis.print);
+                                                }
+
+
+
+
                                                 logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data for monitoring api %s %j", queryData["session_id"], eventFlowData);
                                                 var date = new Date();
                                                 var callreciveEvent = {
@@ -2932,7 +2962,23 @@ function HandleFunction(queryData, req, res, next) {
                                                     Description: response.body
                                                 });
 
-                                                redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
+                                                if(EventConsumeType=="AMQP")
+                                                {
+                                                    eventPublisher.PublishToQueue({
+                                                        Type: 'HTTP',
+                                                        Code: response.statusCode,
+                                                        URL: uuid_dev["nexturl"],
+                                                        APPID: uuid_dev["appid"],
+                                                        SessionID: queryData["session_id"],
+                                                        Description: response.body
+                                                    });
+                                                }
+                                                else
+                                                {
+                                                    redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
+                                                }
+
+
 
 
                                                 logger.debug("HTTPProgrammingAPI.Handler REDIS Publish error for monitoring api %s %j", queryData["session_id"], callreciveEvent);
@@ -2947,7 +2993,21 @@ function HandleFunction(queryData, req, res, next) {
                                                     SessionID: queryData["session_id"],
                                                     Description: "no response"
                                                 });
-                                                redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
+                                                if(EventConsumeType=="AMQP") {
+                                                    eventPublisher.PublishToQueue({
+                                                        Type: 'HTTP',
+                                                        Code: 0000,
+                                                        URL: uuid_dev["nexturl"],
+                                                        APPID: uuid_dev["appid"],
+                                                        SessionID: queryData["session_id"],
+                                                        Description: "no response"
+                                                    });
+                                                }
+                                                else
+                                                {
+                                                    redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
+                                                }
+
 
 
                                                 logger.debug("HTTPProgrammingAPI.Handler REDIS Publish error for monitoring api %s %j", queryData["session_id"], callreciveEvent);
