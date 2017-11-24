@@ -111,7 +111,7 @@ module.exports = {
         "password": "admin",
         "vhost":'/'
     },
-    "EventConsumeType":"amqp",
+    "EventPublishType":"amqp",
     "EventQueueName":"event_queue"
 
 

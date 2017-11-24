@@ -116,7 +116,7 @@ module.exports = {
             "password": "SYS_RABBITMQ_PASSWORD",
             "vhost":"SYS_RABBITMQ_VHOST"
         },
-    "EventConsumeType":"SYS_EVENT_CONSUME_TYPE",
+    "EventPublishType":"SYS_EVENT_CONSUME_TYPE",
     "EventQueueName":"SYS_EVENT_QUEUE"
 
 

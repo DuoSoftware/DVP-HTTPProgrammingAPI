@@ -15,7 +15,7 @@ var format = require("stringformat");
 var uuid = require('node-uuid');
 var validator = require('validator');
 var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
-var EventConsumeType=config.EventConsumeType.toUpperCase();
+var EventPublishType=config.EventPublishType.toUpperCase();
 
 //console.log(messageGenerator.ARDS("XXXX","XXXXX","123","1","3"));
 
@@ -303,7 +303,7 @@ function postData(req, res) {
 
                     var publishObj= {Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  };
 
-                    if(EventConsumeType=="AMQP")
+                    if(EventPublishType=="AMQP")
                     {
                         eventPublisher.PublishToQueue(publishObj);
                     }
@@ -1338,7 +1338,7 @@ function HandleSMS(req, res, next){
             var date = new Date();
             var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'SYSTEM', EventTime:date, EventName:'NOSESSION',EventData:'',EventParams:'',CompanyId:company, TenantId: tenant, SessionId: sessionid  };
 
-            if(EventConsumeType=="AMQP")
+            if(EventPublishType=="AMQP")
             {
                 eventPublisher.PublishToQueue(callreciveEvent);
             }
@@ -1406,7 +1406,7 @@ function HandleSMS(req, res, next){
                         var date = new Date();
                         var callreciveEvent = {EventClass:'APP',EventType:'DATA', EventCategory:'SYSTEM', EventTime:date, EventName:'SYSTEMDATA',EventData:body,EventParams:'',CompanyId:company, TenantId: tenant, SessionId: sessionid  };
 
-                        if(EventConsumeType=="AMQP")
+                        if(EventPublishType=="AMQP")
                         {
                             eventPublisher.PublishToQueue(callreciveEvent);
                         }
@@ -1430,7 +1430,7 @@ function HandleSMS(req, res, next){
                                     var date = new Date();
                                     var callreciveEvent = {EventClass:'APP',EventType:'DATA', EventCategory:'DEVELOPER', EventTime:date, EventName:'REMOTEEXECUTED',EventData:response.body,EventParams:url,CompanyId:company, TenantId: tenant, SessionId: sessionid  };
 
-                                    if(EventConsumeType=="AMQP")
+                                    if(EventPublishType=="AMQP")
                                     {
                                         eventPublisher.PublishToQueue(callreciveEvent);
                                     }
@@ -1508,7 +1508,7 @@ function HandleSMS(req, res, next){
                                     var date = new Date();
                                     var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'DEVELOPER', EventTime:date, EventName:'REMOTEERROR',EventData:err,EventParams:response,CompanyId:company, TenantId: tenant, SessionId: sessionid  };
 
-                                    if(EventConsumeType=="AMQP")
+                                    if(EventPublishType=="AMQP")
                                     {
                                         eventPublisher.PublishToQueue(callreciveEvent);
                                     }
@@ -1890,7 +1890,7 @@ function HandleFunction(queryData, req, res, next) {
                                             SessionId: queryData["session_id"]
                                         };
 
-                                        if(EventConsumeType=="AMQP")
+                                        if(EventPublishType=="AMQP")
                                         {
                                             eventPublisher.PublishToQueue(callreciveEvent);
                                         }
@@ -1968,7 +1968,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     SessionID: queryData["session_id"]
                                                 });
 
-                                                if(EventConsumeType=="AMQP")
+                                                if(EventPublishType=="AMQP")
                                                 {
                                                     eventPublisher.PublishToQueue({
                                                         Type: 'DATA',
@@ -2002,7 +2002,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     SessionId: queryData["session_id"]
                                                 };
 
-                                                if(EventConsumeType=="AMQP")
+                                                if(EventPublishType=="AMQP")
                                                 {
                                                     eventPublisher.PublishToQueue(callreciveEvent);
                                                 }
@@ -2038,7 +2038,7 @@ function HandleFunction(queryData, req, res, next) {
                                             };
                                             if (callData['eventlog'] == true) {
 
-                                                if(EventConsumeType=="AMQP")
+                                                if(EventPublishType=="AMQP")
                                                 {
                                                     eventPublisher.PublishToQueue(callreciveEvent);
                                                 }
@@ -2962,7 +2962,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     Description: response.body
                                                 });
 
-                                                if(EventConsumeType=="AMQP")
+                                                if(EventPublishType=="AMQP")
                                                 {
                                                     eventPublisher.PublishToQueue({
                                                         Type: 'HTTP',
@@ -2993,7 +2993,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     SessionID: queryData["session_id"],
                                                     Description: "no response"
                                                 });
-                                                if(EventConsumeType=="AMQP") {
+                                                if(EventPublishType=="AMQP") {
                                                     eventPublisher.PublishToQueue({
                                                         Type: 'HTTP',
                                                         Code: 0000,
@@ -3032,7 +3032,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 SessionId: queryData["session_id"]
                                             };
 
-                                            if(EventConsumeType=="AMQP")
+                                            if(EventPublishType=="AMQP")
                                             {
                                                 eventPublisher.PublishToQueue(callreciveEvent);
                                             }
