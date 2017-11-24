@@ -2,6 +2,7 @@
 var fs = require('fs');
 var url = require('url');
 var messageGenerator = require('./MessageGenerator.js');
+var eventPublisher = require('./EventPublisher.js');
 var config = require('config');
 var colors = require('colors');
 var http = require('http');
@@ -14,6 +15,7 @@ var format = require("stringformat");
 var uuid = require('node-uuid');
 var validator = require('validator');
 var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
+var EventConsumeType=config.EventConsumeType.toUpperCase();
 
 //console.log(messageGenerator.ARDS("XXXX","XXXXX","123","1","3"));
 
@@ -138,36 +140,36 @@ server.listen(config.HTTPServer.port);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var httpPOST = function (custumerData, section, data) {
-    
+
     //http://192.168.0.60/CSRequestWebApi/api/
     var post_domain = custumerData.domain;
     var post_port = custumerData.port;
     var post_path = custumerData.path;
-    
+
     //var post_data = querystring.stringify({  
     //  'your' : 'post',  
     //  'data': JSON.stringify( data )
     //});  
-    
+
     var post_data = JSON.stringify(data);
     var post_options = {
-        host: post_domain,  
-        port: post_port,  
-        path: post_path,  
-        method: 'POST',  
+        host: post_domain,
+        port: post_port,
+        path: post_path,
+        method: 'POST',
         headers: {
-            'Content-Type': 'application/json',  
+            'Content-Type': 'application/json',
             'Content-Length': post_data.length
         }
     };
-    
+
     var post_req = http.request(post_options, function (res) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
             console.log('Response: ' + chunk);
         });
     });
-    
+
     // write parameters to post body  
     post_req.write(post_data);
     post_req.end();
@@ -183,9 +185,9 @@ function postData(req, res) {
 
     logger.debug("Post voicemail recived");
 
-    
+
     redisClient.get(req.body["session_id"] + "_dev", function (err, sessiondata) {
-        
+
         var uuid_data;
         if (err) {
 
@@ -193,8 +195,8 @@ function postData(req, res) {
 
         }
         else {
-            
-            
+
+
             uuid_data = JSON.parse(sessiondata);
             //var body = { session: req.body["session_id"], direction: req.body["Caller-Direction"], ani: req.body["Caller-Caller-ID-Number"], dnis: req.body["Caller-Destination-Number"], name: req.body["Caller-Caller-ID-Name"], result: "uploaded" };
 
@@ -206,11 +208,11 @@ function postData(req, res) {
                 if(config.Services && config.Services.uploadurl  && config.Services.uploadport) {
 
 
-                     var urloadurl = format("http://{0}/DVP/API/{1}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadurlVersion);
+                    var urloadurl = format("http://{0}/DVP/API/{1}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadurlVersion);
 
 
-                     if(validator.isIP(config.Services.uploadurl))
-                     urloadurl = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadport,config.Services.uploadurlVersion);
+                    if(validator.isIP(config.Services.uploadurl))
+                        urloadurl = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadport,config.Services.uploadurlVersion);
 
 
                     logger.debug("File Upload to " + urloadurl);
@@ -218,17 +220,17 @@ function postData(req, res) {
                     //console.log(req.files);
                     console.log(req.files.result["path"]);
 
-                     var FormData = {
-                     sessionid: req.body["session_id"],
-                     file: fs.createReadStream(req.files.result["path"]),
-                     filename: req.body["session_id"]+".mp3",
-                     display: req.files.result["name"],
-                     class: "CALLSERVER",
-                     type:"CALL",
-                     category:"VOICEMAIL",
-                     referenceid:req.body["session_id"],
-                     mediatype:"audio",
-                     filetype:"mp3"}
+                    var FormData = {
+                        sessionid: req.body["session_id"],
+                        file: fs.createReadStream(req.files.result["path"]),
+                        filename: req.body["session_id"]+".mp3",
+                        display: req.files.result["name"],
+                        class: "CALLSERVER",
+                        type:"CALL",
+                        category:"VOICEMAIL",
+                        referenceid:req.body["session_id"],
+                        mediatype:"audio",
+                        filetype:"mp3"}
 
                     var fileID = format("http://{0}/DVP/API/{1}/InternalFileService/File/DownloadLatest/{2}/{3}/{4}", config.Services.downloadurl, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], FormData.filename);
 
@@ -243,62 +245,62 @@ function postData(req, res) {
                         FormData["display"] = req.body["Caller-Caller-ID-Number"] + " - " +req.body["Caller-Destination-Number"];
                     }
 
-                     var r = request.post({url:urloadurl,formData: FormData, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function(error, response, body){
-                         if(err){
+                    var r = request.post({url:urloadurl,formData: FormData, headers: {'authorization': token, 'companyinfo': format("{0}:{1}",uuid_data["tenant"],uuid_data["company"])}}, function(error, response, body){
+                        if(err){
                             logger.error("File upload error", err);
-                         }else {
+                        }else {
 
-                             //logger.debug(response);
-                             if (response) {
+                            //logger.debug(response);
+                            if (response) {
 
-                                 logger.debug("Response recived", response.body);
-                                 response.body = JSON.parse(response.body);
-                                 logger.debug("Response recived", response.body["IsSuccess"]);
-                                 if (response.body["IsSuccess"]) {
-
-
-                                     if (req.body && req.body["Caller-Caller-ID-Number"] && req.body["Caller-Destination-Number"] && req.body["Caller-Direction"] && req.body["session_id"]) {
-
-                                         //FormData["display"] = req.body["Caller-Caller-ID-Number"] + " - " +req.body["Caller-Destination-Number"];
-
-                                         try {
+                                logger.debug("Response recived", response.body);
+                                response.body = JSON.parse(response.body);
+                                logger.debug("Response recived", response.body["IsSuccess"]);
+                                if (response.body["IsSuccess"]) {
 
 
-                                             var voicemailData = {
-                                                 type: "question",
-                                                 subject: "Voice mail from " + req.body["Caller-Caller-ID-Number"],
-                                                 description: "Voicemail " + fileID,
-                                                 priority: "high"
+                                    if (req.body && req.body["Caller-Caller-ID-Number"] && req.body["Caller-Destination-Number"] && req.body["Caller-Direction"] && req.body["session_id"]) {
 
-                                             };
+                                        //FormData["display"] = req.body["Caller-Caller-ID-Number"] + " - " +req.body["Caller-Destination-Number"];
 
-                                             CreateTicket("voicemail", req.body["session_id"], uuid_data["company"], uuid_data["tenant"], voicemailData["type"], voicemailData["subject"], voicemailData["description"], voicemailData["priority"], voicemailData["tags"], function (success, result) {
-
-                                                 if (success) {
-
-                                                     logger.debug("Create ticket success", result);
-                                                 } else {
-                                                     logger.debug("Create ticket failed");
-                                                 }
-                                             });
+                                        try {
 
 
-                                         } catch (ex) {
-                                             logger.error(ex);
-                                         }
-                                     } else {
+                                            var voicemailData = {
+                                                type: "question",
+                                                subject: "Voice mail from " + req.body["Caller-Caller-ID-Number"],
+                                                description: "Voicemail " + fileID,
+                                                priority: "high"
 
-                                         logger.error("Create engagement no necessary data found ....");
-                                     }
-                                 } else {
+                                            };
 
-                                     logger.error("Upload failed .....");
-                                 }
-                             }
-                         }
+                                            CreateTicket("voicemail", req.body["session_id"], uuid_data["company"], uuid_data["tenant"], voicemailData["type"], voicemailData["subject"], voicemailData["description"], voicemailData["priority"], voicemailData["tags"], function (success, result) {
 
-                     });
-                     redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify({Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  }), redis.print);
+                                                if (success) {
+
+                                                    logger.debug("Create ticket success", result);
+                                                } else {
+                                                    logger.debug("Create ticket failed");
+                                                }
+                                            });
+
+
+                                        } catch (ex) {
+                                            logger.error(ex);
+                                        }
+                                    } else {
+
+                                        logger.error("Create engagement no necessary data found ....");
+                                    }
+                                } else {
+
+                                    logger.error("Upload failed .....");
+                                }
+                            }
+                        }
+
+                    });
+                    redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify({Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  }), redis.print);
 
                 }else{
 
@@ -495,17 +497,17 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
             break;
 
         /*
-        case "dialgateway":
+         case "dialgateway":
 
-            if(uuid_data['gateway'])
-                var number = format("sofia/{0}/{1}", uuid_data['gateway'], callData["number"]);
-            var context = "developer";
-            if (uuid_data['pbxcontext'])
-                var context = uuid_data['pbxcontext'];
-            res.write(messageGenerator.Dial(mainServer, mainServer, context, callData["dialplan"], callData["callername"], callData["callernumber"], number));
+         if(uuid_data['gateway'])
+         var number = format("sofia/{0}/{1}", uuid_data['gateway'], callData["number"]);
+         var context = "developer";
+         if (uuid_data['pbxcontext'])
+         var context = uuid_data['pbxcontext'];
+         res.write(messageGenerator.Dial(mainServer, mainServer, context, callData["dialplan"], callData["callername"], callData["callernumber"], number));
 
-            break;
-            */
+         break;
+         */
 
 
 
@@ -594,7 +596,7 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
 
         case "continue":
 
-                res.write(messageGenerator.Continue(mainServer, callData["key"], callData["attribute"]));
+            res.write(messageGenerator.Continue(mainServer, callData["key"], callData["attribute"]));
 
 
             break;
@@ -1323,7 +1325,17 @@ function HandleSMS(req, res, next){
             logger.error("error in searching data", err);
             var date = new Date();
             var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'SYSTEM', EventTime:date, EventName:'NOSESSION',EventData:'',EventParams:'',CompanyId:company, TenantId: tenant, SessionId: sessionid  };
-            redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
+            if(EventConsumeType=="AMQP")
+            {
+                eventPublisher.PublishToQueue(callreciveEvent);
+            }
+            else
+            {
+                redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+            }
+
+
 
         }else {
 
@@ -1381,7 +1393,16 @@ function HandleSMS(req, res, next){
 
                         var date = new Date();
                         var callreciveEvent = {EventClass:'APP',EventType:'DATA', EventCategory:'SYSTEM', EventTime:date, EventName:'SYSTEMDATA',EventData:body,EventParams:'',CompanyId:company, TenantId: tenant, SessionId: sessionid  };
-                        redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
+                        if(EventConsumeType=="AMQP")
+                        {
+                            eventPublisher.PublishToQueue(callreciveEvent);
+                        }
+                        else
+                        {
+                            redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                        }
+
 
                         //console.log("body", body);
                         //console.log("options", options);
@@ -1396,7 +1417,16 @@ function HandleSMS(req, res, next){
 
                                     var date = new Date();
                                     var callreciveEvent = {EventClass:'APP',EventType:'DATA', EventCategory:'DEVELOPER', EventTime:date, EventName:'REMOTEEXECUTED',EventData:response.body,EventParams:url,CompanyId:company, TenantId: tenant, SessionId: sessionid  };
-                                    redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
+                                    if(EventConsumeType=="AMQP")
+                                    {
+                                        eventPublisher.PublishToQueue(callreciveEvent);
+                                    }
+                                    else
+                                    {
+                                        redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                                    }
+
 
 
 
@@ -1465,7 +1495,16 @@ function HandleSMS(req, res, next){
 
                                     var date = new Date();
                                     var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'DEVELOPER', EventTime:date, EventName:'REMOTEERROR',EventData:err,EventParams:response,CompanyId:company, TenantId: tenant, SessionId: sessionid  };
-                                    redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
+                                    if(EventConsumeType=="AMQP")
+                                    {
+                                        eventPublisher.PublishToQueue(callreciveEvent);
+                                    }
+                                    else
+                                    {
+                                        redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                                    }
+
 
                                 }
 
@@ -1838,8 +1877,15 @@ function HandleFunction(queryData, req, res, next) {
                                             TenantId: tenant,
                                             SessionId: queryData["session_id"]
                                         };
-                                        redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
 
+                                        if(EventConsumeType=="AMQP")
+                                        {
+                                            eventPublisher.PublishToQueue(callreciveEvent);
+                                        }
+                                        else
+                                        {
+                                            redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                                        }
 
                                         logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s", queryData["session_id"], callreciveEvent);
                                         //////////////////////////////////////////////////////////////////////////////// %s///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1925,7 +1971,15 @@ function HandleFunction(queryData, req, res, next) {
                                                     TenantId: uuid_data["tenant"],
                                                     SessionId: queryData["session_id"]
                                                 };
-                                                redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
+                                                if(EventConsumeType=="AMQP")
+                                                {
+                                                    eventPublisher.PublishToQueue(callreciveEvent);
+                                                }
+                                                else
+                                                {
+                                                    redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                                                }
                                                 logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j", queryData["session_id"], callreciveEvent);
                                                 res.writeHead(200, {"Content-Type": "text/xml"});
                                                 res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
@@ -1953,7 +2007,15 @@ function HandleFunction(queryData, req, res, next) {
                                                 SessionId: queryData["session_id"]
                                             };
                                             if (callData['eventlog'] == true) {
-                                                redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
+                                                if(EventConsumeType=="AMQP")
+                                                {
+                                                    eventPublisher.PublishToQueue(callreciveEvent);
+                                                }
+                                                else
+                                                {
+                                                    redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                                                }
                                                 logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j", queryData["session_id"], callreciveEvent);
 
                                             }
@@ -2909,7 +2971,15 @@ function HandleFunction(queryData, req, res, next) {
                                                 TenantId: uuid_data["tenant"],
                                                 SessionId: queryData["session_id"]
                                             };
-                                            redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+
+                                            if(EventConsumeType=="AMQP")
+                                            {
+                                                eventPublisher.PublishToQueue(callreciveEvent);
+                                            }
+                                            else
+                                            {
+                                                redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                                            }
 
                                             logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j", queryData["session_id"], callreciveEvent);
 
@@ -3509,7 +3579,7 @@ server.post('/debug/push', function DataHandle(req, res, next) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 server.post('/', function DataHandle(req, res, next) {
-    
+
     console.log("POST recived .... ");
     postData(req, res);
     HandleFunction(req.body, req, res, next);
@@ -3518,8 +3588,8 @@ server.post('/', function DataHandle(req, res, next) {
 
 
 server.get('/', function CallHandle(req, res, next) {
-    
-    
+
+
     //console.log(req.url);
     var queryData = {};
 
@@ -3528,7 +3598,7 @@ server.get('/', function CallHandle(req, res, next) {
     }catch(ex){
         console.log(ex);
     }
-    
+
     HandleFunction(queryData, req, res, next);
 
 });
