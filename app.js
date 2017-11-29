@@ -1975,10 +1975,11 @@ function HandleFunction(queryData, req, res, next) {
                                                 };
 
 
-                                                var eventFlowData=JSON.parse(eventData);
+                                                var eventFlowData= eventData;
                                                 console.log("Publishing to "+EventPublishType);
                                                 if(EventPublishType=="AMQP")
                                                 {
+                                                    eventData.MType = "SYS:HTTPPROGRAMMING:DATAERROR";
                                                     eventPublisher.PublishToQueue(eventData,httpEventQueue);
                                                 }
                                                 else
@@ -2972,6 +2973,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 console.log("Publishing to "+EventPublishType);
                                                 if(EventPublishType=="AMQP")
                                                 {
+                                                    callreciveEventData.MType = "SYS:HTTPPROGRAMMING:HTTPERROR";
                                                     eventPublisher.PublishToQueue(callreciveEventData,httpEventQueue);
                                                 }
                                                 else
@@ -2999,6 +3001,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 var callreciveEvent=JSON.stringify(callreciveEventData);
                                                 console.log("Publishing to "+EventPublishType);
                                                 if(EventPublishType=="AMQP") {
+                                                    callreciveEventData.MType = "SYS:HTTPPROGRAMMING:HTTPERROR";
                                                     eventPublisher.PublishToQueue(callreciveEventData,httpEventQueue);
                                                 }
                                                 else
