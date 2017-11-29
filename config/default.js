@@ -112,7 +112,8 @@ module.exports = {
         "vhost":'/'
     },
     "EventPublishType":"amqp",
-    "EventQueueName":"event_queue"
+    "EventQueueName":"event_queue",
+    "HttpEventQueueName":"http_event_queue"
 
 
 

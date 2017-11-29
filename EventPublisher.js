@@ -6,8 +6,6 @@ var amqp = require('amqp');
 var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
 
 
-var eventQueue=config.EventQueueName;
-
 var ips = [];
 if(config.RabbitMQ.ip) {
     ips = config.RabbitMQ.ip.split(",");
@@ -40,7 +38,7 @@ queueConnection.on('error', function (error) {
     logger.info("There is an error" + error);
 });
 
-module.exports.PublishToQueue = function(sendObj ) {
+module.exports.PublishToQueue = function(sendObj,eventQueue) {
 
     logger.info("Email Send : " + JSON.stringify(sendObj));
 

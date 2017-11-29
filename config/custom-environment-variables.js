@@ -117,7 +117,8 @@ module.exports = {
             "vhost":"SYS_RABBITMQ_VHOST"
         },
     "EventPublishType":"SYS_EVENT_CONSUME_TYPE",
-    "EventQueueName":"SYS_EVENT_QUEUE"
+    "EventQueueName":"SYS_EVENT_QUEUE",
+    "HttpEventQueueName":"SYS_HTTP_EVENT_QUEUE"
 
 
 

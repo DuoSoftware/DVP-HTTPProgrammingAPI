@@ -16,6 +16,8 @@ var uuid = require('node-uuid');
 var validator = require('validator');
 var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
 var EventPublishType=config.EventPublishType.toUpperCase();
+var eventQueue=config.EventQueueName;
+var httpEventQueue=config.HttpEventQueueName;
 
 //console.log(messageGenerator.ARDS("XXXX","XXXXX","123","1","3"));
 
@@ -303,16 +305,17 @@ function postData(req, res) {
 
                     var publishObj= {Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  };
 
-                    redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify(publishObj), redis.print);
-                    /*if(EventPublishType=="AMQP")
+                    /*redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify(publishObj), redis.print);*/
+                    if(EventPublishType=="AMQP")
                     {
-                        eventPublisher.PublishToQueue(publishObj);
+                     publishObj.MType = "SYS:HTTPPROGRAMMING:FILEUPLOADED";
+                        eventPublisher.PublishToQueue(publishObj,httpEventQueue);
                     }
                     else
                     {
                         //redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify({Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  }), redis.print);
                         redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify(publishObj), redis.print);
-                    }*/
+                    }
 
 
                 }else{
@@ -1341,7 +1344,7 @@ function HandleSMS(req, res, next){
 
             if(EventPublishType=="AMQP")
             {
-                eventPublisher.PublishToQueue(callreciveEvent);
+                eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
             }
             else
             {
@@ -1409,7 +1412,7 @@ function HandleSMS(req, res, next){
 
                         if(EventPublishType=="AMQP")
                         {
-                            eventPublisher.PublishToQueue(callreciveEvent);
+                            eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
                         }
                         else
                         {
@@ -1433,7 +1436,7 @@ function HandleSMS(req, res, next){
 
                                     if(EventPublishType=="AMQP")
                                     {
-                                        eventPublisher.PublishToQueue(callreciveEvent);
+                                        eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
                                     }
                                     else
                                     {
@@ -1511,7 +1514,7 @@ function HandleSMS(req, res, next){
 
                                     if(EventPublishType=="AMQP")
                                     {
-                                        eventPublisher.PublishToQueue(callreciveEvent);
+                                        eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
                                     }
                                     else
                                     {
@@ -1893,7 +1896,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                         if(EventPublishType=="AMQP")
                                         {
-                                            eventPublisher.PublishToQueue(callreciveEvent);
+                                            eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
                                         }
                                         else
                                         {
@@ -1960,31 +1963,27 @@ function HandleFunction(queryData, req, res, next) {
                                             catch (e) {
 
 
-                                                var eventFlowData = JSON.stringify({
+                                                var eventData = {
                                                     Type: 'DATA',
                                                     Code: '',
                                                     URL: '',
                                                     APPID: uuid_dev["appid"],
                                                     Description: JSON.stringify(response.body),
                                                     SessionID: queryData["session_id"]
-                                                });
+                                                };
 
-                                                /*if(EventPublishType=="AMQP")
+
+                                                var eventFlowData=JSON.parse(eventData);
+
+                                                if(EventPublishType=="AMQP")
                                                 {
-                                                    eventPublisher.PublishToQueue({
-                                                        Type: 'DATA',
-                                                        Code: '',
-                                                        URL: '',
-                                                        APPID: uuid_dev["appid"],
-                                                        Description: JSON.stringify(response.body),
-                                                        SessionID: queryData["session_id"]
-                                                    });
+                                                    eventPublisher.PublishToQueue(eventData,httpEventQueue);
                                                 }
                                                 else
                                                 {
-                                                    redisClient.publish("SYS:HTTPPROGRAMMING:DATAERROR", eventFlowData, redis.print);
-                                                }*/
-                                                redisClient.publish("SYS:HTTPPROGRAMMING:DATAERROR", eventFlowData, redis.print);
+                                                    redisClient.publish("SYS:HTTPPROGRAMMING:DATAERROR", JSON.parse(eventFlowData), redis.print);
+                                                }
+                                                //redisClient.publish("SYS:HTTPPROGRAMMING:DATAERROR", eventFlowData, redis.print);
 
 
 
@@ -2006,7 +2005,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                                 if(EventPublishType=="AMQP")
                                                 {
-                                                    eventPublisher.PublishToQueue(callreciveEvent);
+                                                    eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
                                                 }
                                                 else
                                                 {
@@ -2042,7 +2041,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                                 if(EventPublishType=="AMQP")
                                                 {
-                                                    eventPublisher.PublishToQueue(callreciveEvent);
+                                                    eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
                                                 }
                                                 else
                                                 {
@@ -2955,31 +2954,27 @@ function HandleFunction(queryData, req, res, next) {
 
                                             if (response) {
 
-                                                var callreciveEvent = JSON.stringify({
+                                                var callreciveEventData = {
                                                     Type: 'HTTP',
                                                     Code: response.statusCode,
                                                     URL: uuid_dev["nexturl"],
                                                     APPID: uuid_dev["appid"],
                                                     SessionID: queryData["session_id"],
                                                     Description: response.body
-                                                });
+                                                };
 
-                                                /*if(EventPublishType=="AMQP")
+                                                var callreciveEvent=JSON.stringify(callreciveEventData);
+
+
+                                                if(EventPublishType=="AMQP")
                                                 {
-                                                    eventPublisher.PublishToQueue({
-                                                        Type: 'HTTP',
-                                                        Code: response.statusCode,
-                                                        URL: uuid_dev["nexturl"],
-                                                        APPID: uuid_dev["appid"],
-                                                        SessionID: queryData["session_id"],
-                                                        Description: response.body
-                                                    });
+                                                    eventPublisher.PublishToQueue(callreciveEventData,httpEventQueue);
                                                 }
                                                 else
                                                 {
                                                     redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
-                                                }*/
-                                                redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
+                                                }
+                                               // redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
 
 
 
@@ -2988,29 +2983,25 @@ function HandleFunction(queryData, req, res, next) {
 
                                             } else {
 
-                                                var callreciveEvent = JSON.stringify({
+                                                var callreciveEventData = {
                                                     Type: 'HTTP',
                                                     Code: 0000,
                                                     URL: uuid_dev["nexturl"],
                                                     APPID: uuid_dev["appid"],
                                                     SessionID: queryData["session_id"],
                                                     Description: "no response"
-                                                });
-                                               /* if(EventPublishType=="AMQP") {
-                                                    eventPublisher.PublishToQueue({
-                                                        Type: 'HTTP',
-                                                        Code: 0000,
-                                                        URL: uuid_dev["nexturl"],
-                                                        APPID: uuid_dev["appid"],
-                                                        SessionID: queryData["session_id"],
-                                                        Description: "no response"
-                                                    });
+                                                };
+
+                                                var callreciveEvent=JSON.stringify(callreciveEventData);
+
+                                                if(EventPublishType=="AMQP") {
+                                                    eventPublisher.PublishToQueue(callreciveEventData,httpEventQueue);
                                                 }
                                                 else
                                                 {
                                                     redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
-                                                }*/
-                                                redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
+                                                }
+                                               // redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
 
 
 
@@ -3038,7 +3029,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                             if(EventPublishType=="AMQP")
                                             {
-                                                eventPublisher.PublishToQueue(callreciveEvent);
+                                                eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
                                             }
                                             else
                                             {
