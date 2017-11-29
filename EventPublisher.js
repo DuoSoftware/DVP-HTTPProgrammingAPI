@@ -40,7 +40,7 @@ queueConnection.on('error', function (error) {
 
 module.exports.PublishToQueue = function(sendObj,eventQueue) {
 
-    logger.info("Email Send : " + JSON.stringify(sendObj));
+    logger.info("Sending Data object to queue : " + JSON.stringify(sendObj));
 
     try {
         if (sendObj) {
