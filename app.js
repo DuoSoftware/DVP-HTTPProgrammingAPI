@@ -306,6 +306,8 @@ function postData(req, res) {
                     var publishObj= {Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  };
 
                     /*redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify(publishObj), redis.print);*/
+
+                    console.log("Publishing to "+EventPublishType);
                     if(EventPublishType=="AMQP")
                     {
                      publishObj.MType = "SYS:HTTPPROGRAMMING:FILEUPLOADED";
@@ -1341,7 +1343,7 @@ function HandleSMS(req, res, next){
             logger.error("error in searching data", err);
             var date = new Date();
             var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'SYSTEM', EventTime:date, EventName:'NOSESSION',EventData:'',EventParams:'',CompanyId:company, TenantId: tenant, SessionId: sessionid  };
-
+            console.log("Publishing to "+EventPublishType);
             if(EventPublishType=="AMQP")
             {
                 eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
@@ -1409,7 +1411,7 @@ function HandleSMS(req, res, next){
 
                         var date = new Date();
                         var callreciveEvent = {EventClass:'APP',EventType:'DATA', EventCategory:'SYSTEM', EventTime:date, EventName:'SYSTEMDATA',EventData:body,EventParams:'',CompanyId:company, TenantId: tenant, SessionId: sessionid  };
-
+                        console.log("Publishing to "+EventPublishType);
                         if(EventPublishType=="AMQP")
                         {
                             eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
@@ -1433,7 +1435,7 @@ function HandleSMS(req, res, next){
 
                                     var date = new Date();
                                     var callreciveEvent = {EventClass:'APP',EventType:'DATA', EventCategory:'DEVELOPER', EventTime:date, EventName:'REMOTEEXECUTED',EventData:response.body,EventParams:url,CompanyId:company, TenantId: tenant, SessionId: sessionid  };
-
+                                    console.log("Publishing to "+EventPublishType);
                                     if(EventPublishType=="AMQP")
                                     {
                                         eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
@@ -1511,7 +1513,7 @@ function HandleSMS(req, res, next){
 
                                     var date = new Date();
                                     var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'DEVELOPER', EventTime:date, EventName:'REMOTEERROR',EventData:err,EventParams:response,CompanyId:company, TenantId: tenant, SessionId: sessionid  };
-
+                                    console.log("Publishing to "+EventPublishType);
                                     if(EventPublishType=="AMQP")
                                     {
                                         eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
@@ -1893,7 +1895,7 @@ function HandleFunction(queryData, req, res, next) {
                                             TenantId: tenant,
                                             SessionId: queryData["session_id"]
                                         };
-
+                                        console.log("Publishing to "+EventPublishType);
                                         if(EventPublishType=="AMQP")
                                         {
                                             eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
@@ -1974,7 +1976,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
                                                 var eventFlowData=JSON.parse(eventData);
-
+                                                console.log("Publishing to "+EventPublishType);
                                                 if(EventPublishType=="AMQP")
                                                 {
                                                     eventPublisher.PublishToQueue(eventData,httpEventQueue);
@@ -2002,7 +2004,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     TenantId: uuid_data["tenant"],
                                                     SessionId: queryData["session_id"]
                                                 };
-
+                                                console.log("Publishing to "+EventPublishType);
                                                 if(EventPublishType=="AMQP")
                                                 {
                                                     eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
@@ -2037,8 +2039,10 @@ function HandleFunction(queryData, req, res, next) {
                                                 TenantId: uuid_data["tenant"],
                                                 SessionId: queryData["session_id"]
                                             };
-                                            if (callData['eventlog'] == true) {
 
+
+                                            if (callData['eventlog'] == true) {
+                                                console.log("Publishing to "+EventPublishType);
                                                 if(EventPublishType=="AMQP")
                                                 {
                                                     eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
@@ -2965,7 +2969,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                                 var callreciveEvent=JSON.stringify(callreciveEventData);
 
-
+                                                console.log("Publishing to "+EventPublishType);
                                                 if(EventPublishType=="AMQP")
                                                 {
                                                     eventPublisher.PublishToQueue(callreciveEventData,httpEventQueue);
@@ -2993,7 +2997,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 };
 
                                                 var callreciveEvent=JSON.stringify(callreciveEventData);
-
+                                                console.log("Publishing to "+EventPublishType);
                                                 if(EventPublishType=="AMQP") {
                                                     eventPublisher.PublishToQueue(callreciveEventData,httpEventQueue);
                                                 }
@@ -3026,7 +3030,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 TenantId: uuid_data["tenant"],
                                                 SessionId: queryData["session_id"]
                                             };
-
+                                            console.log("Publishing to "+EventPublishType);
                                             if(EventPublishType=="AMQP")
                                             {
                                                 eventPublisher.PublishToQueue(callreciveEvent,eventQueue);
