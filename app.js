@@ -906,7 +906,7 @@ function UpdateUserAttributes(company, tenant, id, attribute, value, cb){
 }
 
 
-function CreateEngagement(dummy, channel, company, tenant, from, to, direction, session, cb){
+function CreateEngagement(dummy, channel, company, tenant, from, to, direction, session, body, cb){
 
     if(dummy){
 
@@ -926,7 +926,8 @@ function CreateEngagement(dummy, channel, company, tenant, from, to, direction, 
             "channel": channel,
             "direction": direction,
             "channel_from":from,
-            "channel_to": to
+            "channel_to": to,
+            "body":body
         };
 
         logger.debug("Calling Engagement service URL %s", engagementURL);
@@ -1364,7 +1365,7 @@ function HandleSMS(req, res, next){
                     };
 
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    CreateEngagement(undefined,"sms",company,tenant,from,destination,"inbound",sessionid, function(isSuccess,result){
+                    CreateEngagement(undefined,"sms",company,tenant,from,destination,"inbound",sessionid,message, function(isSuccess,result){
 
                         if(isSuccess && result){
 
@@ -1712,7 +1713,7 @@ function HandleFunction(queryData, req, res, next) {
 
 
 
-                        CreateEngagement(dummyEngagement, engagementType, uuid_data["company"], uuid_data["tenant"], callerID, queryData["Caller-Destination-Number"], queryData["Caller-Direction"], queryData["session_id"], function (isSuccess, result) {
+                        CreateEngagement(dummyEngagement, engagementType, uuid_data["company"], uuid_data["tenant"], callerID, queryData["Caller-Destination-Number"], queryData["Caller-Direction"], queryData["session_id"], undefined, function (isSuccess, result) {
 
                             if (isSuccess && result) {
 
