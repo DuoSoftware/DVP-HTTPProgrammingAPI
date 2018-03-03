@@ -272,7 +272,7 @@ function postData(req, res) {
 
                                              };
 
-                                             CreateTicket("voicemail", req.body["session_id"], uuid_data["company"], uuid_data["tenant"], voicemailData["type"], voicemailData["subject"], voicemailData["description"], voicemailData["priority"], voicemailData["tags"], function (success, result) {
+                                             CreateTicket("voicemail", req.body["session_id"], uuid_data["company"], uuid_data["tenant"], voicemailData["type"], voicemailData["subject"], voicemailData["description"], voicemailData["priority"], voicemailData["tags"],undefined, function (success, result) {
 
                                                  if (success) {
 
@@ -964,7 +964,7 @@ function CreateEngagement(dummy, channel, company, tenant, from, to, direction, 
 }
 
 
-function CreateTicket(channel,session, company, tenant, type, subjecct, description, priority, tags, cb){
+function CreateTicket(channel,session, company, tenant, type, subjecct, description, priority, tags, requester, cb){
 
     if((config.Services && config.Services.ticketurl && config.Services.ticketport && config.Services.ticketversion)) {
 
@@ -983,6 +983,7 @@ function CreateTicket(channel,session, company, tenant, type, subjecct, descript
             "status": "new",
             "engagement_session": session,
             "channel": channel,
+            "requester": requester,
             "tags": tags,
         };
 
@@ -1313,6 +1314,7 @@ function HandleSMS(req, res, next){
     var content = queryData["content"];
     var sessionid = queryData["to"];
     var systemid = queryData["id"];
+    var profile = undefined;
 
     redisClient.get("SMS:"+sessionid, function (err, sessiondata) {
 
@@ -1370,7 +1372,7 @@ function HandleSMS(req, res, next){
 
                             if(result && result.profile_id){
 
-
+                                profile = result.profile_id;
                             }
 
 
@@ -1422,7 +1424,7 @@ function HandleSMS(req, res, next){
                                             if( smsData["description"]){
                                                 description =smsData["description"];
                                             }
-                                            CreateTicket("sms",sessionid,sessiondata["CompanyId"],sessiondata["TenantId"],smsData["type"], smsData["subject"], description,smsData["priority"],smsData["tags"],function(success, result){});
+                                            CreateTicket("sms",sessionid,sessiondata["CompanyId"],sessiondata["TenantId"],smsData["type"], smsData["subject"], description,smsData["priority"],smsData["tags"],profile,function(success, result){});
 
                                             break;
                                         case "note":
@@ -2518,7 +2520,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                             else if (callData["action"] == "ticket") {
 
-                                                CreateTicket("call", queryData["session_id"], uuid_data["company"], uuid_data["tenant"], callData["type"], callData["subject"], callData["description"], callData["prority"], callData["tags"], function (success, resu) {
+                                                CreateTicket("call", queryData["session_id"], uuid_data["company"], uuid_data["tenant"], callData["type"], callData["subject"], callData["description"], callData["prority"], callData["tags"],undefined, function (success, resu) {
 
                                                     callData["action"] = "continue";
 
