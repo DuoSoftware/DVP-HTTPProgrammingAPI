@@ -2427,7 +2427,7 @@ function HandleFunction(queryData, req, res, next) {
                                                                 if (profileData.Result.BusinessUnit)
                                                                     callData["BusinessUnit"] = profileData.Result.BusinessUnit;
                                                                 else
-                                                                    callData["DialTime"] = "default";
+                                                                    callData["BusinessUnit"] = "default";
 
 
 
