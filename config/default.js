@@ -89,7 +89,7 @@ module.exports = {
 
 
 
-        "ticketurl": "127.0.0.1",
+        "ticketurl": "liteticket.app.veery.cloud",
         "ticketport": '3636',
         "ticketversion": "1.0.0.0",
 
