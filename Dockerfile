@@ -7,7 +7,7 @@
 
 #EXPOSE 8807
 
-FROM node:5.10.0
+FROM node:9.9.0
 ARG VERSION_TAG
 RUN git clone -b $VERSION_TAG https://github.com/DuoSoftware/DVP-HTTPProgrammingAPI.git /usr/local/src/httpprogrammingapi
 RUN cd /usr/local/src/httpprogrammingapi;
