@@ -439,7 +439,7 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
 
                     console.log("------------------------------------------------------> INBAND");
                     //var msg = messageGenerator.DTMFType(mainServer, mainServer, dtmfPayload);
-                    var msg = messageGenerator.Continue(mainServer);
+                    var msg = messageGenerator.StartDTMF(mainServer,mainServer);
                     console.log("------------------------------------------------------>" + msg);
                     res.write(msg);
 
