@@ -3,18 +3,18 @@ module.exports = {
       "Freeswitch" : {
           "ip": 'localhost',
           "port": 8021,
-          "password": 'devadmin'
+          "password": ''
       },
 
     "Redis":
     {
         "mode":"sentinel",//instance, cluster, sentinel
-        "ip": "45.55.142.207",
+        "ip": "",
         "port": 6389,
-        "user": "duo",
-        "password": "DuoS123",
+        "user": "",
+        "password": "",
         "sentinels":{
-            "hosts": "138.197.90.92,45.55.205.92,162.243.81.39",
+            "hosts": "",
             "port":16389,
             "name":"redis-cluster"
         }
@@ -25,13 +25,13 @@ module.exports = {
     "Security":
     {
 
-        "ip" : "45.55.142.207",
+        "ip" : "",
         "port": 6389,
-        "user": "duo",
-        "password": "DuoS123",
+        "user": "",
+        "password": "",
         "mode":"instance",//instance, cluster, sentinel
         "sentinels":{
-            "hosts": "138.197.90.92,45.55.205.92,162.243.81.39",
+            "hosts": "",
             "port":16389,
             "name":"redis-cluster"
         }
@@ -49,14 +49,14 @@ module.exports = {
 
     "Host":{
 
-        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdWtpdGhhIiwianRpIjoiYWEzOGRmZWYtNDFhOC00MWUyLTgwMzktOTJjZTY0YjM4ZDFmIiwic3ViIjoiNTZhOWU3NTlmYjA3MTkwN2EwMDAwMDAxMjVkOWU4MGI1YzdjNGY5ODQ2NmY5MjExNzk2ZWJmNDMiLCJleHAiOjE5MDIzODExMTgsInRlbmFudCI6LTEsImNvbXBhbnkiOi0xLCJzY29wZSI6W3sicmVzb3VyY2UiOiJhbGwiLCJhY3Rpb25zIjoiYWxsIn1dLCJpYXQiOjE0NzAzODExMTh9.Gmlu00Uj66Fzts-w6qEwNUz46XYGzE8wHUhAJOFtiRo"
+        "token": ""
     },
 
     "Services": {
 
-        "uploadurl": '192.168.0.88',
+        "uploadurl": '',
         "uploadport": '8888',
-        "downloadurl": 'internalfileservice.104.131.67.21.xip.io',
+        "downloadurl": '',
         "downloadport": '8081',
         "ruleservice": '127.0.0.1',
         "ruleserviceport": '8888',
@@ -69,17 +69,17 @@ module.exports = {
         "ardsServiceVersion": "1.0.0.0",
 
 
-        "qmusicurl": 'queuemusic.104.131.67.21.xip.io',
+        "qmusicurl": '',
         "qmusicport": '8860',
         "qmusicversion": "1.0.0",
 
 
-        "fileserviceurl": 'fileservice.104.131.67.21.xip.io',
+        "fileserviceurl": '',
         "fileserviceport": '8081',
         "fileserviceVersion": "6.0",
 
 
-        "interactionurl": "interactions.app.veery.cloud",
+        "interactionurl": "",
         "interactionport": '3637',
         "interactionversion": "1.0.0.0",
 
@@ -89,7 +89,7 @@ module.exports = {
 
 
 
-        "ticketurl": "liteticket.app.veery.cloud",
+        "ticketurl": "",
         "ticketport": '3636',
         "ticketversion": "1.0.0.0",
 
