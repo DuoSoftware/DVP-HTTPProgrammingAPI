@@ -107,7 +107,18 @@ module.exports = {
         "port": "HOST_HTTPPROGRAMMINGAPI_PORT",
         "version": "HOST_VERSION",
         "token": "HOST_TOKEN"
-    }
+    },
+
+    "RabbitMQ":
+        {
+            "ip": "SYS_RABBITMQ_HOST",
+            "port": "SYS_RABBITMQ_PORT",
+            "user": "SYS_RABBITMQ_USER",
+            "password": "SYS_RABBITMQ_PASSWORD",
+            "vhost":"SYS_RABBITMQ_VHOST"
+        },
+
+    "EventPublishMethod": "HOST_DVPEVENTS_TYPE"
 
 
 

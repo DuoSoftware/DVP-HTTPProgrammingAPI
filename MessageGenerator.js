@@ -477,6 +477,26 @@ var dtmf_type = function (actionURL, tempURL, dtmfType) {
 };
 
 
+var start_dtmf = function (actionURL, tempURL) {
+
+    var doc = builder.create("document")
+        .att("type", "text/freeswitch-httapi")
+        .ele("variables")
+        .up()
+        .ele("params")
+        .up()
+        .ele("work")
+        .ele("execute")
+        .att("action", actionURL)
+        .att("temp-action", tempURL)
+        .att("application", "start_dtmf")
+        .end({ pretty: true });
+
+
+    return doc;
+};
+
+
 var execute = function (actionURL, tempURL, application, data) {
 
 
@@ -748,3 +768,4 @@ module.exports.WaitForAnswer = wait_for_answer;
 module.exports.DTMFType = dtmf_type;
 module.exports.Queue = Queue;
 module.exports.ARDS = Ards;
+module.exports.StartDTMF = start_dtmf;
