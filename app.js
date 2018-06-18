@@ -14,6 +14,7 @@ var format = require("stringformat");
 var uuid = require('node-uuid');
 var validator = require('validator');
 var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
+var PublishDVPEventsMessage = require("./DVPEventPublisher").PublishDVPEventsMessage;
 
 //console.log(messageGenerator.ARDS("XXXX","XXXXX","123","1","3"));
 
@@ -298,7 +299,7 @@ function postData(req, res) {
                          }
 
                      });
-                     redisClient.publish("SYS:HTTPPROGRAMMING:FILEUPLOADED", JSON.stringify({Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  }), redis.print);
+                    PublishDVPEventsMessage("FILEUPLOADED",{Type: 'FILE', DisplayName: req.files.result["name"], SessionID: req.body["session_id"], APPID: uuid_data["appid"], Description: '', SessionID: req.body["session_id"]  });
 
                 }else{
 
@@ -1323,7 +1324,7 @@ function HandleSMS(req, res, next){
             logger.error("error in searching data", err);
             var date = new Date();
             var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'SYSTEM', EventTime:date, EventName:'NOSESSION',EventData:'',EventParams:'',CompanyId:company, TenantId: tenant, SessionId: sessionid  };
-            redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+            PublishDVPEventsMessage("DVPEVENTS", callreciveEvent);
 
         }else {
 
@@ -1381,7 +1382,7 @@ function HandleSMS(req, res, next){
 
                         var date = new Date();
                         var callreciveEvent = {EventClass:'APP',EventType:'DATA', EventCategory:'SYSTEM', EventTime:date, EventName:'SYSTEMDATA',EventData:body,EventParams:'',CompanyId:company, TenantId: tenant, SessionId: sessionid  };
-                        redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                        PublishDVPEventsMessage("DVPEVENTS", callreciveEvent);
 
                         //console.log("body", body);
                         //console.log("options", options);
@@ -1396,7 +1397,7 @@ function HandleSMS(req, res, next){
 
                                     var date = new Date();
                                     var callreciveEvent = {EventClass:'APP',EventType:'DATA', EventCategory:'DEVELOPER', EventTime:date, EventName:'REMOTEEXECUTED',EventData:response.body,EventParams:url,CompanyId:company, TenantId: tenant, SessionId: sessionid  };
-                                    redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                                    PublishDVPEventsMessage("DVPEVENTS", callreciveEvent);
 
 
 
@@ -1465,7 +1466,7 @@ function HandleSMS(req, res, next){
 
                                     var date = new Date();
                                     var callreciveEvent = {EventClass:'APP',EventType:'ERROR', EventCategory:'DEVELOPER', EventTime:date, EventName:'REMOTEERROR',EventData:err,EventParams:response,CompanyId:company, TenantId: tenant, SessionId: sessionid  };
-                                    redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                                    PublishDVPEventsMessage("DVPEVENTS", callreciveEvent);
 
                                 }
 
@@ -1838,7 +1839,7 @@ function HandleFunction(queryData, req, res, next) {
                                             TenantId: tenant,
                                             SessionId: queryData["session_id"]
                                         };
-                                        redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                                        PublishDVPEventsMessage("DVPEVENTS", callreciveEvent);
 
 
                                         logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s", queryData["session_id"], callreciveEvent);
@@ -1910,7 +1911,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     SessionID: queryData["session_id"]
                                                 });
 
-                                                redisClient.publish("SYS:HTTPPROGRAMMING:DATAERROR", eventFlowData, redis.print);
+                                                PublishDVPEventsMessage("DATAERROR", eventFlowData);
                                                 logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data for monitoring api %s %j", queryData["session_id"], eventFlowData);
                                                 var date = new Date();
                                                 var callreciveEvent = {
@@ -1925,7 +1926,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     TenantId: uuid_data["tenant"],
                                                     SessionId: queryData["session_id"]
                                                 };
-                                                redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                                                PublishDVPEventsMessage("DVPEVENTS", callreciveEvent);
                                                 logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j", queryData["session_id"], callreciveEvent);
                                                 res.writeHead(200, {"Content-Type": "text/xml"});
                                                 res.write(messageGenerator.Hangup(mainServer, mainServer, "NO_ROUTE_DESTINATION"));
@@ -1953,7 +1954,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 SessionId: queryData["session_id"]
                                             };
                                             if (callData['eventlog'] == true) {
-                                                redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                                                PublishDVPEventsMessage("DVPEVENTS",callreciveEvent);
                                                 logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j", queryData["session_id"], callreciveEvent);
 
                                             }
@@ -2870,7 +2871,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     Description: response.body
                                                 });
 
-                                                redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
+                                                PublishDVPEventsMessage("HTTPERROR", callreciveEvent);
 
 
                                                 logger.debug("HTTPProgrammingAPI.Handler REDIS Publish error for monitoring api %s %j", queryData["session_id"], callreciveEvent);
@@ -2885,7 +2886,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     SessionID: queryData["session_id"],
                                                     Description: "no response"
                                                 });
-                                                redisClient.publish("SYS:HTTPPROGRAMMING:HTTPERROR", callreciveEvent, redis.print);
+                                                PublishDVPEventsMessage("HTTPERROR", callreciveEvent);
 
 
                                                 logger.debug("HTTPProgrammingAPI.Handler REDIS Publish error for monitoring api %s %j", queryData["session_id"], callreciveEvent);
@@ -2909,7 +2910,7 @@ function HandleFunction(queryData, req, res, next) {
                                                 TenantId: uuid_data["tenant"],
                                                 SessionId: queryData["session_id"]
                                             };
-                                            redisClient.publish("SYS:MONITORING:DVPEVENTS", JSON.stringify(callreciveEvent), redis.print);
+                                            PublishDVPEventsMessage("DVPEVENTS", callreciveEvent);
 
                                             logger.debug("HTTPProgrammingAPI.Handler REDIS Publish data to event flow %s %j", queryData["session_id"], callreciveEvent);
 
