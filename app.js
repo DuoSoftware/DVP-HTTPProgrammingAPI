@@ -2977,7 +2977,21 @@ function HandleDebugFunction(queryData, req, res, next) {
 
     }
 
+server.opts('/HTTPProgramingApi/HealthCheck', function(req,res,next)
+{
+    res.end('OK');
 
+    return next();
+
+});
+
+server.get('/DHTTPProgramingApi/HealthCheck', function(req,res,next)
+{
+    res.end('OK');
+
+    return next();
+
+});
     redisClient.get(queryData["session_id"] + "_data", function (err, sessiondata) {
 
         var uuid_dev;
