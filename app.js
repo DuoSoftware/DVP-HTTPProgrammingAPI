@@ -2985,7 +2985,7 @@ server.opts('/HTTPProgramingApi/HealthCheck', function(req,res,next)
 
 });
 
-server.get('/DHTTPProgramingApi/HealthCheck', function(req,res,next)
+server.get('/HTTPProgramingApi/HealthCheck', function(req,res,next)
 {
     res.end('OK');
 
