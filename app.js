@@ -1637,9 +1637,13 @@ function HandleFunction(queryData, req, res, next) {
                         var engagementType = 'call';
 
                         var callerID = queryData["Caller-Caller-ID-Number"]
-                        if(queryData["variable_effective_caller_id_number"]){
+                        if (queryData["variable_effective_caller_id_number"]) {
                             callerID = queryData["variable_effective_caller_id_number"];
                         }
+                        if (queryData["effective_caller_id_number"]) {
+                            callerID = queryData["effective_caller_id_number"];
+                        }
+
 
                         if(queryData["Caller-Channel-Name"] && queryData["Caller-Channel-Name"].indexOf("@sip.skype.com") !== -1){
                             engagementType = 'skype';
