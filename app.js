@@ -1644,6 +1644,10 @@ function HandleFunction(queryData, req, res, next) {
                             callerID = queryData["variable_effective_caller_id_number"];
                         }
 
+                        if(queryData["effective_caller_id_number"]){
+                            callerID = queryData["effective_caller_id_number"];
+                        }
+
                         if(queryData["Caller-Channel-Name"] && queryData["Caller-Channel-Name"].indexOf("@sip.skype.com") !== -1){
                             engagementType = 'skype';
                             logger.debug("channel type set to skype .........");
