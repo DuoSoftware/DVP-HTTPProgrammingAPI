@@ -1,1 +1,17 @@
- res.write(messageGenerator.Speak(callData["file"], mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["engine"], callData["voice"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
+{
+    "action": "speak",
+    "engine": "unimrcp:unimrcpserver-mrcp2",
+    "file": "Hello uni mrcp text to speech engine",
+    "nexturl": "end.json",
+    "posturl": "end.json",
+    "result": "result",
+    "errorfile": "",
+    "loops": 2,
+    "voice": "awb",
+    "digittimeout" : 5,
+    "inputtimeout" : 10,
+    "limit" : 30000,
+    "terminator" : "*",
+    "strip" : "*",
+    "digits" : 1
+}
