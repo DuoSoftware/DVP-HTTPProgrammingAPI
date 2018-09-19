@@ -329,7 +329,10 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
             if (callData["maxdigits"])
                 maxdigits = callData["maxdigits"];
 
-            res.write(messageGenerator.Playback(fileID, mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
+            res.write(messageGenerator.Playback(fileID, mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"],
+                callData["inputtimeout"], callData["loops"], callData["terminator"], callData["strip"],
+                callData["digits"], maxdigits,
+                callData["asrEngine"], callData["asrGrammar"]));
 
 
 

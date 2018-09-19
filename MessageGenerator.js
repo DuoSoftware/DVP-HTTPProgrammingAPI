@@ -101,7 +101,7 @@ var playandgetdigits = function (file, actionURL, tempURL, paramName, errorFile,
 };
 
 
-var playback = function (file, actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops, terminators, strip, digitcount, digitcountmax) {
+var playback = function (file, actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops, terminators, strip, digitcount, digitcountmax,asrEngine,asrGrammar) {
 
     ////"~\\d{1}"
     //var format = util.format("~\\d{%d}", digitcount);
@@ -123,13 +123,17 @@ var playback = function (file, actionURL, tempURL, paramName, errorFile, digitTi
         format = util.format("\\S{%d,%d}", digitcount,digitcountmax);
     //(^\d{3,5}$);
 
-    var doc = builder.create("document")
-        .att("type", "text/freeswitch-httapi")
-        .ele("variables")
-        .up()
-        .ele("params")
-        .up()
-        .ele("work")
+    var doc;
+
+    if(asrEngine && asrGrammar){
+
+        doc = builder.create("document")
+            .att("type", "text/freeswitch-httapi")
+            .ele("variables")
+            .up()
+            .ele("params")
+            .up()
+            .ele("work")
             .ele("playback")
             .att("action", actionURL)
             .att("temp-action", tempURL)
@@ -144,6 +148,33 @@ var playback = function (file, actionURL, tempURL, paramName, errorFile, digitTi
             .att("strip", strip)
             .txt(format)
             .end({ pretty: true });
+
+    }else{
+
+        doc = builder.create("document")
+            .att("type", "text/freeswitch-httapi")
+            .ele("variables")
+            .up()
+            .ele("params")
+            .up()
+            .ele("work")
+            .ele("playback")
+            .att("action", actionURL)
+            .att("temp-action", tempURL)
+            .att("name", paramName)
+            .att("file", file)
+            .att("error-file", errorFile)
+            .att("digit-timeout", digitTimeout)
+            .att("input-timeout", inputTimeout)
+            .att("loops", loops)
+            .att("terminators", terminators)
+            .att("asr-engine", asrEngine)
+            .att("asr-grammar", asrGrammar)
+            .ele("bind")
+            .att("strip", strip)
+            .txt(format)
+            .end({ pretty: true });
+    }
 
 
     return doc;
