@@ -55,7 +55,44 @@ terminators="#">
     */
 
 
+var playanddetectspeech = function(text, actionURL, tempURL, inputTimeout, regTimeout, grammar, engine,  language, ttsengine, voice){
 
+
+
+    var application = 'play_and_detect_speech';
+
+    //say:please say yes or no. please say no or yes. please say something! detect:unimrcp {start-input-timers=false,no-input-timeout=5000,recognition-timeout=5000}builtin:grammar/boolean?language=en-US;y=1;n=2
+    var data = util.format("say:%s detect:unimrcp {start-input-timers=false,no-input-timeout=%d,recognition-timeout=%d}builtin:%s?language=%s",
+        text,inputTimeout,regTimeout,grammar,language);
+
+
+    var doc = builder.create("document")
+        .att("type", "text/freeswitch-httapi")
+        .ele("variables")
+        .ele("tts_engine")
+        .text(ttsengine)
+        .up()
+        .ele("tts_voice")
+        .text(voice)
+        .up()
+        .up()
+        .ele("params")
+        .up()
+        .ele("work")
+        .ele("execute")
+        .att("action", actionURL)
+        .att("temp-action", tempURL)
+        .att("application", application)
+        .att("data", data)
+        .up()
+        .ele("getVariable")
+        .att("name", "detect_speech_result")
+        .end({ pretty: true });
+
+
+    return doc;
+
+}
 
 
 
@@ -779,6 +816,7 @@ var voicemail = function (actionURL, tempURL, check, authonly, profile, domain, 
     };
 
 module.exports.PlayAndGetDigits = playandgetdigits;
+module.exports.PlayAndDetectSpeech =playanddetectspeech;
 module.exports.Playback = playback;
 module.exports.Record = record;
 module.exports.Pause = pause;
