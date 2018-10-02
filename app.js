@@ -3657,4 +3657,20 @@ server.post('/routex', function(req,res, next){
 
 });
 
+server.opts('/HTTPProgramingApi/HealthCheck', function(req,res,next)
+{
+    res.end('OK');
+
+    return next();
+
+});
+
+server.get('/HTTPProgramingApi/HealthCheck', function(req,res,next)
+{
+    res.end('OK');
+
+    return next();
+
+})
+
 process.stdin.resume();
