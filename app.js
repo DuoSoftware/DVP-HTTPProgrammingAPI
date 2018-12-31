@@ -15,6 +15,7 @@ var uuid = require('node-uuid');
 var validator = require('validator');
 var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
 var PublishDVPEventsMessage = require("./DVPEventPublisher").PublishDVPEventsMessage;
+var healthcheck = require('dvp-healthcheck/DBHealthChecker');
 
 //console.log(messageGenerator.ARDS("XXXX","XXXXX","123","1","3"));
 
@@ -138,6 +139,9 @@ server.listen(config.HTTPServer.port);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+var hc = new healthcheck(server, {redis: redisClient});
+hc.Initiate();
+
 var httpPOST = function (custumerData, section, data) {
     
     //http://192.168.0.60/CSRequestWebApi/api/
@@ -329,7 +333,10 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
             if (callData["maxdigits"])
                 maxdigits = callData["maxdigits"];
 
-            res.write(messageGenerator.Playback(fileID, mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
+            res.write(messageGenerator.Playback(fileID, mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"],
+                callData["inputtimeout"], callData["loops"], callData["terminator"], callData["strip"],
+                callData["digits"], maxdigits,
+                callData["asrEngine"], callData["asrGrammar"]));
 
 
 
@@ -347,7 +354,17 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
                 error = callData["errorfile"];
 
 
-            res.write(messageGenerator.PlayAndGetDigits(fileID, mainServer, mainServer, callData["result"], error, callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
+            res.write(messageGenerator.PlayAndGetDigits(fileID, mainServer, mainServer, callData["result"], error,
+                callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["terminator"],
+                callData["strip"], callData["digits"], maxdigits));
+
+            break;
+
+
+        case "playanddetectspeech":
+
+            res.write(messageGenerator.PlayAndDetectSpeech(callData["text"], mainServer, mainServer, callData["inputtimeout"],
+                callData["timeout"], callData["asrGrammar"], callData["asrEngine"], callData["language"],callData["ttsEngine"],callData["ttsVoice"]));
 
             break;
 
@@ -357,7 +374,9 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
             if (callData["maxdigits"])
                 maxdigits = callData["maxdigits"];
             //file, actionURL,tempURL, paramName, errorFile, digitTimeout, limit, terminators, strip
-            res.write(messageGenerator.Record(callData["file"], mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["limit"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
+            res.write(messageGenerator.Record(callData["file"], mainServer, mainServer, callData["result"],
+                callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["limit"],
+                callData["terminator"], callData["strip"], callData["digits"], maxdigits));
 
             break;
 
@@ -367,7 +386,9 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
             if (callData["maxdigits"])
                 maxdigits = callData["maxdigits"];
             //var pause = function( actionURL,tempURL, paramName, errorFile, digitTimeout,inputTimeout, milliseconds, terminators, strip)
-            res.write(messageGenerator.Pause(mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["milliseconds"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
+            res.write(messageGenerator.Pause(mainServer, mainServer, callData["result"], callData["errorfile"],
+                callData["digittimeout"], callData["inputtimeout"], callData["milliseconds"], callData["terminator"],
+                callData["strip"], callData["digits"], maxdigits));
 
             break;
 
@@ -377,7 +398,9 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
             if (callData["maxdigits"])
                 maxdigits = callData["maxdigits"];
             //var speak = function(file,actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops,engine,voice, terminators, strip)
-            res.write(messageGenerator.Speak(callData["file"], mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["engine"], callData["voice"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
+            res.write(messageGenerator.Speak(callData["file"], mainServer, mainServer, callData["result"],
+                callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["loops"],
+                callData["engine"], callData["voice"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
 
             break;
 
@@ -388,7 +411,10 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
                 maxdigits = callData["maxdigits"];
 
             //var say = function(file,actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops,language,type,method,gender, terminators, strip)
-            res.write(messageGenerator.Say(callData["file"], mainServer, mainServer, callData["result"], callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["loops"], callData["language"], callData["type"], callData["method"], callData["gender"], callData["terminator"], callData["strip"], callData["digits"], maxdigits));
+            res.write(messageGenerator.Say(callData["file"], mainServer, mainServer, callData["result"],
+                callData["errorfile"], callData["digittimeout"], callData["inputtimeout"], callData["loops"],
+                callData["language"], callData["type"], callData["method"], callData["gender"], callData["terminator"],
+                callData["strip"], callData["digits"], maxdigits));
 
             break;
 
@@ -2128,7 +2154,9 @@ function HandleFunction(queryData, req, res, next) {
 
                                                 }
 
-                                            } else if (callData["action"] == "dialgateway") {
+                                            }
+
+                                            else if (callData["action"] == "dialgateway") {
 
 
                                                 var outbountruleurl;
@@ -3646,5 +3674,21 @@ server.post('/routex', function(req,res, next){
 
 
 });
+
+server.opts('/HTTPProgramingApi/HealthCheck', function(req,res,next)
+{
+    res.end('OK');
+
+    return next();
+
+});
+
+server.get('/HTTPProgramingApi/HealthCheck', function(req,res,next)
+{
+    res.end('OK');
+
+    return next();
+
+})
 
 process.stdin.resume();

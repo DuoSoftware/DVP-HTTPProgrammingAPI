@@ -55,7 +55,44 @@ terminators="#">
     */
 
 
+var playanddetectspeech = function(text, actionURL, tempURL, inputTimeout, regTimeout, grammar, engine,  language, ttsengine, voice){
 
+
+
+    var application = 'play_and_detect_speech';
+
+    //say:please say yes or no. please say no or yes. please say something! detect:unimrcp {start-input-timers=false,no-input-timeout=5000,recognition-timeout=5000}builtin:grammar/boolean?language=en-US;y=1;n=2
+    var data = util.format("%s detect:%s {start-input-timers=false,no-input-timeout=%d,recognition-timeout=%d}%s",
+        text,engine,inputTimeout,regTimeout,grammar);
+
+
+    var doc = builder.create("document")
+        .att("type", "text/freeswitch-httapi")
+        .ele("variables")
+        .ele("tts_engine")
+        .text(ttsengine)
+        .up()
+        .ele("tts_voice")
+        .text(voice)
+        .up()
+        .up()
+        .ele("params")
+        .up()
+        .ele("work")
+        .ele("execute")
+        .att("action", actionURL)
+        .att("temp-action", tempURL)
+        .att("application", application)
+        .att("data", data)
+        .up()
+        .ele("getVariable")
+        .att("name", "detect_speech_result")
+        .end({ pretty: true });
+
+
+    return doc;
+
+}
 
 
 
@@ -101,7 +138,7 @@ var playandgetdigits = function (file, actionURL, tempURL, paramName, errorFile,
 };
 
 
-var playback = function (file, actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops, terminators, strip, digitcount, digitcountmax) {
+var playback = function (file, actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops, terminators, strip, digitcount, digitcountmax,asrEngine,asrGrammar) {
 
     ////"~\\d{1}"
     //var format = util.format("~\\d{%d}", digitcount);
@@ -123,13 +160,43 @@ var playback = function (file, actionURL, tempURL, paramName, errorFile, digitTi
         format = util.format("\\S{%d,%d}", digitcount,digitcountmax);
     //(^\d{3,5}$);
 
-    var doc = builder.create("document")
-        .att("type", "text/freeswitch-httapi")
-        .ele("variables")
-        .up()
-        .ele("params")
-        .up()
-        .ele("work")
+    var doc;
+
+    if(asrEngine && asrGrammar){
+
+        doc = builder.create("document")
+            .att("type", "text/freeswitch-httapi")
+            .ele("variables")
+            .up()
+            .ele("params")
+            .up()
+            .ele("work")
+            .ele("playback")
+            .att("action", actionURL)
+            .att("temp-action", tempURL)
+            .att("name", paramName)
+            .att("file", file)
+            .att("error-file", errorFile)
+            .att("digit-timeout", digitTimeout)
+            .att("input-timeout", inputTimeout)
+            .att("loops", loops)
+            .att("terminators", terminators)
+            .att("asr-engine", asrEngine)
+            .att("asr-grammar", asrGrammar)
+            .ele("bind")
+            .att("strip", strip)
+            .txt(format)
+            .end({ pretty: true });
+
+    }else{
+
+        doc = builder.create("document")
+            .att("type", "text/freeswitch-httapi")
+            .ele("variables")
+            .up()
+            .ele("params")
+            .up()
+            .ele("work")
             .ele("playback")
             .att("action", actionURL)
             .att("temp-action", tempURL)
@@ -144,6 +211,7 @@ var playback = function (file, actionURL, tempURL, paramName, errorFile, digitTi
             .att("strip", strip)
             .txt(format)
             .end({ pretty: true });
+    }
 
 
     return doc;
@@ -748,6 +816,7 @@ var voicemail = function (actionURL, tempURL, check, authonly, profile, domain, 
     };
 
 module.exports.PlayAndGetDigits = playandgetdigits;
+module.exports.PlayAndDetectSpeech =playanddetectspeech;
 module.exports.Playback = playback;
 module.exports.Record = record;
 module.exports.Pause = pause;
