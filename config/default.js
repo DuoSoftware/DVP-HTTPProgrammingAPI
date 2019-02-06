@@ -1,49 +1,41 @@
 module.exports = {
 
-      "Freeswitch" : {
-          "ip": 'localhost',
-          "port": 8021,
-          "password": ''
-      },
+    "Freeswitch" : {
+        "ip": 'localhost',
+        "port": 8021,
+        "password": 'devadmin'
+    },
 
     "Redis":
-    {
-        "mode":"sentinel",//instance, cluster, sentinel
-        "ip": "",
-        "port": 6389,
-        "user": "",
-        "password": "",
-        "sentinels":{
-            "hosts": "",
-            "port":16389,
-            "name":"redis-cluster"
-        }
+        {
+            "mode":"sentinel",//instance, cluster, sentinel
+            "ip": "45.55.142.207",
+            "port": 6389,
+            "user": "duo",
+            "password": "DuoS123",
+            "sentinels":{
+                "hosts": "138.197.90.92,45.55.205.92,162.243.81.39",
+                "port":16389,
+                "name":"redis-cluster"
+            }
 
-    },
-
-    "RabbitMQ": {
-        "ip":"",
-        "port":"5672",
-        "user": "admin",
-        "password": "admin",
-        "vhost":'/'
-    },
+        },
 
 
     "Security":
-    {
+        {
 
-        "ip" : "",
-        "port": 6389,
-        "user": "",
-        "password": "",
-        "mode":"instance",//instance, cluster, sentinel
-        "sentinels":{
-            "hosts": "",
-            "port":16389,
-            "name":"redis-cluster"
-        }
-    },
+            "ip" : "45.55.142.207",
+            "port": 6389,
+            "user": "duo",
+            "password": "DuoS123",
+            "mode":"instance",//instance, cluster, sentinel
+            "sentinels":{
+                "hosts": "138.197.90.92,45.55.205.92,162.243.81.39",
+                "port":16389,
+                "name":"redis-cluster"
+            }
+        },
 
     "HTTPServer" : {
         "port": 8086
@@ -51,20 +43,20 @@ module.exports = {
 
 
     "LBServer" : {
-        "ip": '127.0.0.1',
-        "port": 8086
+        "ip": '3432ab8b.ngrok.io',
+        "port": 80
     },
 
     "Host":{
 
-        "token": ""
+        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdWtpdGhhIiwianRpIjoiYWEzOGRmZWYtNDFhOC00MWUyLTgwMzktOTJjZTY0YjM4ZDFmIiwic3ViIjoiNTZhOWU3NTlmYjA3MTkwN2EwMDAwMDAxMjVkOWU4MGI1YzdjNGY5ODQ2NmY5MjExNzk2ZWJmNDMiLCJleHAiOjE5MDIzODExMTgsInRlbmFudCI6LTEsImNvbXBhbnkiOi0xLCJzY29wZSI6W3sicmVzb3VyY2UiOiJhbGwiLCJhY3Rpb25zIjoiYWxsIn1dLCJpYXQiOjE0NzAzODExMTh9.Gmlu00Uj66Fzts-w6qEwNUz46XYGzE8wHUhAJOFtiRo"
     },
 
     "Services": {
 
-        "uploadurl": '',
+        "uploadurl": '192.168.0.88',
         "uploadport": '8888',
-        "downloadurl": '',
+        "downloadurl": 'internalfileservice.104.131.67.21.xip.io',
         "downloadport": '8081',
         "ruleservice": '127.0.0.1',
         "ruleserviceport": '8888',
@@ -77,17 +69,17 @@ module.exports = {
         "ardsServiceVersion": "1.0.0.0",
 
 
-        "qmusicurl": '',
+        "qmusicurl": 'queuemusic.104.131.67.21.xip.io',
         "qmusicport": '8860',
         "qmusicversion": "1.0.0",
 
 
-        "fileserviceurl": '',
+        "fileserviceurl": 'fileservice.104.131.67.21.xip.io',
         "fileserviceport": '8081',
         "fileserviceVersion": "6.0",
 
 
-        "interactionurl": "",
+        "interactionurl": "interactions.app.veery.cloud",
         "interactionport": '3637',
         "interactionversion": "1.0.0.0",
 
@@ -97,7 +89,7 @@ module.exports = {
 
 
 
-        "ticketurl": "",
+        "ticketurl": "liteticket.app.veery.cloud",
         "ticketport": '3636',
         "ticketversion": "1.0.0.0",
 
@@ -111,8 +103,7 @@ module.exports = {
         "ruleserviceVersion": "1.0.0.0",
         "qmusicVersion": "1.0.0.0"
 
-    },
-    "EventPublishMethod": "amqp"
+    }
 
 
 
