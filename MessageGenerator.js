@@ -518,34 +518,37 @@ var execute = function (actionURL, tempURL, application, data) {
     };
 
 
-var dial = function (actionURL, tempURL, context, dialplan, callername, callernumber, number) {
+var dial = function (actionURL, tempURL, context, dialplan, callername, callernumber, number, record) {
 
 
-        var doc = builder.create("document")
+    var doc = builder.create("document")
         .att("type", "text/freeswitch-httapi")
         .ele("variables")
-            .ele("continue_on_fail")
-            .text("True")
-            .up()
+        .ele("continue_on_fail")
+        .text("True")
+        .up()
+        .ele("facetone_record_session")
+        .text(record)
+        .up()
         .up()
         .ele("params")
         .up()
         .ele("work")
-            .ele("dial")
-            .att("action", actionURL)
-            .att("temp-action", tempURL)
-            .att("caller-id-name", callername)
-            .att("caller-id-number", callernumber)
-            .att("context", context)
-            .att("Dialplan", dialplan)
-            .txt(number)
-            .end({ pretty: true });
+        .ele("dial")
+        .att("action", actionURL)
+        .att("temp-action", tempURL)
+        .att("caller-id-name", callername)
+        .att("caller-id-number", callernumber)
+        .att("context", context)
+        .att("Dialplan", dialplan)
+        .txt(number)
+        .end({pretty: true});
 
 
-        return doc;
+    return doc;
 
 
-    };
+};
 
 
 var recordCall = function (actionURL, tempURL, limit, name) {

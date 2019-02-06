@@ -474,24 +474,39 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
 
         case "dial":
             //var dial = function(actionURL, tempURL,context,dialplan,callername,callernumber,number)
-            res.write(messageGenerator.Dial(mainServer, mainServer, callData["context"], callData["dialplan"], callData["callername"], callData["callernumber"], callData["number"]));
+            var record_session = true;
+            if(callData.hasOwnProperty("record_session"))
+            {
+                record_session = callData["record_session"];
+            }
+            res.write(messageGenerator.Dial(mainServer, mainServer, callData["context"], callData["dialplan"], callData["callername"], callData["callernumber"], callData["number"], record_session));
 
             break;
 
 
         case "dialuser":
+            var record_session = true;
+            if(callData.hasOwnProperty("record_session"))
+            {
+                record_session = callData["record_session"];
+            }
             var number = format("user/{0}@{1}", callData["number"], uuid_data['domain']);
-            res.write(messageGenerator.Dial(mainServer, mainServer, callData["context"], callData["dialplan"], callData["callername"], callData["callernumber"], number));
+            res.write(messageGenerator.Dial(mainServer, mainServer, callData["context"], callData["dialplan"], callData["callername"], callData["callernumber"], number, record_session));
 
             break;
 
         case "dialdirect":
+            var record_session = true;
+            if(callData.hasOwnProperty("record_session"))
+            {
+                record_session = callData["record_session"];
+            }
 
             var number = format("sip:{0}@{1}", callData["number"], uuid_data['domain']);
             var context = "developer";
             if (uuid_data['pbxcontext'])
                 var context = uuid_data['pbxcontext'];
-            res.write(messageGenerator.Dial(mainServer, mainServer, context, callData["dialplan"], callData["callername"], callData["callernumber"], number));
+            res.write(messageGenerator.Dial(mainServer, mainServer, context, callData["dialplan"], callData["callername"], callData["callernumber"], number, record_session));
 
             break;
 
