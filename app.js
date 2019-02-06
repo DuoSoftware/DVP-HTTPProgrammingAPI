@@ -15,6 +15,7 @@ var uuid = require('node-uuid');
 var validator = require('validator');
 var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
 var PublishDVPEventsMessage = require("./DVPEventPublisher").PublishDVPEventsMessage;
+var healthcheck = require('dvp-healthcheck/DBHealthChecker');
 
 //console.log(messageGenerator.ARDS("XXXX","XXXXX","123","1","3"));
 
@@ -138,6 +139,9 @@ server.listen(config.HTTPServer.port);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+var hc = new healthcheck(server, {redis: redisClient});
+hc.Initiate();
+
 var httpPOST = function (custumerData, section, data) {
     
     //http://192.168.0.60/CSRequestWebApi/api/
@@ -3676,5 +3680,21 @@ server.post('/routex', function(req,res, next){
 
 
 });
+
+server.opts('/HTTPProgramingApi/HealthCheck', function(req,res,next)
+{
+    res.end('OK');
+
+    return next();
+
+});
+
+server.get('/HTTPProgramingApi/HealthCheck', function(req,res,next)
+{
+    res.end('OK');
+
+    return next();
+
+})
 
 process.stdin.resume();
