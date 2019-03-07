@@ -1,0 +1,14 @@
+{
+  "action": "playanddetectspeech",
+  "asrEngine": "unimrcp:unimrcpserver-mrcp2",
+  "ttsEngine": "unimrcp:unimrcpserver-mrcp2",
+  "text": "Hello uni mrcp text to speech engine",
+  "nexturl": "end.json",
+  "posturl": "end.json",
+  "result": "result",
+  "asrGrammar": "transcribe",
+  "errorfile": "",
+  "ttsVoice": "en-US-Wavenet-A"
+}
+
+
