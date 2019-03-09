@@ -114,7 +114,7 @@ var playanddetectspeech = function(text, actionURL, tempURL, inputTimeout, regTi
         //{start-input-timers=false,no-input-timeout=%d,recognition-timeout=%d}
 
     //say:please say yes or no. please say no or yes. please say something! detect:unimrcp {start-input-timers=false,no-input-timeout=5000,recognition-timeout=5000}builtin:grammar/boolean?language=en-US;y=1;n=2
-    var data = util.format("%s detect:%s %s",text,engine,detectParams,grammar);
+    var data = util.format("say:%s detect:%s %s",text,engine,detectParams,grammar);
 
 
     var doc = builder.create("document")

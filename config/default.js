@@ -43,8 +43,8 @@ module.exports = {
 
 
     "LBServer" : {
-        "ip": '3432ab8b.ngrok.io',
-        "port": 80
+        "ip": 'e9503cd4.ngrok.io',
+        "port": 8086
     },
 
     "Host":{
@@ -56,7 +56,7 @@ module.exports = {
 
         "uploadurl": '192.168.0.88',
         "uploadport": '8888',
-        "downloadurl": 'internalfileservice.104.131.67.21.xip.io',
+        "downloadurl": 'internalfileservice.app.veery.cloud',
         "downloadport": '8081',
         "ruleservice": '127.0.0.1',
         "ruleserviceport": '8888',
@@ -69,12 +69,12 @@ module.exports = {
         "ardsServiceVersion": "1.0.0.0",
 
 
-        "qmusicurl": 'queuemusic.104.131.67.21.xip.io',
+        "qmusicurl": 'queuemusic.app.veery.cloud',
         "qmusicport": '8860',
         "qmusicversion": "1.0.0",
 
 
-        "fileserviceurl": 'fileservice.104.131.67.21.xip.io',
+        "fileserviceurl": 'fileservice.app.veery.cloud',
         "fileserviceport": '8081',
         "fileserviceVersion": "6.0",
 
@@ -89,7 +89,7 @@ module.exports = {
 
 
 
-        "ticketurl": "liteticket.app.veery.cloud",
+        "ticketurl": "127.0.0.1",
         "ticketport": '3636',
         "ticketversion": "1.0.0.0",
 

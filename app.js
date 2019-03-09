@@ -16,6 +16,8 @@ var validator = require('validator');
 var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
 var PublishDVPEventsMessage = require("./DVPEventPublisher").PublishDVPEventsMessage;
 var healthcheck = require('dvp-healthcheck/DBHealthChecker');
+var convert = require('xml-js');
+
 
 //console.log(messageGenerator.ARDS("XXXX","XXXXX","123","1","3"));
 
@@ -1785,6 +1787,37 @@ function HandleFunction(queryData, req, res, next) {
 
 
                             {
+
+
+
+                                if (queryData['ARDS-Resource-Profile-Name']) {
+
+                                    uuid_dev["resource"] = queryData['ARDS-Resource-Profile-Name'];
+                                }
+
+                                if(queryData['detect_speech_result']){
+                                    try {
+
+                                        var detected_result = JSON.parse(convert.xml2json(queryData['detect_speech_result'], {
+                                            compact: true,
+                                            spaces: 4
+                                        }));
+
+                                        queryData['detect_speech_result'] = detected_result;
+
+                                        if(detected_result && detected_result.result && detected_result.result.interpretation
+                                            && detected_result.result.interpretation.input  && detected_result.result.interpretation.input._text){
+                                            queryData['detect_speech_result_string'] = detected_result.result.interpretation.input._text;
+                                            logger.info('Detected voice : ' + detected_result.result.interpretation.input._text);
+                                        }
+                                        //resultValue = uuid_dev['detect_speech_result'];
+
+                                    }catch(ex){
+                                        logger.error("xml conversion failed", ex);
+                                    }
+                                }
+
+
                                 var resultValue = "none";
                                 if (queryData[uuid_dev["result"]]) {
                                     resultValue = queryData[uuid_dev["result"]];
@@ -1797,10 +1830,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                 }
 
-                                if (queryData['ARDS-Resource-Profile-Name']) {
 
-                                    uuid_dev["resource"] = queryData['ARDS-Resource-Profile-Name'];
-                                }
 
 
                                 //queryData["variable_ARDS-Resource-Profile-Name"]

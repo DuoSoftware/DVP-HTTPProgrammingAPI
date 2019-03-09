@@ -21,6 +21,7 @@
     "restify": "^4.3.0",
     "stringformat": "^0.0.5",
     "validator": "^4.1.0",
+    "xml-js": "^1.6.11",
     "xmlbuilder": "^2.6.2",
     "yaml": "^0.2.3"
   },
