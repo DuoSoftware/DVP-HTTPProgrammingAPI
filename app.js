@@ -29,8 +29,10 @@ if(validator.isIP(config.LBServer.ip))
 
 //var mainServer = config.LBServer.path;
 
-
+var _appToken = config.Host.apptoken || config.Host.token;
+var appToken = format("Bearer {0}",_appToken);
 var token = format("Bearer {0}",config.Host.token);
+
 
 ////////////////////////////////redis////////////////////////////////////////
 var redisip = config.Redis.ip;
@@ -1759,12 +1761,7 @@ function HandleFunction(queryData, req, res, next) {
                             logger.info("Session is going to reset -----------------------------------------------------------------------------------> outside");
                             dummyEngagement = true;
 
-
-
                         }
-
-
-
 
                         CreateEngagement(dummyEngagement, engagementType, uuid_data["company"], uuid_data["tenant"], callerID, queryData["Caller-Destination-Number"], queryData["Caller-Direction"], queryData["session_id"], undefined, function (isSuccess, result) {
 
@@ -1788,8 +1785,6 @@ function HandleFunction(queryData, req, res, next) {
 
                             {
 
-
-
                                 if (queryData['ARDS-Resource-Profile-Name']) {
 
                                     uuid_dev["resource"] = queryData['ARDS-Resource-Profile-Name'];
@@ -1798,10 +1793,17 @@ function HandleFunction(queryData, req, res, next) {
                                 if(queryData['detect_speech_result']){
                                     try {
 
-                                        var detected_result = JSON.parse(convert.xml2json(queryData['detect_speech_result'], {
-                                            compact: true,
-                                            spaces: 4
-                                        }));
+                                        var detected_result = {};
+                                        if(queryData['detect_speech_result']) {
+                                            try {
+                                                detected_result = JSON.parse(convert.xml2json(queryData['detect_speech_result'], {
+                                                    compact: true,
+                                                    spaces: 4
+                                                }));
+                                            }catch(ex){
+                                                logger.error(ex);
+                                            }
+                                        }
 
                                         queryData['detect_speech_result'] = detected_result;
 
@@ -1859,7 +1861,7 @@ function HandleFunction(queryData, req, res, next) {
                                     method: "POST",
                                     json: body,
                                     headers: {
-                                        'authorization': token,
+                                        'authorization': appToken,
                                         'companyinfo': format("{0}:{1}", uuid_data["tenant"], uuid_data["company"])
                                     }
                                 };

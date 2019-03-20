@@ -116,6 +116,12 @@ var playanddetectspeech = function(text, actionURL, tempURL, inputTimeout, regTi
     //say:please say yes or no. please say no or yes. please say something! detect:unimrcp {start-input-timers=false,no-input-timeout=5000,recognition-timeout=5000}builtin:grammar/boolean?language=en-US;y=1;n=2
     var data = util.format("say:%s detect:%s %s",text,engine,detectParams,grammar);
 
+    if(language)
+    {
+        //si-LK
+        data = util.format("%s?language=%s",data,language)
+    }
+
 
     var doc = builder.create("document")
         .att("type", "text/freeswitch-httapi")
@@ -144,8 +150,6 @@ var playanddetectspeech = function(text, actionURL, tempURL, inputTimeout, regTi
     return doc;
 
 }
-
-
 
 
 var playandgetdigits = function (file, actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops, terminators, strip, digitcount, digitcountmax) {
@@ -572,7 +576,6 @@ var Ards = function (actionURL, tempURL, skill,skilldisplay, company, tenant, ar
 
     return doc;
 };
-
 
 
 var dtmf_type = function (actionURL, tempURL, dtmfType) {
