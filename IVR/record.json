@@ -1,6 +1,6 @@
 {
     "action": "record",
-    "file": "testrecord.wav",
+    "cd /var    ": "testrecord.wav",
     "nexturl": "end.json",
     "posturl": "end.json",
     "result": "result",

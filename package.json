@@ -18,9 +18,10 @@
     "redis": "^0.12.1",
     "regex": "^0.1.1",
     "request": "^2.87.0",
-    "restify": "^4.0.3",
+    "restify": "^4.3.0",
     "stringformat": "^0.0.5",
     "validator": "^4.1.0",
+    "xml-js": "^1.6.11",
     "xmlbuilder": "^2.6.2",
     "yaml": "^0.2.3"
   },

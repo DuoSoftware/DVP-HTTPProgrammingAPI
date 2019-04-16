@@ -16,6 +16,8 @@ var validator = require('validator');
 var logger = require('dvp-common/LogHandler/CommonLogHandler.js').logger;
 var PublishDVPEventsMessage = require("./DVPEventPublisher").PublishDVPEventsMessage;
 var healthcheck = require('dvp-healthcheck/DBHealthChecker');
+var convert = require('xml-js');
+
 
 //console.log(messageGenerator.ARDS("XXXX","XXXXX","123","1","3"));
 
@@ -27,8 +29,10 @@ if(validator.isIP(config.LBServer.ip))
 
 //var mainServer = config.LBServer.path;
 
-
+var _appToken = config.Host.apptoken || config.Host.token;
+var appToken = format("Bearer {0}",_appToken);
 var token = format("Bearer {0}",config.Host.token);
+
 
 ////////////////////////////////redis////////////////////////////////////////
 var redisip = config.Redis.ip;
@@ -391,6 +395,7 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
                 callData["strip"], callData["digits"], maxdigits));
 
             break;
+            break;
 
         case "speak":
 
@@ -499,25 +504,44 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
             break;
 
         case "dial":
+
+            var record_session = true;
+            if(callData.hasOwnProperty("record_session"))
+            {
+                record_session = callData["record_session"];
+            }
             //var dial = function(actionURL, tempURL,context,dialplan,callername,callernumber,number)
-            res.write(messageGenerator.Dial(mainServer, mainServer, callData["context"], callData["dialplan"], callData["callername"], callData["callernumber"], callData["number"]));
+            res.write(messageGenerator.Dial(mainServer, mainServer, callData["context"], callData["dialplan"], callData["callername"], callData["callernumber"], callData["number"], record_session));
 
             break;
 
 
         case "dialuser":
+
+            var record_session = true;
+            if(callData.hasOwnProperty("record_session"))
+            {
+                record_session = callData["record_session"];
+            }
+
             var number = format("user/{0}@{1}", callData["number"], uuid_data['domain']);
-            res.write(messageGenerator.Dial(mainServer, mainServer, callData["context"], callData["dialplan"], callData["callername"], callData["callernumber"], number));
+            res.write(messageGenerator.Dial(mainServer, mainServer, callData["context"], callData["dialplan"], callData["callername"], callData["callernumber"], number, record_session));
 
             break;
 
         case "dialdirect":
 
+            var record_session = true;
+            if(callData.hasOwnProperty("record_session"))
+            {
+                record_session = callData["record_session"];
+            }
+
             var number = format("sip:{0}@{1}", callData["number"], uuid_data['domain']);
             var context = "developer";
             if (uuid_data['pbxcontext'])
                 var context = uuid_data['pbxcontext'];
-            res.write(messageGenerator.Dial(mainServer, mainServer, context, callData["dialplan"], callData["callername"], callData["callernumber"], number));
+            res.write(messageGenerator.Dial(mainServer, mainServer, context, callData["dialplan"], callData["callername"], callData["callernumber"], number, record_session));
 
             break;
 
@@ -1737,12 +1761,7 @@ function HandleFunction(queryData, req, res, next) {
                             logger.info("Session is going to reset -----------------------------------------------------------------------------------> outside");
                             dummyEngagement = true;
 
-
-
                         }
-
-
-
 
                         CreateEngagement(dummyEngagement, engagementType, uuid_data["company"], uuid_data["tenant"], callerID, queryData["Caller-Destination-Number"], queryData["Caller-Direction"], queryData["session_id"], undefined, function (isSuccess, result) {
 
@@ -1765,6 +1784,42 @@ function HandleFunction(queryData, req, res, next) {
 
 
                             {
+
+                                if (queryData['ARDS-Resource-Profile-Name']) {
+
+                                    uuid_dev["resource"] = queryData['ARDS-Resource-Profile-Name'];
+                                }
+
+                                if(queryData['detect_speech_result']){
+                                    try {
+
+                                        var detected_result = {};
+                                        if(queryData['detect_speech_result']) {
+                                            try {
+                                                detected_result = JSON.parse(convert.xml2json(queryData['detect_speech_result'], {
+                                                    compact: true,
+                                                    spaces: 4
+                                                }));
+                                            }catch(ex){
+                                                logger.error(ex);
+                                            }
+                                        }
+
+                                        queryData['detect_speech_result'] = detected_result;
+
+                                        if(detected_result && detected_result.result && detected_result.result.interpretation
+                                            && detected_result.result.interpretation.input  && detected_result.result.interpretation.input._text){
+                                            queryData['detect_speech_result_string'] = detected_result.result.interpretation.input._text;
+                                            logger.info('Detected voice : ' + detected_result.result.interpretation.input._text);
+                                        }
+                                        //resultValue = uuid_dev['detect_speech_result'];
+
+                                    }catch(ex){
+                                        logger.error("xml conversion failed", ex);
+                                    }
+                                }
+
+
                                 var resultValue = "none";
                                 if (queryData[uuid_dev["result"]]) {
                                     resultValue = queryData[uuid_dev["result"]];
@@ -1777,10 +1832,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                 }
 
-                                if (queryData['ARDS-Resource-Profile-Name']) {
 
-                                    uuid_dev["resource"] = queryData['ARDS-Resource-Profile-Name'];
-                                }
 
 
                                 //queryData["variable_ARDS-Resource-Profile-Name"]
@@ -1809,7 +1861,7 @@ function HandleFunction(queryData, req, res, next) {
                                     method: "POST",
                                     json: body,
                                     headers: {
-                                        'authorization': token,
+                                        'authorization': appToken,
                                         'companyinfo': format("{0}:{1}", uuid_data["tenant"], uuid_data["company"])
                                     }
                                 };

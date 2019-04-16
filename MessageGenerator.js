@@ -55,15 +55,72 @@ terminators="#">
     */
 
 
+// var playanddetectspeech = function(actionURL, tempURL, tts_engine, tts_voice, play_mode, text, detect_module, detect_mode, detect_param, result_param){
+//
+//
+//
+//     var application = 'play_and_detect_speech';
+//
+//     if(play_mode == 'say'){
+//         text = util.format('say: %s',text);
+//     }
+//
+//     var data = util.format("%s detect:%s {start-input-timers=false}builtin:%s/%s", text, detect_module,detect_mode,detect_param, result_param);
+//
+//
+//     var doc = builder.create("document")
+//         .att("type", "text/freeswitch-httapi")
+//         .ele("variables")
+//         .ele("tts_engine")
+//         .text(tts_engine)
+//         .up()
+//         .ele("tts_voice")
+//         .text(tts_voice)
+//         .up()
+//         .up()
+//         .ele("params")
+//         .up()
+//         .ele("work")
+//         .ele("execute")
+//         .att("action", actionURL)
+//         .att("temp-action", tempURL)
+//         .att("application", application)
+//         .att("data", data)
+//         .up()
+//         .ele("getVariable")
+//         .att("name", 'detect_speech_result')
+//         .end({ pretty: true });
+//
+//
+//     return doc;
+// }
+
+
 var playanddetectspeech = function(text, actionURL, tempURL, inputTimeout, regTimeout, grammar, engine,  language, ttsengine, voice){
 
-
+//   <action application="play_and_detect_speech" data="ivr/ivr-welcome_to_freeswitch.wav detect:unimrcp:uni2 {start-input-timers=false}builtin:speech/transcribe"/>
 
     var application = 'play_and_detect_speech';
 
+    var detectParams = '{start-input-timers=false}';
+    if(inputTimeout > 0 || regTimeout > 0){
+
+        detectParams = util.format('{start-input-timers=false,no-input-timeout=%d,recognition-timeout=%d}',inputTimeout,regTimeout);
+    }
+
+    if(grammar == 'transcribe'){
+        grammar = 'builtin:speech/transcribe';
+    }
+        //{start-input-timers=false,no-input-timeout=%d,recognition-timeout=%d}
+
     //say:please say yes or no. please say no or yes. please say something! detect:unimrcp {start-input-timers=false,no-input-timeout=5000,recognition-timeout=5000}builtin:grammar/boolean?language=en-US;y=1;n=2
-    var data = util.format("%s detect:%s {start-input-timers=false,no-input-timeout=%d,recognition-timeout=%d}%s",
-        text,engine,inputTimeout,regTimeout,grammar);
+    var data = util.format("say:%s detect:%s %s",text,engine,detectParams,grammar);
+
+    if(language)
+    {
+        //si-LK
+        data = util.format("%s?language=%s",data,language)
+    }
 
 
     var doc = builder.create("document")
@@ -93,8 +150,6 @@ var playanddetectspeech = function(text, actionURL, tempURL, inputTimeout, regTi
     return doc;
 
 }
-
-
 
 
 var playandgetdigits = function (file, actionURL, tempURL, paramName, errorFile, digitTimeout, inputTimeout, loops, terminators, strip, digitcount, digitcountmax) {
@@ -523,7 +578,6 @@ var Ards = function (actionURL, tempURL, skill,skilldisplay, company, tenant, ar
 };
 
 
-
 var dtmf_type = function (actionURL, tempURL, dtmfType) {
 
     var doc = builder.create("document")
@@ -589,31 +643,37 @@ var execute = function (actionURL, tempURL, application, data) {
     };
 
 
-var dial = function (actionURL, tempURL, context, dialplan, callername, callernumber, number) {
+var dial = function (actionURL, tempURL, context, dialplan, callername, callernumber, number, record) {
 
 
-        var doc = builder.create("document")
+    var doc = builder.create("document")
         .att("type", "text/freeswitch-httapi")
         .ele("variables")
+        .ele("facetone_record_session")
+        .text(record)
+        .up()
+        .ele("continue_on_fail")
+        .text("true")
+        .up()
         .up()
         .ele("params")
         .up()
         .ele("work")
-            .ele("dial")
-            .att("action", actionURL)
-            .att("temp-action", tempURL)
-            .att("caller-id-name", callername)
-            .att("caller-id-number", callernumber)
-            .att("context", context)
-            .att("Dialplan", dialplan)
-            .txt(number)
-            .end({ pretty: true });
+        .ele("dial")
+        .att("action", actionURL)
+        .att("temp-action", tempURL)
+        .att("caller-id-name", callername)
+        .att("caller-id-number", callernumber)
+        .att("context", context)
+        .att("Dialplan", dialplan)
+        .txt(number)
+        .end({pretty: true});
 
 
-        return doc;
+    return doc;
 
 
-    };
+};
 
 
 var recordCall = function (actionURL, tempURL, limit, name) {
