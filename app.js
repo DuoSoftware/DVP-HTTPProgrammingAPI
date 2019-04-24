@@ -367,7 +367,7 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
 
         case "playanddetectspeech":
 
-            res.write(messageGenerator.PlayAndDetectSpeech(callData["text"], mainServer, mainServer, callData["inputtimeout"],
+            res.write(messageGenerator.PlayAndDetectSpeech(fileID, callData["text"], mainServer, mainServer, callData["inputtimeout"],
                 callData["timeout"], callData["asrGrammar"], callData["asrEngine"], callData["language"],callData["ttsEngine"],callData["ttsVoice"]));
 
             break;
@@ -2058,7 +2058,7 @@ function HandleFunction(queryData, req, res, next) {
                                             //console.log(callData["action"]);
 
 
-                                            if ((callData["action"] == "play" || callData["action"] == "playandgetdigits" )) {
+                                            if ((callData["action"] == "play" || callData["action"] == "playandgetdigits"  || callData["action"] == 'playanddetectspeech')) {
 
 
                                                 //console.log("inplay.....");
