@@ -2207,7 +2207,57 @@ function HandleFunction(queryData, req, res, next) {
 
                                                     }
                                                 }else{
-                                                    Operation(callData, null, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '', '');
+                                                    ///////////////////////////////////////////////////////////////////////////
+
+                                                    logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"], callData, uuid_data["domain"], uuid_data["profile"], queryData);
+
+
+                                                    Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"]);
+
+                                                    console.log("----------------------------------------------------> get result");
+
+                                                    uuid_dev["result"] = callData["result"];
+
+                                                    console.log("----------------------------------------------------> got result");
+
+
+                                                    if (uuid_dev["baseurl"] != "none") {
+
+                                                        console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
+
+                                                        uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                        uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["nexturl"]);
+                                                    }
+                                                    else {
+
+                                                        console.log("----------------------------------------------------> no base url");
+
+                                                        uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                        uuid_dev["nexturl"] = callData["nexturl"];
+
+                                                        console.log(uuid_dev["nexturl"]);
+
+
+                                                        console.log("DEV DATA -------------> %j", uuid_dev);
+                                                        console.log("CALL DATA -------------> %j", callData);
+
+
+                                                    }
+
+
+                                                    logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s", queryData["session_id"], uuid_dev["nexturl"]);
+
+
+                                                    try {
+                                                        var redisData = JSON.stringify(uuid_dev);
+                                                        redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                                        logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j", redisData);
+                                                    }
+                                                    catch (e) {
+                                                        console.error(e);
+                                                    }
+
+                                                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                 }
 
                                             }
