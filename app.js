@@ -18,6 +18,9 @@ var PublishDVPEventsMessage = require("./DVPEventPublisher").PublishDVPEventsMes
 var healthcheck = require('dvp-healthcheck/DBHealthChecker');
 var convert = require('xml-js');
 
+var voicemailType = config.VoiceMail.type;
+var voicemailPriority = config.VoiceMail.priority;
+
 
 //console.log(messageGenerator.ARDS("XXXX","XXXXX","123","1","3"));
 
@@ -215,11 +218,13 @@ function postData(req, res) {
                 if(config.Services && config.Services.uploadurl  && config.Services.uploadport) {
 
 
-                     var urloadurl = format("http://{0}/DVP/API/{1}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadurlVersion);
+                     var urloadurl = format("http://{0}/DVP/API/{1}/FileService/File/Upload", config.Services.uploadurl,
+                         config.Services.uploadurlVersion);
 
 
                      if(validator.isIP(config.Services.uploadurl))
-                     urloadurl = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadport,config.Services.uploadurlVersion);
+                     urloadurl = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Upload", config.Services.uploadurl,
+                         config.Services.uploadport,config.Services.uploadurlVersion);
 
 
                     logger.debug("File Upload to " + urloadurl);
@@ -239,7 +244,9 @@ function postData(req, res) {
                      mediatype:"audio",
                      filetype:"mp3"}
 
-                    var fileID = format("http://{0}/DVP/API/{1}/InternalFileService/File/DownloadLatest/{2}/{3}/{4}", config.Services.downloadurl, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], FormData.filename);
+                    var fileID = format("http://{0}/DVP/API/{1}/InternalFileService/File/DownloadLatest/{2}/{3}/{4}",
+                        config.Services.downloadurl, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"],
+                        FormData.filename);
 
 
 
@@ -266,7 +273,8 @@ function postData(req, res) {
                                  if (response.body["IsSuccess"]) {
 
 
-                                     if (req.body && req.body["Caller-Caller-ID-Number"] && req.body["Caller-Destination-Number"] && req.body["Caller-Direction"] && req.body["session_id"]) {
+                                     if (req.body && req.body["Caller-Caller-ID-Number"] && req.body["Caller-Destination-Number"]
+                                         && req.body["Caller-Direction"] && req.body["session_id"]) {
 
                                          //FormData["display"] = req.body["Caller-Caller-ID-Number"] + " - " +req.body["Caller-Destination-Number"];
 
@@ -274,14 +282,17 @@ function postData(req, res) {
 
 
                                              var voicemailData = {
-                                                 type: "question",
+                                                 type: voicemailType || "question",
                                                  subject: "Voice mail from " + req.body["Caller-Caller-ID-Number"],
                                                  description: "Voicemail " + fileID,
-                                                 priority: "high"
+                                                 priority: voicemailPriority || "high"
 
                                              };
 
-                                             CreateTicket("voicemail", req.body["session_id"], uuid_data["company"], uuid_data["tenant"], voicemailData["type"], voicemailData["subject"], voicemailData["description"], voicemailData["priority"], voicemailData["tags"],undefined, function (success, result) {
+                                             CreateTicket("voicemail", req.body["session_id"], uuid_data["company"],
+                                                 uuid_data["tenant"], voicemailData["type"], voicemailData["subject"],
+                                                 voicemailData["description"], voicemailData["priority"], voicemailData["tags"],
+                                                 undefined, function (success, result) {
 
                                                  if (success) {
 

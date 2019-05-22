@@ -6,6 +6,11 @@ module.exports = {
         "password": 'devadmin'
     },
 
+    "VoiceMail":{
+       "type": "voicemail",
+       "priority": "high"
+    },
+
     "Redis":
         {
             "mode":"sentinel",//instance, cluster, sentinel
