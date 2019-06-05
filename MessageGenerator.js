@@ -96,7 +96,7 @@ terminators="#">
 // }
 
 
-var playanddetectspeech = function(text, actionURL, tempURL, inputTimeout, regTimeout, grammar, engine,  language, ttsengine, voice){
+var playanddetectspeech = function(fileid, text, actionURL, tempURL, inputTimeout, regTimeout, grammar, engine,  language, ttsengine, voice){
 
 //   <action application="play_and_detect_speech" data="ivr/ivr-welcome_to_freeswitch.wav detect:unimrcp:uni2 {start-input-timers=false}builtin:speech/transcribe"/>
 
@@ -115,6 +115,10 @@ var playanddetectspeech = function(text, actionURL, tempURL, inputTimeout, regTi
 
     //say:please say yes or no. please say no or yes. please say something! detect:unimrcp {start-input-timers=false,no-input-timeout=5000,recognition-timeout=5000}builtin:grammar/boolean?language=en-US;y=1;n=2
     var data = util.format("say:%s detect:%s %s",text,engine,detectParams,grammar);
+    if(fileid){
+        data = util.format("%s detect:%s %s",fileid,engine,detectParams,grammar);
+    }
+    //ivr/say_yes_or_no.wav
 
     if(language)
     {

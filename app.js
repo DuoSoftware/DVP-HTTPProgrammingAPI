@@ -18,6 +18,9 @@ var PublishDVPEventsMessage = require("./DVPEventPublisher").PublishDVPEventsMes
 var healthcheck = require('dvp-healthcheck/DBHealthChecker');
 var convert = require('xml-js');
 
+var voicemailType = config.VoiceMail.type;
+var voicemailPriority = config.VoiceMail.priority;
+
 
 //console.log(messageGenerator.ARDS("XXXX","XXXXX","123","1","3"));
 
@@ -215,11 +218,13 @@ function postData(req, res) {
                 if(config.Services && config.Services.uploadurl  && config.Services.uploadport) {
 
 
-                     var urloadurl = format("http://{0}/DVP/API/{1}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadurlVersion);
+                     var urloadurl = format("http://{0}/DVP/API/{1}/FileService/File/Upload", config.Services.uploadurl,
+                         config.Services.uploadurlVersion);
 
 
                      if(validator.isIP(config.Services.uploadurl))
-                     urloadurl = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Upload", config.Services.uploadurl,config.Services.uploadport,config.Services.uploadurlVersion);
+                     urloadurl = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Upload", config.Services.uploadurl,
+                         config.Services.uploadport,config.Services.uploadurlVersion);
 
 
                     logger.debug("File Upload to " + urloadurl);
@@ -239,7 +244,9 @@ function postData(req, res) {
                      mediatype:"audio",
                      filetype:"mp3"}
 
-                    var fileID = format("http://{0}/DVP/API/{1}/InternalFileService/File/DownloadLatest/{2}/{3}/{4}", config.Services.downloadurl, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], FormData.filename);
+                    var fileID = format("http://{0}/DVP/API/{1}/InternalFileService/File/DownloadLatest/{2}/{3}/{4}",
+                        config.Services.downloadurl, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"],
+                        FormData.filename);
 
 
 
@@ -266,7 +273,8 @@ function postData(req, res) {
                                  if (response.body["IsSuccess"]) {
 
 
-                                     if (req.body && req.body["Caller-Caller-ID-Number"] && req.body["Caller-Destination-Number"] && req.body["Caller-Direction"] && req.body["session_id"]) {
+                                     if (req.body && req.body["Caller-Caller-ID-Number"] && req.body["Caller-Destination-Number"]
+                                         && req.body["Caller-Direction"] && req.body["session_id"]) {
 
                                          //FormData["display"] = req.body["Caller-Caller-ID-Number"] + " - " +req.body["Caller-Destination-Number"];
 
@@ -274,14 +282,17 @@ function postData(req, res) {
 
 
                                              var voicemailData = {
-                                                 type: "question",
+                                                 type: voicemailType || "question",
                                                  subject: "Voice mail from " + req.body["Caller-Caller-ID-Number"],
                                                  description: "Voicemail " + fileID,
-                                                 priority: "high"
+                                                 priority: voicemailPriority || "high"
 
                                              };
 
-                                             CreateTicket("voicemail", req.body["session_id"], uuid_data["company"], uuid_data["tenant"], voicemailData["type"], voicemailData["subject"], voicemailData["description"], voicemailData["priority"], voicemailData["tags"],undefined, function (success, result) {
+                                             CreateTicket("voicemail", req.body["session_id"], uuid_data["company"],
+                                                 uuid_data["tenant"], voicemailData["type"], voicemailData["subject"],
+                                                 voicemailData["description"], voicemailData["priority"], voicemailData["tags"],
+                                                 undefined, function (success, result) {
 
                                                  if (success) {
 
@@ -367,7 +378,7 @@ function Operation(callData, fileID, mainServer, queryData, res, domain, profile
 
         case "playanddetectspeech":
 
-            res.write(messageGenerator.PlayAndDetectSpeech(callData["text"], mainServer, mainServer, callData["inputtimeout"],
+            res.write(messageGenerator.PlayAndDetectSpeech(fileID, callData["text"], mainServer, mainServer, callData["inputtimeout"],
                 callData["timeout"], callData["asrGrammar"], callData["asrEngine"], callData["language"],callData["ttsEngine"],callData["ttsVoice"]));
 
             break;
@@ -2058,7 +2069,7 @@ function HandleFunction(queryData, req, res, next) {
                                             //console.log(callData["action"]);
 
 
-                                            if ((callData["action"] == "play" || callData["action"] == "playandgetdigits" )) {
+                                            if ((callData["action"] == "play" || callData["action"] == "playandgetdigits"  || callData["action"] == 'playanddetectspeech')) {
 
 
                                                 //console.log("inplay.....");
@@ -2072,138 +2083,192 @@ function HandleFunction(queryData, req, res, next) {
                                                 //console.log(config.Services);
                                                 //console.log(uuid_data);
 
-                                                if ((config.Services && config.Services.fileserviceurl && config.Services.fileserviceport && uuid_data['appid'])) {
+                                                if(filenamex) {
+                                                    if ((config.Services && config.Services.fileserviceurl && config.Services.fileserviceport && uuid_data['appid'])) {
 
-                                                    ///DVP/API/'+version+'/FIleService/FileHandler/:filename/FileInfoForApplicationId/:appId
+                                                        ///DVP/API/'+version+'/FIleService/FileHandler/:filename/FileInfoForApplicationId/:appId
 
-                                                    urlx = format("http://{0}/DVP/API/{1}/FileService/File/{2}/ofApplication/{3}", config.Services.fileserviceurl, config.Services.fileserviceVersion, filenamex, uuid_data['appid']);
-                                                    if (validator.isIP(config.Services.fileserviceurl))
-                                                        urlx = format("http://{0}:{1}/DVP/API/{2}/FileService/File/{3}/ofApplication/{4}", config.Services.fileserviceurl, config.Services.fileserviceport, config.Services.fileserviceVersion, filenamex, uuid_data['appid']);
+                                                        urlx = format("http://{0}/DVP/API/{1}/FileService/File/{2}/ofApplication/{3}", config.Services.fileserviceurl, config.Services.fileserviceVersion, filenamex, uuid_data['appid']);
+                                                        if (validator.isIP(config.Services.fileserviceurl))
+                                                            urlx = format("http://{0}:{1}/DVP/API/{2}/FileService/File/{3}/ofApplication/{4}", config.Services.fileserviceurl, config.Services.fileserviceport, config.Services.fileserviceVersion, filenamex, uuid_data['appid']);
 
 
-                                                    logger.debug("Calling FILE service URL %s", urlx);
-                                                    request.get({
-                                                        url: urlx,
-                                                        headers: {
-                                                            authorization: token,
-                                                            companyinfo: format("{0}:{1}", uuid_data["tenant"], uuid_data["company"])
-                                                        }
-                                                    }, function (_error, _response, datax) {
+                                                        logger.debug("Calling FILE service URL %s", urlx);
+                                                        request.get({
+                                                            url: urlx,
+                                                            headers: {
+                                                                authorization: token,
+                                                                companyinfo: format("{0}:{1}", uuid_data["tenant"], uuid_data["company"])
+                                                            }
+                                                        }, function (_error, _response, datax) {
+
+                                                            var fileID = filenamex;
+
+                                                            try {
+
+                                                                var filedata
+                                                                if (_response)
+                                                                    filedata = JSON.parse(_response.body);
+
+                                                                if (!_error && _response && _response.statusCode == 200 && filedata && filedata.Result && filedata.Result["UniqueId"]) {
+
+
+                                                                    logger.debug("HTTPProgrammingAPI.Handler Request File resolution Responsedata %d %j %j ", _response.statusCode, filedata, filedata.Result);
+
+
+                                                                    var ext = filedata.Result.FileStructure.split(/[/]+/).pop();
+                                                                    fileID = format("{0}.{1}", filedata.Result.UniqueId, ext);
+
+                                                                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                                                                    ///DVP/API/'+version+'/FileService/File/Download/:id/:displayname
+
+                                                                    fileID = format("http://{0}/DVP/API/{1}/InternalFileService/File/DownloadLatest/{2}/{3}/{4}", config.Services.downloadurl, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
+
+
+                                                                    if (validator.isIP(config.Services.downloadurl))
+                                                                        fileID = format("http://{0}:{1}/DVP/API/{2}/InternalFileService/File/DownloadLatest/{3}/{4}/{5}", config.Services.downloadurl, config.Services.downloadport, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
+
+                                                                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                                                                    //fileID = "http://localhost/IVR/Duo_IVR_Menu.wav";
+
+                                                                    logger.debug("HTTPProgrammingAPI.Handler Request File resolution %s %s", queryData["session_id"], fileID);
+
+
+                                                                }
+                                                                else {
+
+
+                                                                    //uuid_data["tenant"],uuid_data["company"]
+                                                                    var companyLocation = format("{0}/{1}", uuid_data["tenant"], uuid_data["company"]);
+                                                                    fileID = format("{0}/{1}", companyLocation, filenamex);
+
+                                                                    logger.error("HTTPProgrammingAPI.Handler Request File resolution %s", queryData["session_id"]);
+                                                                    logger.error("Errors -----> " + _error + " " + _response);
+
+
+                                                                }
+
+                                                                ///////////////////////////////////////////////////////////////////////////
+                                                                try {
+
+                                                                    logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"], callData, uuid_data["domain"], uuid_data["profile"], queryData);
+
+                                                                    Operation(callData, fileID, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '', '');
+                                                                }
+                                                                catch (exxx) {
+
+                                                                    console.log(exxx);
+
+                                                                }
+                                                                console.log("----------------------------------------------------> get result");
+
+                                                                uuid_dev["result"] = callData["result"];
+
+                                                                console.log("----------------------------------------------------> got result");
+
+
+                                                                if (uuid_dev["baseurl"] != "none") {
+
+                                                                    console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
+
+                                                                    uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                                    uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["nexturl"]);
+                                                                }
+                                                                else {
+
+                                                                    console.log("----------------------------------------------------> no base url");
+
+                                                                    uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                                    uuid_dev["nexturl"] = callData["nexturl"];
+
+                                                                    console.log("DEV DATA -------------> %j", uuid_dev);
+                                                                    console.log("CALL DATA -------------> %j", callData);
+
+
+                                                                }
+
+
+                                                                logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s", queryData["session_id"], uuid_dev["nexturl"]);
+
+
+                                                                try {
+                                                                    var redisData = JSON.stringify(uuid_dev);
+                                                                    redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                                                    logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j", redisData);
+                                                                }
+                                                                catch (e) {
+                                                                    console.error(e);
+                                                                }
+
+
+                                                            } catch (exx) {
+
+                                                                console.error(exx);
+
+                                                            }
+
+
+                                                        });
+                                                    } else {
 
                                                         var fileID = filenamex;
+                                                        Operation(callData, fileID, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '', '');
 
-                                                        try {
+                                                    }
+                                                }else{
+                                                    ///////////////////////////////////////////////////////////////////////////
 
-                                                            var filedata
-                                                            if (_response)
-                                                                filedata = JSON.parse(_response.body);
-
-                                                            if (!_error && _response && _response.statusCode == 200 && filedata && filedata.Result && filedata.Result["UniqueId"]) {
-
-
-                                                                logger.debug("HTTPProgrammingAPI.Handler Request File resolution Responsedata %d %j %j ", _response.statusCode, filedata, filedata.Result);
+                                                    logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"], callData, uuid_data["domain"], uuid_data["profile"], queryData);
 
 
-                                                                var ext = filedata.Result.FileStructure.split(/[/]+/).pop();
-                                                                fileID = format("{0}.{1}", filedata.Result.UniqueId, ext);
+                                                    Operation(callData, callData["file"], mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"]);
 
-                                                                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                                    console.log("----------------------------------------------------> get result");
 
-                                                                ///DVP/API/'+version+'/FileService/File/Download/:id/:displayname
+                                                    uuid_dev["result"] = callData["result"];
 
-                                                                fileID = format("http://{0}/DVP/API/{1}/InternalFileService/File/DownloadLatest/{2}/{3}/{4}", config.Services.downloadurl, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
-
-
-                                                                if (validator.isIP(config.Services.downloadurl))
-                                                                    fileID = format("http://{0}:{1}/DVP/API/{2}/InternalFileService/File/DownloadLatest/{3}/{4}/{5}", config.Services.downloadurl, config.Services.downloadport, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
-
-                                                                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                                                                //fileID = "http://localhost/IVR/Duo_IVR_Menu.wav";
-
-                                                                logger.debug("HTTPProgrammingAPI.Handler Request File resolution %s %s", queryData["session_id"], fileID);
+                                                    console.log("----------------------------------------------------> got result");
 
 
-                                                            }
-                                                            else {
+                                                    if (uuid_dev["baseurl"] != "none") {
+
+                                                        console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
+
+                                                        uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                        uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["nexturl"]);
+                                                    }
+                                                    else {
+
+                                                        console.log("----------------------------------------------------> no base url");
+
+                                                        uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                                        uuid_dev["nexturl"] = callData["nexturl"];
+
+                                                        console.log(uuid_dev["nexturl"]);
 
 
-                                                                //uuid_data["tenant"],uuid_data["company"]
-                                                                var companyLocation = format("{0}/{1}", uuid_data["tenant"], uuid_data["company"]);
-                                                                fileID = format("{0}/{1}", companyLocation, filenamex);
-
-                                                                logger.error("HTTPProgrammingAPI.Handler Request File resolution %s", queryData["session_id"]);
-                                                                logger.error("Errors -----> " + _error + " " + _response);
+                                                        console.log("DEV DATA -------------> %j", uuid_dev);
+                                                        console.log("CALL DATA -------------> %j", callData);
 
 
-                                                            }
-
-                                                            ///////////////////////////////////////////////////////////////////////////
-                                                            try {
-
-                                                                logger.debug("HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j", queryData["session_id"], callData, uuid_data["domain"], uuid_data["profile"], queryData);
-
-                                                                Operation(callData, fileID, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '', '');
-                                                            }
-                                                            catch (exxx) {
-
-                                                                console.log(exxx);
-
-                                                            }
-                                                            console.log("----------------------------------------------------> get result");
-
-                                                            uuid_dev["result"] = callData["result"];
-
-                                                            console.log("----------------------------------------------------> got result");
+                                                    }
 
 
-                                                            if (uuid_dev["baseurl"] != "none") {
-
-                                                                console.log("----------------------------------------------------> have base url" + uuid_dev["baseurl"]);
-
-                                                                uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                                uuid_dev["nexturl"] = format("{0}/{1}", uuid_dev["baseurl"], callData["nexturl"]);
-                                                            }
-                                                            else {
-
-                                                                console.log("----------------------------------------------------> no base url");
-
-                                                                uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                                                uuid_dev["nexturl"] = callData["nexturl"];
-
-                                                                console.log("DEV DATA -------------> %j", uuid_dev);
-                                                                console.log("CALL DATA -------------> %j", callData);
+                                                    logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s", queryData["session_id"], uuid_dev["nexturl"]);
 
 
-                                                            }
+                                                    try {
+                                                        var redisData = JSON.stringify(uuid_dev);
+                                                        redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
+                                                        logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j", redisData);
+                                                    }
+                                                    catch (e) {
+                                                        console.error(e);
+                                                    }
 
-
-                                                            logger.debug("HTTPProgrammingAPI.Handler APP NextURL  %s %s", queryData["session_id"], uuid_dev["nexturl"]);
-
-
-                                                            try {
-                                                                var redisData = JSON.stringify(uuid_dev);
-                                                                redisClient.set(queryData["session_id"] + "_dev", redisData, redis.print);
-                                                                logger.debug("HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j", redisData);
-                                                            }
-                                                            catch (e) {
-                                                                console.error(e);
-                                                            }
-
-
-                                                        } catch (exx) {
-
-                                                            console.error(exx);
-
-                                                        }
-
-
-                                                    });
-                                                } else {
-
-                                                    var fileID = filenamex;
-                                                    Operation(callData, fileID, mainServer, queryData, res, uuid_data["domain"], uuid_data["profile"], '', '');
-
+                                                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                 }
 
                                             }
