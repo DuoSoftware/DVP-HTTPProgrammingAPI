@@ -17,7 +17,7 @@
     "redis": "^0.12.1",
     "regex": "^0.1.1",
     "request": "^2.55.0",
-    "restify": "^3.0.2",
+    "restify": "^8.4.0",
     "stringformat": "^0.0.5",
     "validator": "^4.1.0",
     "xmlbuilder": "^2.6.2",
