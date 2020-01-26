@@ -193,7 +193,7 @@ function postData(req, res) {
     //fs.createReadStream('file.json').pipe(request.put('http://mysite.com/obj.json'))
 
 
-    logger.debug("Post voicemail recived");
+    logger.debug("Post voicemail received");
 
     
     redisClient.get(req.body["session_id"] + "_dev", function (err, sessiondata) {
