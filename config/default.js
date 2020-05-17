@@ -107,7 +107,9 @@ module.exports = {
         "uploadurlVersion": "1.0.0.0",
         "downloaddurlVersion": "1.0.0.0",
         "ruleserviceVersion": "1.0.0.0",
-        "qmusicVersion": "1.0.0.0"
+        "qmusicVersion": "1.0.0.0",
+
+        "dynamicPort" : false
 
     }
 
