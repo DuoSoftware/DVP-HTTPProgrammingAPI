@@ -653,7 +653,7 @@ var dial = function (actionURL, tempURL, context, dialplan, callername, callernu
     var doc = builder.create("document")
         .att("type", "text/freeswitch-httapi")
         .ele("variables")
-        .ele("facetone_record_session")
+        .ele("record_session")
         .text(record)
         .up()
         .ele("continue_on_fail")
