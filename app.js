@@ -233,7 +233,7 @@ function postData(req, res) {
                          config.Services.uploadurlVersion);
 
 
-                     if(validator.isIP(config.Services.uploadurl))
+                     if(config.Services.dynamicPort || validator.isIP(config.Services.uploadurl))
                      urloadurl = format("http://{0}:{1}/DVP/API/{2}/FileService/File/Upload", config.Services.uploadurl,
                          config.Services.uploadport,config.Services.uploadurlVersion);
 
@@ -896,7 +896,7 @@ function GetUserAttributes(company, tenant, id, attribute, cb){
 
 
         var userserviceURL = format("http://{0}/DVP/API/{1}/ExternalUser/"+id+"/attribute/"+attribute, config.Services.userserviceurl, config.Services.userserviceversion);
-        if (validator.isIP(config.Services.userserviceurl))
+        if (config.Services.dynamicPort || validator.isIP(config.Services.userserviceurl))
             userserviceURL = format("http://{0}:{1}/DVP/API/{2}/ExternalUser/"+id+"/attribute/"+attribute, config.Services.userserviceurl, config.Services.userserviceport, config.Services.userserviceversion);
 
         //var engagementData =  {};
@@ -940,7 +940,7 @@ function UpdateUserAttributes(company, tenant, id, attribute, value, cb){
 
 
         var userserviceURL = format("http://{0}/DVP/API/{1}/ExternalUser/"+id+"/attribute/"+attribute+"/value/"+value, config.Services.userserviceurl, config.Services.userserviceversion);
-        if (validator.isIP(config.Services.userserviceurl))
+        if (config.Services.dynamicPort || validator.isIP(config.Services.userserviceurl))
             userserviceURL = format("http://{0}:{1}/DVP/API/{2}/ExternalUser/"+id+"/attribute/"+attribute+"/value/"+value, config.Services.userserviceurl, config.Services.userserviceport, config.Services.userserviceversion);
 
         //var engagementData =  {};
@@ -991,7 +991,7 @@ function CreateEngagement(dummy, channel, company, tenant, from, to, direction, 
 
 
         var engagementURL = format("http://{0}/DVP/API/{1}/EngagementSessionForProfile", config.Services.interactionurl, config.Services.interactionversion);
-        if (validator.isIP(config.Services.interactionurl))
+        if (config.Services.dynamicPort || validator.isIP(config.Services.interactionurl))
             engagementURL = format("http://{0}:{1}/DVP/API/{2}/EngagementSessionForProfile", config.Services.interactionurl, config.Services.interactionport, config.Services.interactionversion);
 
         var engagementData =  {
@@ -1044,7 +1044,7 @@ function CreateTicket(channel,session, company, tenant, type, subjecct, descript
 
 
         var ticketURL = format("http://{0}/DVP/API/{1}/Ticket", config.Services.ticketurl, config.Services.ticketversion);
-        if (validator.isIP(config.Services.ticketurl))
+        if (config.Services.dynamicPort || validator.isIP(config.Services.ticketurl))
             ticketURL = format("http://{0}:{1}/DVP/API/{2}/Ticket", config.Services.ticketurl, config.Services.ticketport, config.Services.ticketversion);
 
         var ticketData =  {
@@ -1108,7 +1108,7 @@ function CreateSubmission(company, tenant, session, requester, submitter, satisf
 
         //console.log("CreateSubmission start");
         var ticketURL = format("http://{0}/DVP/API/{1}/CustomerSatisfaction/Submission/ByEngagement", config.Services.csaturl, config.Services.csatversion);
-        if (validator.isIP(config.Services.csaturl))
+        if (config.Services.dynamicPort || validator.isIP(config.Services.csaturl))
             ticketURL = format("http://{0}:{1}/DVP/API/{2}/CustomerSatisfaction/Submission/ByEngagement", config.Services.csaturl, config.Services.csatport, config.Services.csatversion);
 
         var csatData =  {
@@ -1170,7 +1170,7 @@ function CreateComment(channel, channeltype,company, tenant, engid, engagement, 
     if (config.Services && config.Services.ticketurl && config.Services.ticketport && config.Services.ticketversion) {
 
         var url = format("http://{0}/DVP/API/{1}/TicketByEngagement/{2}/Comment", config.Services.ticketurl, config.Services.ticketversion,engagement._id);
-        if (validator.isIP(config.Services.ticketurl))
+        if (config.Services.dynamicPort || validator.isIP(config.Services.ticketurl))
             url = format("http://{0}:{1}/DVP/API/{2}/TicketByEngagement/{3}/Comment", config.Services.ticketurl, config.Services.ticketport,config.Services.ticketversion, engid);
 
 
@@ -1230,7 +1230,7 @@ function AddNoteToEngagement(company, tenant, session,body){
         ///DVP/API/:version/EngagementSession/:session/Note
 
         var engagementURL = format("http://{0}/DVP/API/{1}/EngagementSession/{2}/Note", config.Services.interactionurl, config.Services.interactionversion, session);
-        if (validator.isIP(config.Services.interactionurl))
+        if (config.Services.dynamicPort || validator.isIP(config.Services.interactionurl))
             engagementURL = format("http://{0}:{1}/DVP/API/{2}/EngagementSession/{3}/Note", config.Services.interactionurl, config.Services.interactionport, config.Services.interactionversion, session);
 
         var engagementData =  {
@@ -1277,7 +1277,7 @@ function GetAgentForRequest(company, tenant, sessionID, Attributes, cb){
         ///http://ardsliteservice.app.veery.cloud/DVP/API/1.0.0.0/ARDS/request
 
         var ardsURL = format("http://{0}/DVP/API/{1}/ARDS/request", config.Services.ardsServiceHost, config.Services.ardsServiceVersion);
-        if (validator.isIP(config.Services.ardsServiceHost))
+        if (config.Services.dynamicPort || validator.isIP(config.Services.ardsServiceHost))
             ardsURL = format("http://{0}:{1}/DVP/API/{2}/ARDS/request", config.Services.ardsServiceHost, config.Services.ardsServicePort, config.Services.ardsServiceVersion);
 
         var ardsData =  {
@@ -1338,7 +1338,7 @@ function AddToInbox(company, tenant, sessionid, from, type, msg, profile, headin
 
 
         var engagementURL = format("http://{0}/DVP/API/{1}/Inbox/Message", config.Services.interactionurl, config.Services.interactionversion);
-        if (validator.isIP(config.Services.interactionurl))
+        if (config.Services.dynamicPort || validator.isIP(config.Services.interactionurl))
             engagementURL = format("http://{0}:{1}/DVP/API/{2}/Inbox/Message", config.Services.interactionurl, config.Services.interactionport, config.Services.interactionversion);
 
         var engagementData =  {
@@ -2100,7 +2100,7 @@ function HandleFunction(queryData, req, res, next) {
                                                         ///DVP/API/'+version+'/FIleService/FileHandler/:filename/FileInfoForApplicationId/:appId
 
                                                         urlx = format("http://{0}/DVP/API/{1}/FileService/File/{2}/ofApplication/{3}", config.Services.fileserviceurl, config.Services.fileserviceVersion, filenamex, uuid_data['appid']);
-                                                        if (validator.isIP(config.Services.fileserviceurl))
+                                                        if (config.Services.dynamicPort || validator.isIP(config.Services.fileserviceurl))
                                                             urlx = format("http://{0}:{1}/DVP/API/{2}/FileService/File/{3}/ofApplication/{4}", config.Services.fileserviceurl, config.Services.fileserviceport, config.Services.fileserviceVersion, filenamex, uuid_data['appid']);
 
 
@@ -2137,7 +2137,7 @@ function HandleFunction(queryData, req, res, next) {
                                                                     fileID = format("http://{0}/DVP/API/{1}/InternalFileService/File/DownloadLatest/{2}/{3}/{4}", config.Services.downloadurl, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
 
 
-                                                                    if (validator.isIP(config.Services.downloadurl))
+                                                                    if (config.Services.dynamicPort || validator.isIP(config.Services.downloadurl))
                                                                         fileID = format("http://{0}:{1}/DVP/API/{2}/InternalFileService/File/DownloadLatest/{3}/{4}/{5}", config.Services.downloadurl, config.Services.downloadport, config.Services.downloaddurlVersion, uuid_data["tenant"], uuid_data["company"], filenamex);
 
                                                                     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2296,7 +2296,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     outbountruleurl = format("http://{0}/DVP/API/{1}/CallRule/Outbound/ANI/{2}/DNIS/{3}", config.Services.ruleservice, config.Services.ruleserviceVersion, callData["callernumber"], callData["number"]);
 
 
-                                                    if (validator.isIP(config.Services.ruleservice))
+                                                    if (config.Services.dynamicPort || validator.isIP(config.Services.ruleservice))
                                                         outbountruleurl = format("http://{0}:{1}/DVP/API/{2}/CallRule/Outbound/ANI/{3}/DNIS/{4}", config.Services.ruleservice, config.Services.ruleserviceport, config.Services.ruleserviceVersion, callData["callernumber"], callData["number"]);
                                                 }
 
@@ -2408,7 +2408,7 @@ function HandleFunction(queryData, req, res, next) {
                                                     queueURL = format("http://{0}/ardsurl/{1}/{2}", config.Services.ards, uuid_data["tenant"], uuid_data["company"]);
 
 
-                                                    if (validator.isIP(config.Services.ards))
+                                                    if (config.Services.dynamicPort || validator.isIP(config.Services.ards))
                                                         queueURL = format("http://{0}:{1}/ardsurl/{2}/{3}", config.Services.ards, config.Services.ardsport, uuid_data["tenant"], uuid_data["company"]);
 
 
@@ -2512,7 +2512,7 @@ function HandleFunction(queryData, req, res, next) {
 
                                                     profileURL = format("http://{0}/DVP/API/{1}/QueueMusic/Profile/{2}", config.Services.qmusicurl, config.Services.qmusicVersion, callData["profile"]);
 
-                                                    if (validator.isIP(config.Services.qmusicurl))
+                                                    if (config.Services.dynamicPort || validator.isIP(config.Services.qmusicurl))
                                                         profileURL = format("http://{0}:{1}/DVP/API/{2}/QueueMusic/Profile/{3}", config.Services.qmusicurl, config.Services.qmusicport, config.Services.qmusicVersion, callData["profile"]);
 
 
@@ -3263,7 +3263,7 @@ function HandleDebugFunction(queryData, req, res, next) {
 
                                     url = format("http://{0}/{1}/GetFileIDForName/{2}", config.Services.downloadurl, filenamex, uuid_data['appid']);
 
-                                    if(validator.isIP(config.Services.downloadurl))
+                                    if(config.Services.dynamicPort || validator.isIP(config.Services.downloadurl))
                                         url = format("http://{0}:{1}/{2}/GetFileIDForName/{3}", config.Services.downloadurl,config.Services.downloadport, filenamex, uuid_data['appid']);
 
                                     logger.debug("Calling FILE service URL %s",url);
@@ -3364,7 +3364,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                         outbountruleurl = format("http://{0}/Outbound/ANI/{1}/DNIS/{2}", config.Services.ruleservice, callData["callernumber"], callData["number"]);
 
 
-                                        if(validator.isIP(config.Services.ruleservice))
+                                        if(config.Services.dynamicPort || validator.isIP(config.Services.ruleservice))
                                             outbountruleurl = format("http://{0}:{1}/Outbound/ANI/{2}/DNIS/{3}", config.Services.ruleservice,config.Services.ruleserviceport, callData["callernumber"], callData["number"]);
                                     }
 
@@ -3454,7 +3454,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                                         queueURL = format("http://{0}/ardsurl/{1}/{2}", config.Services.ards,  uuid_data["tenant"],uuid_data["company"]);
 
 
-                                        if(validator.isIP(config.Services.ards))
+                                        if(config.Services.dynamicPort || validator.isIP(config.Services.ards))
                                             queueURL = format("http://{0}:{1}/ardsurl/{2}/{3}", config.Services.ards,config.Services.ardsport,  uuid_data["tenant"],uuid_data["company"]);
 
                                     }

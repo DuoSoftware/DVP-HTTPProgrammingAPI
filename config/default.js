@@ -14,13 +14,13 @@ module.exports = {
     "Redis":
         {
             "mode":"sentinel",//instance, cluster, sentinel
-            "ip": "45.55.142.207",
-            "port": 6389,
-            "user": "duo",
-            "password": "DuoS123",
+            "ip": "",
+            "port": 6379,
+            "user": "",
+            "password": "",
             "sentinels":{
-                "hosts": "138.197.90.92,45.55.205.92,162.243.81.39",
-                "port":16389,
+                "hosts": "",
+                "port":6379,
                 "name":"redis-cluster"
             }
 
@@ -30,14 +30,14 @@ module.exports = {
     "Security":
         {
 
-            "ip" : "45.55.142.207",
-            "port": 6389,
-            "user": "duo",
-            "password": "DuoS123",
+            "ip" : "",
+            "port": 6379,
+            "user": "",
+            "password": "",
             "mode":"instance",//instance, cluster, sentinel
             "sentinels":{
-                "hosts": "138.197.90.92,45.55.205.92,162.243.81.39",
-                "port":16389,
+                "hosts": "",
+                "port":6379,
                 "name":"redis-cluster"
             }
         },
@@ -107,7 +107,9 @@ module.exports = {
         "uploadurlVersion": "1.0.0.0",
         "downloaddurlVersion": "1.0.0.0",
         "ruleserviceVersion": "1.0.0.0",
-        "qmusicVersion": "1.0.0.0"
+        "qmusicVersion": "1.0.0.0",
+
+        "dynamicPort" : false
 
     }
 
