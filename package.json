@@ -9,6 +9,7 @@
     "config": "^1.12.0",
     "data2xml": "^1.2.0",
     "dvp-common": "1.1.0",
+    "dvp-common-lite": "^1.1.0",
     "dvp-healthcheck": "^1.0.6",
     "form-data": "^0.2.0",
     "ioredis": "^3.1.1",
