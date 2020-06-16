@@ -2848,16 +2848,18 @@ function HandleFunction(queryData, req, res, next) {
                                     );
 
                                     logger.error(
-                                      "HTTPProgrammingAPI.Handler Request File resolution %s",
-                                      queryData["session_id"]
+                                      `HTTPProgrammingAPI.Handler Request File resolution ${queryData["session_id"]}`
                                     );
-                                    logger.error(
-                                      `Errors -----> ${
-                                        _error.message
-                                      } Response ----> ${JSON.stringify(
-                                        _response
-                                      )}`
-                                    );
+                                    if (_response)
+                                      logger.error(
+                                        `Response ----> ${JSON.stringify(
+                                          _response
+                                        )}`
+                                      );
+                                    if (_error)
+                                      logger.error(
+                                        `Errors -----> ${_error.message} `
+                                      );
                                   }
 
                                   ///////////////////////////////////////////////////////////////////////////
