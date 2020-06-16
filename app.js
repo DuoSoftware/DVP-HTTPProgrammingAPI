@@ -1377,36 +1377,37 @@ function CreateEngagement(
       body: body,
     };
 
-    logger.debug("Calling Engagement service URL %s", engagementURL);
-    request(
-      {
-        method: "POST",
-        url: engagementURL,
-        headers: {
-          authorization: token,
-          companyinfo: format("{0}:{1}", tenant, company),
-        },
-        json: engagementData,
+    let request_data = {
+      method: "POST",
+      url: engagementURL,
+      headers: {
+        authorization: token,
+        companyinfo: format("{0}:{1}", tenant, company),
       },
-      function (_error, _response, datax) {
-        try {
-          if (
-            (!_error && _response && _response.statusCode == 200,
-            _response.body && _response.body.IsSuccess)
-          ) {
-            return cb(true, _response.body.Result);
-          } else {
-            logger.error(
-              "There is an error in  create engagements for this session " +
-                session
-            );
-            return cb(false, {});
-          }
-        } catch (excep) {
+      json: engagementData,
+    };
+
+    logger.debug(
+      `Calling Engagement service ---> ${JSON.stringify(request_data)}`
+    );
+    request(request_data, function (_error, _response, datax) {
+      try {
+        if (
+          (!_error && _response && _response.statusCode == 200,
+          _response.body && _response.body.IsSuccess)
+        ) {
+          return cb(true, _response.body.Result);
+        } else {
+          logger.error(
+            "There is an error in  create engagements for this session " +
+              session
+          );
           return cb(false, {});
         }
+      } catch (excep) {
+        return cb(false, {});
       }
-    );
+    });
   }
 }
 
@@ -2365,7 +2366,9 @@ function HandleFunction(queryData, req, res, next) {
                     uuid_dev["dev_params"]["profile"] = result.profile_id;
                   }
                 } else {
-                  logger.error("Call Engagement Creation Failed  " + result);
+                  logger.error(
+                    `Call Engagement Creation Failed  ${JSON.stringify(result)}`
+                  );
                 }
 
                 {
