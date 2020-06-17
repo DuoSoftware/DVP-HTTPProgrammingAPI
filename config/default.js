@@ -109,7 +109,7 @@ module.exports = {
         "ruleserviceVersion": "1.0.0.0",
         "qmusicVersion": "1.0.0.0",
 
-        "dynamicPort" : false
+        "dynamicPort" : true
 
     }
 
