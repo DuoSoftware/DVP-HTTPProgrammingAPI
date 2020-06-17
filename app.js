@@ -3399,116 +3399,107 @@ function HandleFunction(queryData, req, res, next) {
                               );
                           }
 
-                          request.get(
-                            {
-                              url: profileURL,
-                              headers: {
-                                authorization: token,
-                                companyinfo: format(
-                                  "{0}:{1}",
-                                  uuid_data["tenant"],
-                                  uuid_data["company"]
-                                ),
-                              },
+                          let ards_request_info = {
+                            url: profileURL,
+                            headers: {
+                              authorization: token,
+                              companyinfo: format(
+                                "{0}:{1}",
+                                uuid_data["tenant"],
+                                uuid_data["company"]
+                              ),
                             },
-                            function (_error, _response, datax) {
-                              try {
+                          };
+
+                          logger.debug(
+                            `ARDS request info -------> ${JSON.stringify(
+                              ards_request_info
+                            )}`
+                          );
+
+                          request.get(ards_request_info, function (
+                            _error,
+                            _response,
+                            datax
+                          ) {
+                            try {
+                              if (
+                                !_error &&
+                                _response &&
+                                _response.statusCode == 200
+                              ) {
+                                var profileData = JSON.parse(_response.body);
+
                                 if (
-                                  !_error &&
-                                  _response &&
-                                  _response.statusCode == 200
+                                  profileData &&
+                                  profileData.IsSuccess &&
+                                  profileData.Result
                                 ) {
-                                  var profileData = JSON.parse(_response.body);
+                                  if (profileData.Result.MOH)
+                                    callData["MOH"] = profileData.Result.MOH;
+                                  else callData["MOH"] = "";
+
+                                  if (profileData.Result.Announcement)
+                                    callData["Announcement"] =
+                                      profileData.Result.Announcement;
+                                  else callData["Announcement"] = "";
+
+                                  if (profileData.Result.FirstAnnounement)
+                                    callData["FirstAnnounement"] =
+                                      profileData.Result.FirstAnnounement;
+                                  else callData["FirstAnnounement"] = "";
+
+                                  if (profileData.Result.AnnouncementTime)
+                                    callData["AnnouncementTime"] =
+                                      profileData.Result.AnnouncementTime;
+                                  else callData["AnnouncementTime"] = "";
+
+                                  if (profileData.Result.PositionAnnouncement)
+                                    callData["PositionAnnouncement"] = "true";
+                                  else
+                                    callData["PositionAnnouncement"] = "false";
+
+                                  if (profileData.Result.Language)
+                                    callData["Language"] =
+                                      profileData.Result.Language;
+                                  else callData["Language"] = "en";
+
+                                  if (profileData.Result.MaxQueueTime)
+                                    callData["MaxQueueTime"] =
+                                      profileData.Result.MaxQueueTime;
+                                  else callData["MaxQueueTime"] = "0";
+
+                                  if (profileData.Result.DialTime)
+                                    callData["DialTime"] =
+                                      profileData.Result.DialTime;
+                                  else callData["DialTime"] = "30";
+
+                                  if (profileData.Result.DialTime)
+                                    callData["DialTime"] =
+                                      profileData.Result.DialTime;
+                                  else callData["DialTime"] = "30";
+
+                                  if (profileData.Result.BusinessUnit)
+                                    callData["BusinessUnit"] =
+                                      profileData.Result.BusinessUnit;
+                                  else callData["BusinessUnit"] = "default";
 
                                   if (
-                                    profileData &&
-                                    profileData.IsSuccess &&
-                                    profileData.Result
+                                    callData["company"] &&
+                                    callData["tenant"]
                                   ) {
-                                    if (profileData.Result.MOH)
-                                      callData["MOH"] = profileData.Result.MOH;
-                                    else callData["MOH"] = "";
-
-                                    if (profileData.Result.Announcement)
-                                      callData["Announcement"] =
-                                        profileData.Result.Announcement;
-                                    else callData["Announcement"] = "";
-
-                                    if (profileData.Result.FirstAnnounement)
-                                      callData["FirstAnnounement"] =
-                                        profileData.Result.FirstAnnounement;
-                                    else callData["FirstAnnounement"] = "";
-
-                                    if (profileData.Result.AnnouncementTime)
-                                      callData["AnnouncementTime"] =
-                                        profileData.Result.AnnouncementTime;
-                                    else callData["AnnouncementTime"] = "";
-
-                                    if (profileData.Result.PositionAnnouncement)
-                                      callData["PositionAnnouncement"] = "true";
-                                    else
-                                      callData["PositionAnnouncement"] =
-                                        "false";
-
-                                    if (profileData.Result.Language)
-                                      callData["Language"] =
-                                        profileData.Result.Language;
-                                    else callData["Language"] = "en";
-
-                                    if (profileData.Result.MaxQueueTime)
-                                      callData["MaxQueueTime"] =
-                                        profileData.Result.MaxQueueTime;
-                                    else callData["MaxQueueTime"] = "0";
-
-                                    if (profileData.Result.DialTime)
-                                      callData["DialTime"] =
-                                        profileData.Result.DialTime;
-                                    else callData["DialTime"] = "30";
-
-                                    if (profileData.Result.DialTime)
-                                      callData["DialTime"] =
-                                        profileData.Result.DialTime;
-                                    else callData["DialTime"] = "30";
-
-                                    if (profileData.Result.BusinessUnit)
-                                      callData["BusinessUnit"] =
-                                        profileData.Result.BusinessUnit;
-                                    else callData["BusinessUnit"] = "default";
-
-                                    if (
-                                      callData["company"] &&
-                                      callData["tenant"]
-                                    ) {
-                                      uuid_data["company"] =
-                                        callData["company"];
-                                      uuid_data["tenant"] = callData["tenant"];
-                                    } else {
-                                      callData["company"] =
-                                        uuid_data["company"];
-                                      callData["tenant"] = uuid_data["tenant"];
-                                    }
-
-                                    logger.debug(
-                                      "HTTPProgrammingAPI.Handler Request profile resolution %s %j",
-                                      queryData["session_id"],
-                                      profileData
-                                    );
+                                    uuid_data["company"] = callData["company"];
+                                    uuid_data["tenant"] = callData["tenant"];
                                   } else {
-                                    console.log(
-                                      "Get ARDS rule failed --------> "
-                                    );
-                                    callData["MOH"] = "";
-                                    callData["Announcement"] = "";
-                                    callData["FirstAnnounement"] = "";
-                                    callData["AnnouncementTime"] = "";
-                                    callData["company"] = "";
-                                    callData["tenant"] = "";
-
-                                    logger.error(
-                                      "HTTPProgrammingAPI.Handler Request Profile resolution %s",
-                                      queryData["session_id"]
-                                    );
+                                    callData["company"] = uuid_data["company"];
+                                    callData["tenant"] = uuid_data["tenant"];
                                   }
+
+                                  logger.debug(
+                                    "HTTPProgrammingAPI.Handler Request profile resolution %s %j",
+                                    queryData["session_id"],
+                                    profileData
+                                  );
                                 } else {
                                   console.log(
                                     "Get ARDS rule failed --------> "
@@ -3517,103 +3508,116 @@ function HandleFunction(queryData, req, res, next) {
                                   callData["Announcement"] = "";
                                   callData["FirstAnnounement"] = "";
                                   callData["AnnouncementTime"] = "";
-                                  callData["company"] = uuid_data["company"];
-                                  callData["tenant"] = uuid_data["tenant"];
+                                  callData["company"] = "";
+                                  callData["tenant"] = "";
 
                                   logger.error(
                                     "HTTPProgrammingAPI.Handler Request Profile resolution %s",
                                     queryData["session_id"]
                                   );
                                 }
+                              } else {
+                                console.log("Get ARDS rule failed --------> ");
+                                callData["MOH"] = "";
+                                callData["Announcement"] = "";
+                                callData["FirstAnnounement"] = "";
+                                callData["AnnouncementTime"] = "";
+                                callData["company"] = uuid_data["company"];
+                                callData["tenant"] = uuid_data["tenant"];
 
-                                logger.debug(
-                                  "HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j",
-                                  queryData["session_id"],
-                                  callData,
-                                  uuid_data["domain"],
-                                  uuid_data["profile"],
-                                  queryData
+                                logger.error(
+                                  "HTTPProgrammingAPI.Handler Request Profile resolution %s",
+                                  queryData["session_id"]
                                 );
-
-                                Operation(
-                                  callData,
-                                  callData["file"],
-                                  mainServer,
-                                  queryData,
-                                  res,
-                                  uuid_data["domain"],
-                                  uuid_data["profile"],
-                                  callData["ip"],
-                                  callData["port"]
-                                );
-
-                                console.log(
-                                  "----------------------------------------------------> get result"
-                                );
-
-                                uuid_dev["result"] = callData["result"];
-
-                                console.log(
-                                  "----------------------------------------------------> got result"
-                                );
-
-                                if (uuid_dev["baseurl"] != "none") {
-                                  console.log(
-                                    "----------------------------------------------------> have base url" +
-                                      uuid_dev["baseurl"]
-                                  );
-
-                                  uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                  uuid_dev["nexturl"] = format(
-                                    "{0}/{1}",
-                                    uuid_dev["baseurl"],
-                                    callData["nexturl"]
-                                  );
-                                } else {
-                                  console.log(
-                                    "----------------------------------------------------> no base url"
-                                  );
-
-                                  uuid_dev["currenturl"] = uuid_dev["nexturl"];
-                                  uuid_dev["nexturl"] = callData["nexturl"];
-
-                                  console.log(uuid_dev["nexturl"]);
-
-                                  console.log(
-                                    "DEV DATA -------------> %j",
-                                    uuid_dev
-                                  );
-                                  console.log(
-                                    "CALL DATA -------------> %j",
-                                    callData
-                                  );
-                                }
-
-                                logger.debug(
-                                  "HTTPProgrammingAPI.Handler APP NextURL  %s %s",
-                                  queryData["session_id"],
-                                  uuid_dev["nexturl"]
-                                );
-
-                                try {
-                                  var redisData = JSON.stringify(uuid_dev);
-                                  redisClient.set(
-                                    queryData["session_id"] + "_dev",
-                                    redisData,
-                                    redis.print
-                                  );
-                                  logger.debug(
-                                    "HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",
-                                    redisData
-                                  );
-                                } catch (e) {
-                                  console.error(e);
-                                }
-                              } catch (reqex) {
-                                console.error(reqex);
                               }
+
+                              logger.debug(
+                                "HTTPProgrammingAPI.Handler CallOperation %s %j %s %s %j",
+                                queryData["session_id"],
+                                callData,
+                                uuid_data["domain"],
+                                uuid_data["profile"],
+                                queryData
+                              );
+
+                              Operation(
+                                callData,
+                                callData["file"],
+                                mainServer,
+                                queryData,
+                                res,
+                                uuid_data["domain"],
+                                uuid_data["profile"],
+                                callData["ip"],
+                                callData["port"]
+                              );
+
+                              console.log(
+                                "----------------------------------------------------> get result"
+                              );
+
+                              uuid_dev["result"] = callData["result"];
+
+                              console.log(
+                                "----------------------------------------------------> got result"
+                              );
+
+                              if (uuid_dev["baseurl"] != "none") {
+                                console.log(
+                                  "----------------------------------------------------> have base url" +
+                                    uuid_dev["baseurl"]
+                                );
+
+                                uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                uuid_dev["nexturl"] = format(
+                                  "{0}/{1}",
+                                  uuid_dev["baseurl"],
+                                  callData["nexturl"]
+                                );
+                              } else {
+                                console.log(
+                                  "----------------------------------------------------> no base url"
+                                );
+
+                                uuid_dev["currenturl"] = uuid_dev["nexturl"];
+                                uuid_dev["nexturl"] = callData["nexturl"];
+
+                                console.log(uuid_dev["nexturl"]);
+
+                                console.log(
+                                  "DEV DATA -------------> %j",
+                                  uuid_dev
+                                );
+                                console.log(
+                                  "CALL DATA -------------> %j",
+                                  callData
+                                );
+                              }
+
+                              logger.debug(
+                                "HTTPProgrammingAPI.Handler APP NextURL  %s %s",
+                                queryData["session_id"],
+                                uuid_dev["nexturl"]
+                              );
+
+                              try {
+                                var redisData = JSON.stringify(uuid_dev);
+                                redisClient.set(
+                                  queryData["session_id"] + "_dev",
+                                  redisData,
+                                  redis.print
+                                );
+                                logger.debug(
+                                  "HTTPProgrammingAPI.Handler SetRedis Data UUID_DEV %j",
+                                  redisData
+                                );
+                              } catch (e) {
+                                console.error(e);
+                              }
+                            } catch (reqex) {
+                              console.error(reqex);
                             }
-                          );
+                          });
                         } else if (callData["action"] == "ticket") {
                           CreateTicket(
                             "call",
