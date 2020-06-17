@@ -37,7 +37,7 @@ process.on("unhandledRejection", (err) => {
 
 var mainServer = format("http://{0}", config.LBServer.ip);
 
-if (validator.isIP(config.LBServer.ip))
+if (config.Services.dynamicPort || validator.isIP(config.LBServer.ip))
   mainServer = format(
     "http://{0}:{1}",
     config.LBServer.ip,
