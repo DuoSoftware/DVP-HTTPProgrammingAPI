@@ -5,7 +5,10 @@ module.exports = {
         "password": "FS_PASSWORD"
     },
 
-
+    "VoiceMail": {
+        "type": "SYS_VOICEMAIL_TYPE",
+        "priority": "SYS_VOICEMAIL_PRIORITY",
+    },
 
 
     "Redis":
