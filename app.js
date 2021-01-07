@@ -284,7 +284,7 @@ function postData(req, res) {
           };
 
           logger.debug(
-            `Fileservice request data ----> ${JSON.stringify(request_data)}`
+            `Fileservice request data ----> ${FormData.sessionid}, ${FormData.filename}`
           );
 
           var r = request.post(request_data, function (error, response, body) {
