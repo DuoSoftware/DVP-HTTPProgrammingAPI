@@ -96,6 +96,7 @@ if (redismode == "sentinel") {
         sentinels: sentinelConnections,
         name: config.Redis.sentinels.name,
         password: redispass,
+        db: redisdb,
       };
     } else {
       console.log("No enough sentinel servers found .........");
