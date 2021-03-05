@@ -16,6 +16,7 @@ module.exports = {
     port: 6379,
     user: "",
     password: "",
+    db: 11,
     sentinels: {
       hosts: "",
       port: 6379,

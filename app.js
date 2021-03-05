@@ -96,6 +96,7 @@ if (redismode == "sentinel") {
         sentinels: sentinelConnections,
         name: config.Redis.sentinels.name,
         password: redispass,
+        db: redisdb,
       };
     } else {
       console.log("No enough sentinel servers found .........");
@@ -621,7 +622,7 @@ function Operation(
 
         console.log(
           "------------------------------------------------------>" +
-            callData["dtmftype"]
+          callData["dtmftype"]
         );
         //var msg = messageGenerator.DTMFType(mainServer, mainServer, callData["dtmftype"]);
         var msg = messageGenerator.Continue(mainServer);
@@ -1221,9 +1222,9 @@ function GetUserAttributes(company, tenant, id, attribute, cb) {
     )
       userserviceURL = format(
         "http://{0}:{1}/DVP/API/{2}/ExternalUser/" +
-          id +
-          "/attribute/" +
-          attribute,
+        id +
+        "/attribute/" +
+        attribute,
         config.Services.userserviceurl,
         config.Services.userserviceport,
         config.Services.userserviceversion
@@ -1246,7 +1247,7 @@ function GetUserAttributes(company, tenant, id, attribute, cb) {
         try {
           if (
             (!_error && _response && _response.statusCode == 200,
-            _response.body && _response.body.IsSuccess)
+              _response.body && _response.body.IsSuccess)
           ) {
             cb(true, _response.body.Result);
           } else {
@@ -1272,11 +1273,11 @@ function UpdateUserAttributes(company, tenant, id, attribute, value, cb) {
   ) {
     var userserviceURL = format(
       "http://{0}/DVP/API/{1}/ExternalUser/" +
-        id +
-        "/attribute/" +
-        attribute +
-        "/value/" +
-        value,
+      id +
+      "/attribute/" +
+      attribute +
+      "/value/" +
+      value,
       config.Services.userserviceurl,
       config.Services.userserviceversion
     );
@@ -1286,11 +1287,11 @@ function UpdateUserAttributes(company, tenant, id, attribute, value, cb) {
     )
       userserviceURL = format(
         "http://{0}:{1}/DVP/API/{2}/ExternalUser/" +
-          id +
-          "/attribute/" +
-          attribute +
-          "/value/" +
-          value,
+        id +
+        "/attribute/" +
+        attribute +
+        "/value/" +
+        value,
         config.Services.userserviceurl,
         config.Services.userserviceport,
         config.Services.userserviceversion
@@ -1313,7 +1314,7 @@ function UpdateUserAttributes(company, tenant, id, attribute, value, cb) {
         try {
           if (
             (!_error && _response && _response.statusCode == 200,
-            _response.body && _response.body.IsSuccess)
+              _response.body && _response.body.IsSuccess)
           ) {
             cb(true, _response.body.Result);
           } else {
@@ -1394,13 +1395,13 @@ function CreateEngagement(
       try {
         if (
           (!_error && _response && _response.statusCode == 200,
-          _response.body && _response.body.IsSuccess)
+            _response.body && _response.body.IsSuccess)
         ) {
           return cb(true, _response.body.Result);
         } else {
           logger.error(
             "There is an error in  create engagements for this session " +
-              session
+            session
           );
           return cb(false, {});
         }
@@ -1842,19 +1843,19 @@ function AddToInbox(
         try {
           if (
             (!_error && _response && _response.statusCode == 200,
-            _response.body && _response.body.IsSuccess)
+              _response.body && _response.body.IsSuccess)
           ) {
             logger.debug("Add to inbox is success " + sessionid);
           } else {
             logger.error(
               "There is an error in  create engagements for this session " +
-                sessionid
+              sessionid
             );
           }
         } catch (excep) {
           logger.error(
             "There is an error in  create engagements for this session " +
-              sessionid,
+            sessionid,
             excep
           );
         }
@@ -2002,7 +2003,7 @@ function HandleSMS(req, res, next) {
                           sessiondata["TenantId"],
                           smsData["engagement"],
                           result,
-                          function (success, result) {}
+                          function (success, result) { }
                         );
 
                         break;
@@ -2023,7 +2024,7 @@ function HandleSMS(req, res, next) {
                           smsData["priority"],
                           smsData["tags"],
                           profile,
-                          function (success, result) {}
+                          function (success, result) { }
                         );
 
                         break;
@@ -2304,7 +2305,7 @@ function HandleFunction(queryData, req, res, next) {
 
               logger.info(
                 "User number ------------------------------------------------------------->" +
-                  callerID
+                callerID
               );
 
               //redisClient.lpush(queryData["Caller-Destination-Number"] + "_live", queryData["session_id"], redis.print);
@@ -2332,11 +2333,11 @@ function HandleFunction(queryData, req, res, next) {
 
                 logger.info(
                   "DEV data reset due to session reset____________________  " +
-                    uuid_dev.nexturl +
-                    " " +
-                    uuid_dev.baseurl +
-                    " " +
-                    uuid_dev.appid
+                  uuid_dev.nexturl +
+                  " " +
+                  uuid_dev.baseurl +
+                  " " +
+                  uuid_dev.appid
                 );
               }
               logger.info(
@@ -2409,7 +2410,7 @@ function HandleFunction(queryData, req, res, next) {
                           detected_result.result.interpretation.input._text;
                         logger.info(
                           "Detected voice : " +
-                            detected_result.result.interpretation.input._text
+                          detected_result.result.interpretation.input._text
                         );
                       }
                       //resultValue = uuid_dev['detect_speech_result'];
@@ -2900,7 +2901,7 @@ function HandleFunction(queryData, req, res, next) {
                                   if (uuid_dev["baseurl"] != "none") {
                                     console.log(
                                       "----------------------------------------------------> have base url" +
-                                        uuid_dev["baseurl"]
+                                      uuid_dev["baseurl"]
                                     );
 
                                     uuid_dev["currenturl"] =
@@ -3002,7 +3003,7 @@ function HandleFunction(queryData, req, res, next) {
                             if (uuid_dev["baseurl"] != "none") {
                               console.log(
                                 "----------------------------------------------------> have base url" +
-                                  uuid_dev["baseurl"]
+                                uuid_dev["baseurl"]
                               );
 
                               uuid_dev["currenturl"] = uuid_dev["nexturl"];
@@ -3167,7 +3168,7 @@ function HandleFunction(queryData, req, res, next) {
                                 if (uuid_dev["baseurl"] != "none") {
                                   console.log(
                                     "----------------------------------------------------> have base url" +
-                                      uuid_dev["baseurl"]
+                                    uuid_dev["baseurl"]
                                   );
 
                                   uuid_dev["currenturl"] = uuid_dev["nexturl"];
@@ -3216,7 +3217,7 @@ function HandleFunction(queryData, req, res, next) {
                                 } catch (e) {
                                   console.error(e);
                                 }
-                              } catch (reqex) {}
+                              } catch (reqex) { }
                             }
                           );
                         } else if (callData["action"] == "queue") {
@@ -3320,7 +3321,7 @@ function HandleFunction(queryData, req, res, next) {
                                 if (uuid_dev["baseurl"] != "none") {
                                   console.log(
                                     "----------------------------------------------------> have base url" +
-                                      uuid_dev["baseurl"]
+                                    uuid_dev["baseurl"]
                                   );
 
                                   uuid_dev["currenturl"] = uuid_dev["nexturl"];
@@ -3369,7 +3370,7 @@ function HandleFunction(queryData, req, res, next) {
                                 } catch (e) {
                                   console.error(e);
                                 }
-                              } catch (reqex) {}
+                              } catch (reqex) { }
                             }
                           );
                         }
@@ -3565,7 +3566,7 @@ function HandleFunction(queryData, req, res, next) {
                               if (uuid_dev["baseurl"] != "none") {
                                 console.log(
                                   "----------------------------------------------------> have base url" +
-                                    uuid_dev["baseurl"]
+                                  uuid_dev["baseurl"]
                                 );
 
                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
@@ -3667,7 +3668,7 @@ function HandleFunction(queryData, req, res, next) {
                               if (uuid_dev["baseurl"] != "none") {
                                 console.log(
                                   "----------------------------------------------------> have base url" +
-                                    uuid_dev["baseurl"]
+                                  uuid_dev["baseurl"]
                                 );
 
                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
@@ -3729,7 +3730,7 @@ function HandleFunction(queryData, req, res, next) {
 
                           console.info(
                             "Calling user attribute --------------------> ----------------> " +
-                              profile
+                            profile
                           );
                           GetUserAttributes(
                             uuid_data["company"],
@@ -3781,7 +3782,7 @@ function HandleFunction(queryData, req, res, next) {
                               if (uuid_dev["baseurl"] != "none") {
                                 console.log(
                                   "----------------------------------------------------> have base url" +
-                                    uuid_dev["baseurl"]
+                                  uuid_dev["baseurl"]
                                 );
 
                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
@@ -3843,7 +3844,7 @@ function HandleFunction(queryData, req, res, next) {
 
                           console.info(
                             "Calling user attribute update--------------------> ----------------> " +
-                              profile
+                            profile
                           );
                           UpdateUserAttributes(
                             uuid_data["company"],
@@ -3896,7 +3897,7 @@ function HandleFunction(queryData, req, res, next) {
                               if (uuid_dev["baseurl"] != "none") {
                                 console.log(
                                   "----------------------------------------------------> have base url" +
-                                    uuid_dev["baseurl"]
+                                  uuid_dev["baseurl"]
                                 );
 
                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
@@ -3959,7 +3960,7 @@ function HandleFunction(queryData, req, res, next) {
 
                           console.log(
                             "variable_ARDS-Resource-Profile-Name -------------------------------------------------------------> " +
-                              uuid_dev["resource"]
+                            uuid_dev["resource"]
                           );
 
                           CreateSubmission(
@@ -4005,7 +4006,7 @@ function HandleFunction(queryData, req, res, next) {
                               if (uuid_dev["baseurl"] != "none") {
                                 console.log(
                                   "----------------------------------------------------> have base url" +
-                                    uuid_dev["baseurl"]
+                                  uuid_dev["baseurl"]
                                 );
 
                                 uuid_dev["currenturl"] = uuid_dev["nexturl"];
@@ -4093,7 +4094,7 @@ function HandleFunction(queryData, req, res, next) {
                           if (uuid_dev["baseurl"] != "none") {
                             console.log(
                               "----------------------------------------------------> have base url" +
-                                uuid_dev["baseurl"]
+                              uuid_dev["baseurl"]
                             );
 
                             uuid_dev["currenturl"] = uuid_dev["nexturl"];
@@ -4522,7 +4523,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                         if (uuid_dev["baseurl"] != "none") {
                           console.log(
                             "----------------------------------------------------> have base url" +
-                              uuid_dev["baseurl"]
+                            uuid_dev["baseurl"]
                           );
 
                           uuid_dev["currenturl"] = uuid_dev["nexturl"];
@@ -4556,7 +4557,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                         } catch (e) {
                           console.error(e);
                         }
-                      } catch (exx) {}
+                      } catch (exx) { }
                     }
                   );
                 } else if (callData["action"] == "dialgateway") {
@@ -4650,7 +4651,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                         if (uuid_dev["baseurl"] != "none") {
                           console.log(
                             "----------------------------------------------------> have base url" +
-                              uuid_dev["baseurl"]
+                            uuid_dev["baseurl"]
                           );
 
                           uuid_dev["currenturl"] = uuid_dev["nexturl"];
@@ -4684,7 +4685,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                         } catch (e) {
                           console.error(e);
                         }
-                      } catch (reqex) {}
+                      } catch (reqex) { }
                     }
                   );
                 } else if (callData["action"] == "queue") {
@@ -4765,7 +4766,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                         if (uuid_dev["baseurl"] != "none") {
                           console.log(
                             "----------------------------------------------------> have base url" +
-                              uuid_dev["baseurl"]
+                            uuid_dev["baseurl"]
                           );
 
                           uuid_dev["currenturl"] = uuid_dev["nexturl"];
@@ -4799,7 +4800,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                         } catch (e) {
                           console.error(e);
                         }
-                      } catch (reqex) {}
+                      } catch (reqex) { }
                     }
                   );
                 } else {
@@ -4829,7 +4830,7 @@ function HandleDebugFunction(queryData, req, res, next) {
                   if (uuid_dev["baseurl"] != "none") {
                     console.log(
                       "----------------------------------------------------> have base url" +
-                        uuid_dev["baseurl"]
+                      uuid_dev["baseurl"]
                     );
 
                     uuid_dev["currenturl"] = uuid_dev["nexturl"];

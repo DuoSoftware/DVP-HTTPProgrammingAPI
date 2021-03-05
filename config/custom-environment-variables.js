@@ -1,5 +1,5 @@
 module.exports = {
-    "Freeswitch" : {
+    "Freeswitch": {
         "ip": "SYS_FREESWITCH_HOST",
         "port": "SYS_EVENTSOCKET_PORT",
         "password": "FS_PASSWORD"
@@ -10,15 +10,16 @@ module.exports = {
 
     "Redis":
     {
-        "mode":"SYS_REDIS_MODE",
+        "mode": "SYS_REDIS_MODE",
         "ip": "SYS_REDIS_HOST",
         "port": "SYS_REDIS_PORT",
         "user": "SYS_REDIS_USER",
         "password": "SYS_REDIS_PASSWORD",
-        "sentinels":{
+        "db": "SYS_REDIS_DB_DASHBOARD",
+        "sentinels": {
             "hosts": "SYS_REDIS_SENTINEL_HOSTS",
-            "port":"SYS_REDIS_SENTINEL_PORT",
-            "name":"SYS_REDIS_SENTINEL_NAME"
+            "port": "SYS_REDIS_SENTINEL_PORT",
+            "name": "SYS_REDIS_SENTINEL_NAME"
         }
 
     },
@@ -30,21 +31,21 @@ module.exports = {
         "port": "SYS_REDIS_PORT",
         "user": "SYS_REDIS_USER",
         "password": "SYS_REDIS_PASSWORD",
-        "mode":"SYS_REDIS_MODE",
-        "sentinels":{
+        "mode": "SYS_REDIS_MODE",
+        "sentinels": {
             "hosts": "SYS_REDIS_SENTINEL_HOSTS",
-            "port":"SYS_REDIS_SENTINEL_PORT",
-            "name":"SYS_REDIS_SENTINEL_NAME"
+            "port": "SYS_REDIS_SENTINEL_PORT",
+            "name": "SYS_REDIS_SENTINEL_NAME"
         }
 
     },
 
-    "HTTPServer" : {
+    "HTTPServer": {
         "port": "HOST_HTTPPROGRAMMINGAPI_PORT"
     },
 
 
-    "LBServer" : {
+    "LBServer": {
 
         "ip": "LB_FRONTEND",
         "port": "LB_PORT"
@@ -54,20 +55,20 @@ module.exports = {
     "Services": {
 
         "uploadurl": "SYS_FILESERVICE_HOST",
-        "uploadport":"SYS_FILESERVICE_PORT",
-        "uploadurlVersion":"SYS_FILESERVICE_VERSION",
+        "uploadport": "SYS_FILESERVICE_PORT",
+        "uploadurlVersion": "SYS_FILESERVICE_VERSION",
         "fileserviceurl": "SYS_FILESERVICE_HOST",
-        "fileserviceport":"SYS_FILESERVICE_PORT",
-        "fileserviceVersion":"SYS_FILESERVICE_VERSION",
+        "fileserviceport": "SYS_FILESERVICE_PORT",
+        "fileserviceVersion": "SYS_FILESERVICE_VERSION",
 
 
         "interactionurl": "SYS_INTERACTION_HOST",
         "interactionport": "SYS_INTERACTION_PORT",
-        "interactionversion":"SYS_INTERACTION_VERSION",
+        "interactionversion": "SYS_INTERACTION_VERSION",
 
         "ticketurl": "SYS_TICKET_HOST",
         "ticketport": "SYS_TICKET_PORT",
-        "ticketversion":"SYS_TICKET_VERSION",
+        "ticketversion": "SYS_TICKET_VERSION",
 
         "csaturl": "SYS_CSAT_HOST",
         "csatport": 'SYS_CSAT_PORT',
@@ -80,8 +81,8 @@ module.exports = {
         "userserviceversion": "SYS_USERSERVICE_VERSION",
 
         "downloadurl": "SYS_DOWNLOAD_FILESERVICE_HOST",
-        "downloadport":"SYS_DOWNLOAD_FILESERVICE_PORT",
-        "downloaddurlVersion" : "SYS_DOWNLOAD_FILESERVICE_VERSION",
+        "downloadport": "SYS_DOWNLOAD_FILESERVICE_PORT",
+        "downloaddurlVersion": "SYS_DOWNLOAD_FILESERVICE_VERSION",
 
 
         "ruleservice": "SYS_RULESERVICE_HOST",
@@ -110,13 +111,13 @@ module.exports = {
     },
 
     "RabbitMQ":
-        {
-            "ip": "SYS_RABBITMQ_HOST",
-            "port": "SYS_RABBITMQ_PORT",
-            "user": "SYS_RABBITMQ_USER",
-            "password": "SYS_RABBITMQ_PASSWORD",
-            "vhost":"SYS_RABBITMQ_VHOST"
-        },
+    {
+        "ip": "SYS_RABBITMQ_HOST",
+        "port": "SYS_RABBITMQ_PORT",
+        "user": "SYS_RABBITMQ_USER",
+        "password": "SYS_RABBITMQ_PASSWORD",
+        "vhost": "SYS_RABBITMQ_VHOST"
+    },
 
     "EventPublishMethod": "HOST_DVPEVENTS_TYPE"
 
